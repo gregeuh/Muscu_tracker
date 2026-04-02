@@ -131,12 +131,6 @@
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .history-item {
-            padding: 12px 0; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .delete-btn { background: none; border: none; color: var(--danger-color); font-size: 18px; cursor: pointer; padding: 5px 10px; }
-
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-cell {
             background-color: var(--bg-color); border: 1px solid var(--border-color);
@@ -176,13 +170,46 @@
         }
         .checkbox-container input { width: 18px; height: 18px; margin: 0; padding: 0; }
         .history-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
-        /* NOUVEAU : Style pour le fantôme */
+        
         #last-workout-ghost {
             font-size: 13px; color: var(--accent-color); 
             text-align: center; margin-top: 2px; margin-bottom: 10px; 
             min-height: 18px; font-weight: 600;
         }
+
+        /* NOUVEAU : Styles pour les groupes d'exercices */
+        .history-group {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .group-header {
+            background-color: rgba(0,123,255,0.08);
+            color: var(--accent-color);
+            padding: 12px 15px;
+            font-weight: 800;
+            font-size: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .group-sets { padding: 0 15px; }
+        .set-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .set-item:last-child { border-bottom: none; }
+        .set-info { display: flex; flex-direction: column; }
+        .set-main { display: flex; align-items: center; gap: 10px; }
+        .set-number {
+            background-color: var(--bg-color); color: var(--text-muted);
+            font-size: 11px; font-weight: 800; padding: 3px 7px;
+            border-radius: 6px; border: 1px solid var(--border-color); min-width: 14px; text-align: center;
+        }
+        .delete-btn { background: none; border: none; color: var(--danger-color); font-size: 18px; cursor: pointer; padding: 5px; }
 
     </style></head><body>
 
@@ -260,15 +287,15 @@
                     <button type="submit" class="btn-primary" id="submit-btn">Enregistrer</button>
                 </form>
             </div>
-            <h3>Aujourd'hui</h3>
-            <div id="history-list" class="card"></div>
+            <h3>Historique de la séance</h3>
+            <div id="history-list"></div>
         </section>
 
         <section id="calendar" class="tab-content">
             <h2>Calendrier</h2>
             <div class="card"><div class="calendar-grid" id="calendar-container"></div></div>
             <h3 id="selected-date-title">Séance du jour</h3>
-            <div id="day-details" class="card"></div>
+            <div id="day-details"></div>
         </section>
 
         <section id="stats" class="tab-content">
@@ -335,7 +362,6 @@
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        // NOUVEAU : Fonction pour charger le fantôme
         async function loadGhost(machineName) {
             const ghostDiv = document.getElementById('last-workout-ghost');
             if(!machineName) { ghostDiv.innerText = ''; return; }
@@ -344,27 +370,18 @@
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", machineName));
             const snap = await getDocs(q);
             
-            let lastWorkout = null;
-            let maxTime = 0;
-            
+            let lastWorkout = null; let maxTime = 0;
             snap.forEach(d => {
                 const data = d.data();
-                // On ignore les échauffements pour ne garder que la "vraie" perf
                 if (data.isWarmup) return;
-                
                 const time = data.timestamp.toMillis();
-                if (time > maxTime) {
-                    maxTime = time;
-                    lastWorkout = data;
-                }
+                if (time > maxTime) { maxTime = time; lastWorkout = data; }
             });
             
             if (lastWorkout) {
                 const dateStr = lastWorkout.timestamp.toDate().toLocaleDateString('fr-FR', {day: '2-digit', month: 'short'});
                 ghostDiv.innerHTML = `👻 Dernière fois (${dateStr}) : <strong>${lastWorkout.weight}kg x ${lastWorkout.reps}</strong>`;
-            } else {
-                ghostDiv.innerText = '';
-            }
+            } else { ghostDiv.innerText = ''; }
         }
 
         async function loadExercises() {
@@ -384,7 +401,7 @@
 
         document.getElementById('machine').onchange = (e) => {
             document.getElementById('delete-machine-btn').style.display = customExercises[e.target.value] ? 'flex' : 'none';
-            loadGhost(e.target.value); // Met à jour le fantôme quand on change de machine
+            loadGhost(e.target.value); 
         };
 
         document.getElementById('save-machine-btn').onclick = async () => {
@@ -448,47 +465,89 @@
             document.getElementById('is-warmup').checked = false;
             
             loadWorkouts();
-            loadGhost(machine); // Actualise le fantôme avec la série qu'on vient de faire !
+            loadGhost(machine); 
             document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
-        function renderHistoryItem(data, docId, container) {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            const textStyle = data.isWarmup ? 'color: var(--text-muted); font-style: italic; opacity: 0.8;' : '';
-            const noteHtml = data.note ? `<div class="history-note">📝 ${data.note}</div>` : '';
+        // NOUVEAU : Fonction de suppression globale
+        window.deleteSeries = async (docId) => {
+            if(confirm("Supprimer cette série ?")) { 
+                await deleteDoc(doc(db, "workouts", docId)); 
+                loadGhost(document.getElementById('machine').value);
+                if(document.getElementById('calendar').classList.contains('active')) {
+                    const activeDayCell = document.querySelector('.day-cell.selected');
+                    if(activeDayCell) loadWorkoutsForDay(parseInt(activeDayCell.innerText));
+                } else {
+                    loadWorkouts();
+                }
+            } 
+        };
 
-            item.innerHTML = `
-                <div style="${textStyle}">
-                    <strong>${data.isWarmup ? '🔥 ' : ''}${data.machine}</strong><br>
-                    <small>${data.weight}kg x ${data.reps}</small>
-                    ${noteHtml}
-                </div>`;
-            const del = document.createElement('button');
-            del.className = 'delete-btn'; del.innerHTML = '🗑️';
-            del.onclick = async () => { 
-                if(confirm("Supprimer ?")) { 
-                    await deleteDoc(doc(db, "workouts", docId)); 
-                    loadWorkouts(); 
-                    loadGhost(document.getElementById('machine').value); // Maj du fantôme en cas de suppression
-                } 
-            };
-            item.appendChild(del);
-            container.appendChild(item);
+        // NOUVEAU : Le moteur de regroupement d'exercices
+        function renderGroupedWorkouts(dailyWorkoutsArray, container) {
+            container.innerHTML = '';
+            if(dailyWorkoutsArray.length === 0) {
+                container.innerHTML = '<p style="text-align:center; font-size:12px; color:var(--text-muted);">Aucune série pour ce jour.</p>';
+                return;
+            }
+
+            let groups = [];
+            let currentGroup = null;
+
+            // Comme la liste est chronologique inversée (les plus récents en premier), on regroupe les séries consécutives.
+            dailyWorkoutsArray.forEach(item => {
+                if(!currentGroup || currentGroup.machine !== item.data.machine) {
+                    currentGroup = { machine: item.data.machine, sets: [] };
+                    groups.push(currentGroup);
+                }
+                currentGroup.sets.push(item);
+            });
+
+            groups.forEach(g => {
+                // On inverse l'ordre à l'intérieur du groupe pour avoir la Série 1 en haut
+                g.sets.reverse();
+                
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'history-group';
+                
+                let html = `<div class="group-header">🏋️ ${g.machine}</div><div class="group-sets">`;
+                
+                g.sets.forEach((item, index) => {
+                    const d = item.data;
+                    const textStyle = d.isWarmup ? 'color: var(--text-muted); font-style: italic; opacity: 0.8;' : '';
+                    const noteHtml = d.note ? `<div class="history-note">📝 ${d.note}</div>` : '';
+                    const prefix = d.isWarmup ? '🔥 ' : `<span class="set-number">${index + 1}</span>`;
+                    
+                    html += `
+                    <div class="set-item" style="${textStyle}">
+                        <div class="set-info">
+                            <div class="set-main">${prefix} <strong>${d.weight}kg x ${d.reps}</strong></div>
+                            ${noteHtml}
+                        </div>
+                        <button class="delete-btn" onclick="deleteSeries('${item.id}')">🗑️</button>
+                    </div>`;
+                });
+                
+                html += `</div>`;
+                groupDiv.innerHTML = html;
+                container.appendChild(groupDiv);
+            });
         }
 
         async function loadWorkouts() {
             const list = document.getElementById('history-list');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
-            list.innerHTML = '';
             const selectedDate = document.getElementById('workout-date').value;
+            
+            let dailyWorkouts = [];
             snap.forEach(d => {
                 const date = d.data().timestamp.toDate();
                 const dStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-                if(dStr === selectedDate) renderHistoryItem(d.data(), d.id, list);
+                if(dStr === selectedDate) dailyWorkouts.push({id: d.id, data: d.data()});
             });
-            if(list.innerHTML === '') list.innerHTML = '<p style="text-align:center; font-size:12px;">Aucune série.</p>';
+            
+            renderGroupedWorkouts(dailyWorkouts, list);
         }
 
         document.getElementById('workout-date').onchange = () => loadWorkouts();
@@ -519,15 +578,16 @@
             document.getElementById('selected-date-title').innerText = `Séance du ${day} ${new Date().toLocaleString('fr-fr', { month: 'long' })}`;
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
-            details.innerHTML = '';
-            let hasData = false;
+            
+            let dailyWorkouts = [];
             snap.forEach(d => {
                 const date = d.data().timestamp.toDate();
                 if(date.getDate() === day && date.getMonth() === new Date().getMonth()) {
-                    hasData = true; renderHistoryItem(d.data(), d.id, details);
+                    dailyWorkouts.push({id: d.id, data: d.data()});
                 }
             });
-            if(!hasData) details.innerHTML = '<p style="text-align:center; font-size:12px;">Repos.</p>';
+            
+            renderGroupedWorkouts(dailyWorkouts, details);
         }
 
         let statChart = null;
