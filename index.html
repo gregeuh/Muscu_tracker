@@ -22,10 +22,34 @@
             --text-main: #ffffff; --text-muted: #8e8e93; --accent-color: #0a84ff;
             --border-color: #2c2c2e; --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
-        html, body { background-color: var(--bg-color); margin: 0; font-family: 'Inter', sans-serif; color: var(--text-main); transition: background-color 0.3s; -webkit-tap-highlight-color: transparent; overflow-x: hidden; width: 100%; height: 100%; }
-        body { padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; }
+
+        /* FIX DU SCROLL : On enlève height: 100% qui bloquait tout */
+        html { 
+            background-color: var(--bg-color);
+            scroll-behavior: smooth;
+        }
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-main); 
+            transition: background-color 0.3s; 
+            -webkit-tap-highlight-color: transparent; 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
+        }
         
-        header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1000; }
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; height: 64px; 
+            background-color: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 20px; padding-top: env(safe-area-inset-top); 
+            z-index: 1000; 
+        }
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
         
@@ -35,7 +59,7 @@
         [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
         #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; padding: 8px 16px; border-radius: 20px; display: none; }
 
-        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80dvh; padding: 20px; text-align: center; }
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
         #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
@@ -44,10 +68,10 @@
         h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
         h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); display: flex; align-items: center; gap: 8px; }
 
-        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; -webkit-appearance: none; appearance: none; }
+        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; }
         
         .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
-        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; max-width: 100%; display: block; min-height: 54px; }
+        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; max-width: 100%; display: block; min-height: 54px; -webkit-appearance: none; appearance: none; }
         .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
 
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; font-size: 16px; }
@@ -203,11 +227,13 @@
         let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
         setPersistence(auth, browserLocalPersistence);
 
+        // --- THEME ---
         const themeBtn = document.getElementById('theme-btn');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); localStorage.setItem('theme', dark ? 'dark' : 'light'); };
         applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
         themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
+        // --- AUTH ---
         const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const errorMsg = document.getElementById('auth-error');
         document.getElementById('auth-toggle-btn').onclick = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Se connecter" : "Créer mon compte"; document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion"; };
         document.getElementById('auth-submit-btn').onclick = async () => { try { if (isLoginMode) await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); else await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); } catch (err) { errorMsg.innerText = err.message; errorMsg.style.display = 'block'; } };
@@ -217,6 +243,7 @@
         });
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
+        // --- TABS ---
         window.showTab = (tabId, btn) => { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
@@ -224,8 +251,7 @@
             if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
-        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
-
+        // --- WORKOUTS & EXERCISES ---
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
@@ -254,6 +280,8 @@
 
         window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
 
+        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
+
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
@@ -275,11 +303,8 @@
             const dateInput = document.getElementById('workout-date').value;
             const todayStr = new Date().toISOString().split('T')[0];
             const titleDisplay = document.getElementById('session-date-display');
-            
-            // Mise à jour du titre
             if(dateInput === todayStr) titleDisplay.innerText = "Séance du jour";
             else titleDisplay.innerText = "Séance du " + formatDateShort(new Date(dateInput));
-
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")); 
             const snap = await getDocs(q); let filtered = [];
             snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
