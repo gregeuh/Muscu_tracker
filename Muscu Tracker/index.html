@@ -37,12 +37,16 @@
             --border-color: #333333;
         }
 
+        html {
+            background-color: var(--panel-bg);
+        }
+
         body {
             margin: 0; font-family: 'Inter', sans-serif;
             background-color: var(--bg-color); color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
             padding-top: calc(90px + env(safe-area-inset-top, 0px));
-            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
+            padding-bottom: calc(120px + env(safe-area-inset-bottom, 20px)); 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -133,7 +137,7 @@
         .modal-card { width: 100%; max-width: 400px; margin: 0; text-align: center; }
 
         #floating-timer {
-            display: none; position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); 
+            display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
             left: 20px; right: 20px; background: var(--accent-color); color: white; 
             padding: 15px 20px; border-radius: 12px; text-align: center; 
             font-weight: 800; font-size: 18px; z-index: 999; 
@@ -166,26 +170,33 @@
         .stat-box h4 { margin: 0; font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .stat-box p { margin: 5px 0 0 0; font-size: 22px; font-weight: 800; color: var(--accent-color); }
 
-        /* NOUVEAU : CSS du Menu corrigé pour boucher le trou de l'iPhone */
         nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background-color: var(--panel-bg); border-top: 1px solid var(--border-color);
             display: none; justify-content: space-around;
             padding-top: 5px;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom); 
+            z-index: 1000;
         }
-        /* Cette rallonge invisible bouche le vide en dessous sur certains iPhones */
         nav::after {
             content: ''; position: absolute; top: 100%; left: 0; right: 0;
-            height: 50px; background-color: var(--panel-bg);
+            height: 100px; background-color: var(--panel-bg);
         }
 
         .nav-btn {
             background: none; border: none; color: var(--text-muted);
-            padding: 10px; font-size: 11px; flex: 1; display: flex;
+            padding: 10px 5px 10px 5px; font-size: 11px; flex: 1; display: flex;
             flex-direction: column; align-items: center; gap: 4px; z-index: 2;
         }
         .nav-btn.active { color: var(--accent-color); }
+
+        /* NOUVEAU : Case à cocher personnalisée */
+        .checkbox-container {
+            display: flex; align-items: center; gap: 8px; justify-content: center;
+            margin-top: 5px; margin-bottom: 15px; cursor: pointer; color: var(--text-muted); font-size: 14px;
+        }
+        .checkbox-container input { width: 18px; height: 18px; margin: 0; padding: 0; }
+
     </style>
 </head>
 <body>
@@ -258,7 +269,12 @@
                         <input type="number" id="weight" placeholder="Poids (kg)" inputmode="numeric" required style="margin-bottom: 0;">
                         <input type="number" id="reps" placeholder="Reps" inputmode="numeric" required style="margin-bottom: 0;">
                     </div>
-                    <button type="submit" class="btn-primary" id="submit-btn" style="margin-top: 15px;">Enregistrer</button>
+
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="is-warmup"> 🔥 Série d'échauffement
+                    </label>
+
+                    <button type="submit" class="btn-primary" id="submit-btn">Enregistrer</button>
                 </form>
             </div>
             <h3>Aujourd'hui</h3>
@@ -279,7 +295,7 @@
                 <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0 <span style="font-size:12px;">kg</span></p></div>
             </div>
             <div class="card">
-                <h3 style="font-size: 14px; text-align: center; margin-top: 0;">Top Exercices</h3>
+                <h3 style="font-size: 14px; text-align: center; margin-top: 0;">Top Exercices (Hors échauf.)</h3>
                 <canvas id="statsChart"></canvas>
             </div>
         </section>
@@ -483,6 +499,9 @@
             const now = new Date(); 
             const finalDate = new Date(yyyy, mm - 1, dd, now.getHours(), now.getMinutes(), now.getSeconds());
 
+            // On récupère la valeur de la checkbox
+            const isWarmupVal = document.getElementById('is-warmup').checked;
+
             const btn = document.getElementById('submit-btn');
             btn.innerText = "...";
             
@@ -491,16 +510,54 @@
                 weight: parseInt(document.getElementById('weight').value),
                 reps: parseInt(document.getElementById('reps').value),
                 timestamp: finalDate, 
-                userId: auth.currentUser.uid
+                userId: auth.currentUser.uid,
+                isWarmup: isWarmupVal // NOUVEAU
             });
             
             document.getElementById('weight').value = '';
             document.getElementById('reps').value = '';
+            document.getElementById('is-warmup').checked = false; // On décoche après ajout
             btn.innerText = "Enregistrer";
             
             loadWorkouts();
             modalTimerPrompt.style.display = 'flex';
         };
+
+        // NOUVEAU : Fonction pour générer le HTML de l'historique avec le style échauffement
+        function renderHistoryItem(data, docId, container) {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            
+            // Si c'est un échauffement, on grise le texte et on met une flamme
+            const textStyle = data.isWarmup ? 'color: var(--text-muted); font-style: italic; opacity: 0.8;' : '';
+            const prefix = data.isWarmup ? '🔥 ' : '';
+
+            item.innerHTML = `
+                <div style="${textStyle}">
+                    <strong>${prefix}${data.machine}</strong><br>
+                    <small>${data.weight}kg x ${data.reps}</small>
+                </div>`;
+                
+            const del = document.createElement('button');
+            del.className = 'delete-btn';
+            del.innerHTML = '🗑️';
+            del.onclick = async () => { 
+                if(confirm("Supprimer ?")) { 
+                    await deleteDoc(doc(db, "workouts", docId)); 
+                    loadWorkouts(); // Recharge l'onglet principal
+                    if(document.getElementById('calendar').classList.contains('active')) {
+                        // Si on est sur le calendrier, on le rafraîchit aussi
+                        const activeDayCell = document.querySelector('.day-cell.selected');
+                        if (activeDayCell) {
+                            loadWorkoutsForDay(parseInt(activeDayCell.innerText));
+                            renderCalendar();
+                        }
+                    }
+                } 
+            };
+            item.appendChild(del);
+            container.appendChild(item);
+        }
 
         async function loadWorkouts() {
             const list = document.getElementById('history-list');
@@ -520,15 +577,7 @@
                 const workoutDateStr = `${y}-${m}-${day}`;
 
                 if (workoutDateStr === selectedDateStr) {
-                    const item = document.createElement('div');
-                    item.className = 'history-item';
-                    item.innerHTML = `<div><strong>${data.machine}</strong><br><small>${data.weight}kg x ${data.reps}</small></div>`;
-                    const del = document.createElement('button');
-                    del.className = 'delete-btn';
-                    del.innerHTML = '🗑️';
-                    del.onclick = async () => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", d.id)); loadWorkouts(); } };
-                    item.appendChild(del);
-                    list.appendChild(item);
+                    renderHistoryItem(data, d.id, list);
                 }
             });
             
@@ -567,14 +616,17 @@
             title.innerText = `Séance du ${day} ${new Date().toLocaleString('fr-fr', { month: 'long' })}`;
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
-            let html = '';
+            details.innerHTML = ''; // On vide
+            let hasData = false;
+            
             snap.forEach(d => {
                 const date = d.data().timestamp.toDate();
                 if(date.getDate() === day && date.getMonth() === new Date().getMonth()) {
-                    html += `<div class="history-item"><strong>${d.data().machine}</strong> <span>${d.data().weight}kg x ${d.data().reps}</span></div>`;
+                    hasData = true;
+                    renderHistoryItem(d.data(), d.id, details);
                 }
             });
-            details.innerHTML = html || '<p style="text-align:center; font-size:12px;">Repos ce jour-là !</p>';
+            if(!hasData) details.innerHTML = '<p style="text-align:center; font-size:12px;">Repos ce jour-là !</p>';
         }
 
         let statChart = null;
@@ -583,12 +635,17 @@
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
             let totalSeries = 0; let totalVolume = 0; const machinesCount = {};
+            
             snap.forEach(d => {
                 const data = d.data();
-                totalSeries++;
-                totalVolume += (data.weight * data.reps);
-                machinesCount[data.machine] = (machinesCount[data.machine] || 0) + 1;
+                // NOUVEAU : On ignore l'échauffement dans les statistiques
+                if (!data.isWarmup) {
+                    totalSeries++;
+                    totalVolume += (data.weight * data.reps);
+                    machinesCount[data.machine] = (machinesCount[data.machine] || 0) + 1;
+                }
             });
+            
             document.getElementById('stat-series').innerText = totalSeries;
             document.getElementById('stat-volume').innerHTML = totalVolume + ' <span style="font-size:12px;">kg</span>';
             const sortedMachines = Object.entries(machinesCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -598,7 +655,7 @@
                 type: 'bar',
                 data: {
                     labels: sortedMachines.map(m => m[0]),
-                    datasets: [{ label: 'Nombre de séries', data: sortedMachines.map(m => m[1]), backgroundColor: '#007bff', borderRadius: 6 }]
+                    datasets: [{ label: 'Séries (hors échauf.)', data: sortedMachines.map(m => m[1]), backgroundColor: '#007bff', borderRadius: 6 }]
                 },
                 options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
             });
