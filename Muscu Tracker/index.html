@@ -77,13 +77,18 @@
         h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
 
-        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; }
+        input, select { 
+            width: 100%; padding: 16px; background-color: var(--bg-color); 
+            border: 1px solid var(--border-color); color: var(--text-main); 
+            border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px;
+            font-family: inherit;
+        }
+        input[type="date"] { min-height: 54px; cursor: pointer; }
 
-        /* BOUTONS UNIFORMISÉS */
         .btn-primary { 
             background-color: var(--accent-color); color: white; border: none; 
             padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; 
-            cursor: pointer; font-size: 16px; transition: background 0.2s;
+            cursor: pointer; font-size: 16px; transition: all 0.2s;
         }
         .btn-primary:active { transform: scale(0.98); background-color: var(--accent-hover); }
 
@@ -93,47 +98,47 @@
         }
 
         .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        #add-machine-btn { border-radius: 16px; width: 56px; height: 56px; background: var(--accent-color); color: white; border: none; font-size: 24px; cursor: pointer; }
+        #add-machine-btn { border-radius: 16px; width: 56px; height: 56px; background: var(--accent-color); color: white; border: none; font-size: 24px; cursor: pointer; flex-shrink: 0; }
 
-        /* MODALS (FIX POUR L'AFFICHAGE) */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); 
-            display: none; align-items: center; justify-content: center; z-index: 2000; 
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
         }
         .modal-card { 
-            width: 90%; max-width: 380px; background: var(--card-bg); 
+            width: 100%; max-width: 380px; background: var(--card-bg); 
             border-radius: 32px; padding: 28px; border: 1px solid var(--border-color);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column;
         }
-        .modal-card h2 { margin-top: 0; font-size: 24px; text-align: center; }
+        .modal-card h2 { margin-top: 0; font-size: 24px; text-align: center; margin-bottom: 20px; }
 
         #floating-timer { 
             display: none; position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
             left: 16px; right: 16px; background: var(--accent-color); color: white; 
-            padding: 16px 20px; border-radius: 20px; z-index: 999; 
+            padding: 16px 20px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3);
         }
 
-        /* HISTORIQUE */
         .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
-        .group-header { background: var(--accent-light); color: var(--accent-color); padding: 16px 20px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; }
+        .group-header { background: var(--accent-light); color: var(--accent-color); padding: 16px 20px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .set-item:last-child { border-bottom: none; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
         .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
 
-        /* CALENDRIER */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 14px; position: relative; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
         .day-cell.today { background: var(--accent-light); color: var(--accent-color); }
         .day-cell.selected { background: var(--accent-color); color: white; }
 
-        /* NAV */
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 12px; font-size: 11px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .nav-btn.active { color: var(--accent-color); }
+        .nav-btn span { font-size: 22px; }
 
         #last-workout-ghost { font-size: 13px; color: var(--accent-color); text-align: center; margin-bottom: 12px; font-weight: 700; }
+        #success-flash { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent-color); color: white; padding: 20px 40px; border-radius: 50px; font-weight: 800; font-size: 18px; z-index: 5000; display: none; }
     </style></head><body>
 
     <header id="main-header">
@@ -147,7 +152,7 @@
 
     <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; padding:20px; text-align:center;">
         <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
-        <button id="google-login-btn" class="btn-primary" style="width:auto; padding: 16px 32px;">Connexion Google</button>
+        <button id="google-login-btn" class="btn-primary" style="width:auto; padding: 16px 32px; box-shadow: 0 10px 20px rgba(0,122,255,0.2);">Connexion Google</button>
     </div>
 
     <div id="app-screen">
@@ -160,7 +165,7 @@
                     <div class="input-row" style="margin-bottom:0;"><input type="number" id="weight" placeholder="Kg" inputmode="numeric" required onfocus="this.select()"><input type="number" id="reps" placeholder="Reps" inputmode="numeric" required onfocus="this.select()"></div>
                     <div id="last-workout-ghost"></div>
                     <input type="text" id="series-note" placeholder="Note (facultatif)">
-                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:20px; font-size:14px; font-weight:600; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
+                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:20px; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer;"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
                     <button type="submit" class="btn-primary">Enregistrer la série</button>
                 </form>
             </div>
@@ -170,7 +175,7 @@
         <section id="calendar" class="tab-content">
             <h2>Calendrier</h2>
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <div id="month-display" style="font-weight:800; font-size:18px;">Mois</div>
                     <div style="display:flex; gap:10px;"><button class="theme-toggle" onclick="changeMonth(-1)">‹</button><button class="theme-toggle" onclick="changeMonth(1)">›</button></div>
                 </div>
@@ -181,7 +186,7 @@
         </section>
 
         <section id="stats" class="tab-content">
-            <h2>Stats</h2>
+            <h2>Stats Globales</h2>
             <div class="stats-summary">
                 <div class="stat-box"><h4>SÉRIES</h4><p id="stat-series">0</p></div>
                 <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0</p></div>
@@ -217,11 +222,13 @@
         <div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;">
             <span id="timer-display">00:00</span>
             <div style="display:flex; gap:10px;">
-                <button onclick="timerSeconds += 30" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px;">+30s</button>
-                <button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px;">✕</button>
+                <button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px; font-weight:700;">+30s</button>
+                <button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button>
             </div>
         </div>
     </div>
+
+    <div id="success-flash">Série validée ! 💪</div>
 
     <nav id="bottom-nav">
         <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button>
@@ -232,7 +239,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig);
@@ -243,6 +250,13 @@
         let currentViewDate = new Date();
         let personalRecords = {};
         let collapsedGroups = new Set();
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+
+        // CONFIGURATION PERSISTANCE : Déconnexion quand on ferme l'onglet/fenêtre
+        setPersistence(auth, browserSessionPersistence);
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -254,6 +268,8 @@
                 document.getElementById('bottom-nav').style.display = 'flex';
                 loadExercises(); loadWorkouts(); loadPRs();
             } else {
+                document.getElementById('user-photo').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app-screen').style.display = 'none';
                 document.getElementById('bottom-nav').style.display = 'none';
@@ -317,6 +333,11 @@
                 timestamp: new Date(), userId: auth.currentUser.uid
             });
             if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine] || 0)) personalRecords[machine] = weight;
+            
+            if(navigator.vibrate) navigator.vibrate(50);
+            const flash = document.getElementById('success-flash');
+            flash.style.display = 'block'; setTimeout(() => flash.style.display = 'none', 1500);
+
             loadWorkouts();
             document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
@@ -325,7 +346,7 @@
             const select = document.getElementById('machine');
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
-            let exercises = []; snap.forEach(d => { exercises.push(d.data().name); customExercises[d.data().name] = {id: d.id}; });
+            let exercises = []; snap.forEach(d => { exercises.push(d.data().name); });
             exercises.sort(); select.innerHTML = exercises.map(name => `<option value="${name}">${name}</option>`).join('');
             select.dispatchEvent(new Event('change'));
         }
@@ -380,6 +401,7 @@
             renderGrouped(filtered, details);
         }
 
+        let statChartInstance = null;
         async function loadStats() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
@@ -388,11 +410,10 @@
             document.getElementById('stat-series').innerText = series;
             document.getElementById('stat-volume').innerText = volume + ' kg';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] }, options: { scales: { y: { beginAtZero: true } } } });
+            if(statChartInstance) statChartInstance.destroy();
+            statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] }, options: { scales: { y: { beginAtZero: true } } } });
         }
 
-        let timerInterval = null; window.timerSeconds = 0;
         function startTimer(sec) {
             clearInterval(timerInterval); timerSeconds = sec;
             document.getElementById('floating-timer').style.display = 'block';
@@ -403,6 +424,7 @@
                 timerSeconds--;
             }, 1000);
         }
+        window.addTime = () => { timerSeconds += 30; };
         document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
         document.querySelectorAll('.timer-select-btn').forEach(btn => btn.onclick = () => { document.getElementById('modal-timer-prompt').style.display = 'none'; startTimer(parseInt(btn.dataset.time)); });
 
@@ -414,4 +436,5 @@
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); document.getElementById('theme-switch').checked = dark; };
         applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
         document.getElementById('theme-switch').onclick = (e) => applyTheme(e.target.checked);
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
