@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Muscu Tracker</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Muscu">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
+    <link rel="manifest" href="manifest.json">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -33,6 +40,15 @@
             padding-top: calc(90px + env(safe-area-inset-top, 0px));
             padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px)); 
             -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ANIMATION FLASH POUR LE CHRONO (Alternative au vibreur iOS) */
+        @keyframes flashScreen {
+            0%, 100% { background-color: var(--bg-color); }
+            50% { background-color: rgba(0, 123, 255, 0.4); }
+        }
+        .flash-active {
+            animation: flashScreen 0.5s ease-in-out 4; /* Clignote 4 fois */
         }
 
         header {
@@ -74,6 +90,13 @@
             width: 100%; padding: 14px; background-color: var(--panel-bg);
             border: 1px solid var(--border-color); color: var(--text-main);
             border-radius: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 10px;
+        }
+
+        /* Styliser un peu mieux le champ date sur iOS */
+        input[type="date"] {
+            font-family: 'Inter', sans-serif;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         button.btn-primary {
@@ -213,6 +236,11 @@
             <h2>Nouvelle Série</h2>
             <div class="card">
                 <form id="workout-form">
+                    
+                    <div class="input-row" style="margin-bottom: 10px;">
+                        <input type="date" id="workout-date" required style="margin-bottom: 0;">
+                    </div>
+
                     <div class="input-row">
                         <select id="machine" required style="margin-bottom: 0;">
                             <option value="" disabled selected>Chargement...</option>
@@ -278,6 +306,9 @@
         const provider = new GoogleAuthProvider();
 
         let customExercises = {};
+
+        // INITIALISATION DE LA DATE DU JOUR AU CHARGEMENT
+        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
 
         // SCROLL HEADER
         let lastScrollY = window.scrollY;
@@ -397,18 +428,15 @@
         const floatingTimer = document.getElementById('floating-timer');
         const timerDisplay = document.getElementById('timer-display');
 
-        // Fermer la pop-up sans chrono
         document.getElementById('cancel-timer-btn').onclick = () => {
             modalTimerPrompt.style.display = 'none';
         };
 
-        // Fermer le chrono en cours
         document.getElementById('stop-timer-btn').onclick = () => {
             clearInterval(timerInterval);
             floatingTimer.style.display = 'none';
         };
 
-        // Démarrer le chrono depuis la pop-up
         document.querySelectorAll('.timer-select-btn').forEach(btn => {
             btn.onclick = () => {
                 const seconds = parseInt(btn.getAttribute('data-time'));
@@ -428,8 +456,15 @@
                 if(remaining <= 0) {
                     clearInterval(timerInterval);
                     timerDisplay.innerText = "C'est parti ! 🏋️";
-                    if (navigator.vibrate) navigator.vibrate([200, 100, 200]); // Fait vibrer le téléphone
-                    setTimeout(() => { floatingTimer.style.display = 'none'; }, 4000); // Disparaît après 4s
+                    
+                    // On garde la vibration (pour Android) et on ajoute le flash de l'écran pour l'iPhone
+                    if (navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+                    document.body.classList.add('flash-active');
+                    
+                    setTimeout(() => { 
+                        floatingTimer.style.display = 'none'; 
+                        document.body.classList.remove('flash-active');
+                    }, 2500); 
                 } else {
                     updateTimerDisplay(remaining);
                 }
@@ -447,20 +482,28 @@
             e.preventDefault();
             const machineVal = document.getElementById('machine').value;
             if(!machineVal) return;
+            
+            // On récupère la date choisie par l'utilisateur
+            const dateVal = document.getElementById('workout-date').value;
+            const [yyyy, mm, dd] = dateVal.split('-');
+            const now = new Date(); // On garde l'heure actuelle pour le tri
+            const finalDate = new Date(yyyy, mm - 1, dd, now.getHours(), now.getMinutes(), now.getSeconds());
+
             const btn = document.getElementById('submit-btn');
             btn.innerText = "...";
+            
             await addDoc(collection(db, "workouts"), {
                 machine: machineVal,
                 weight: parseInt(document.getElementById('weight').value),
                 reps: parseInt(document.getElementById('reps').value),
-                timestamp: new Date(),
+                timestamp: finalDate, // On utilise la date combinée
                 userId: auth.currentUser.uid
             });
+            
             document.getElementById('weight').value = '';
             document.getElementById('reps').value = '';
             btn.innerText = "Enregistrer";
             
-            // Recharger l'historique ET ouvrir la pop-up du chrono
             loadWorkouts();
             modalTimerPrompt.style.display = 'flex';
         };
@@ -470,19 +513,41 @@
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
             list.innerHTML = snap.empty ? '<p style="text-align:center; font-size:12px;">Aucune série.</p>' : '';
+            
+            // Pour n'afficher que l'historique de la date sélectionnée (Aujourd'hui par défaut)
+            const selectedDateStr = document.getElementById('workout-date').value;
+
             snap.forEach(d => {
                 const data = d.data();
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                item.innerHTML = `<div><strong>${data.machine}</strong><br><small>${data.weight}kg x ${data.reps}</small></div>`;
-                const del = document.createElement('button');
-                del.className = 'delete-btn';
-                del.innerHTML = '🗑️';
-                del.onclick = async () => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", d.id)); loadWorkouts(); } };
-                item.appendChild(del);
-                list.appendChild(item);
+                const workoutDateObj = data.timestamp.toDate();
+                
+                // Formater la date Firebase en YYYY-MM-DD pour la comparer avec le sélecteur
+                const y = workoutDateObj.getFullYear();
+                const m = String(workoutDateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(workoutDateObj.getDate()).padStart(2, '0');
+                const workoutDateStr = `${y}-${m}-${day}`;
+
+                // On n'affiche que les séries du jour sélectionné
+                if (workoutDateStr === selectedDateStr) {
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `<div><strong>${data.machine}</strong><br><small>${data.weight}kg x ${data.reps}</small></div>`;
+                    const del = document.createElement('button');
+                    del.className = 'delete-btn';
+                    del.innerHTML = '🗑️';
+                    del.onclick = async () => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", d.id)); loadWorkouts(); } };
+                    item.appendChild(del);
+                    list.appendChild(item);
+                }
             });
+            
+            if(list.innerHTML === '') list.innerHTML = '<p style="text-align:center; font-size:12px;">Aucune série à cette date.</p>';
         }
+
+        // Recharger l'historique affiché si on change la date
+        document.getElementById('workout-date').addEventListener('change', () => {
+            loadWorkouts();
+        });
 
         async function renderCalendar() {
             const container = document.getElementById('calendar-container');
