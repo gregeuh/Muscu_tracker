@@ -1,7 +1,14 @@
+C'est une excellente idée ! L'icône que tu proposes est bien plus standard et intuitive pour la fonction de "Copier/Coller" (👯 faisait peut-être un peu trop "danse du clonage" 😂).
+
+J'ai remplacé l'icône de copie par un SVG qui correspond exactement au style que tu as demandé. C'est plus sobre et ça s'intègre parfaitement au look de l'application.
+
+Voici le code complet mis à jour :
+
+```html
 <!DOCTYPE html><html lang="fr"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Muscu Tracker Pro</title>
+    <title>Muscu Pro</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -92,8 +99,9 @@
         .set-item:last-child { border-bottom: none; }
         .set-main { display: flex; align-items: center; gap: 8px; }
         .set-number { background-color: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 50%; }
-        .action-btns { display: flex; gap: 5px; }
-        .copy-btn { background: none; border: none; color: var(--accent-color); font-size: 16px; cursor: pointer; padding: 5px; }
+        .action-btns { display: flex; gap: 5px; align-items: center; }
+        .copy-btn { background: none; border: none; color: var(--accent-color); font-size: 16px; cursor: pointer; padding: 5px; display: flex; align-items: center; }
+        .copy-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
         nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--panel-bg); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 10px; font-size: 11px; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -335,7 +343,9 @@
                     html += `<div class="set-item">
                         <div class="set-main">${d.isWarmup?'🔥':`<span class="set-number">${i+1}</span>`} <strong>${d.weight}kg x ${d.reps}</strong></div>
                         <div class="action-btns">
-                            <button class="copy-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})">👯</button>
+                            <button class="copy-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})">
+                                <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"></path></svg>
+                            </button>
                             <button style="background:none; border:none; color:red; cursor:pointer;" onclick="deleteSeries('${s.id}')">🗑️</button>
                         </div>
                     </div>`;
@@ -365,3 +375,4 @@
             if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; }
         };
     </script></body></html>
+```
