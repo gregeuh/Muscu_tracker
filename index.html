@@ -31,8 +31,7 @@
         .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(0,122,255,0.1); border-radius: 12px; font-size: 18px; border: none; color: var(--accent-color); }
         .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
         [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
-
-        #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; padding: 8px 16px; border-radius: 20px; display: none; }
+        #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; padding: 8px 12px; border-radius: 20px; display: none; }
 
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
         #app-screen { display: none; padding: 0 16px; max-width: 500px; margin: 0 auto; }
@@ -56,7 +55,6 @@
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
         .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
 
-        #floating-timer { display: none; position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; border-radius: 14px; position: relative; cursor: pointer; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
@@ -73,8 +71,12 @@
         #success-flash { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent-color); color: white; padding: 20px 40px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; }
         
         .icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
-        .icon-btn:active { opacity: 0.5; }
         .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* LISTE EXERCICES */
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border-color); }
+        .exercise-item:last-child { border-bottom: none; }
+        #floating-timer { display: none; position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; }
     </style></head><body>
 
     <header>
@@ -87,7 +89,7 @@
 
     <div id="auth-screen">
         <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
-        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Heureux de vous revoir !</p>
+        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Gère tes entraînements proprement</p>
         <input type="email" id="auth-email" placeholder="Email" autocomplete="off">
         <input type="password" id="auth-password" placeholder="Mot de passe" autocomplete="off">
         <button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Se connecter</button>
@@ -120,6 +122,12 @@
             <div id="history-list"></div>
         </section>
 
+        <section id="exercises-tab" class="tab-content">
+            <h2>Mes Exercices</h2>
+            <div class="card" style="padding:0; overflow:hidden;" id="exercise-manage-list">
+                </div>
+        </section>
+
         <section id="calendar-tab" class="tab-content">
             <h2>Calendrier</h2>
             <div class="card">
@@ -142,41 +150,38 @@
         </section>
     </div>
 
-    <div id="modal-add-machine" class="modal-overlay">
-        <div class="modal-card">
-            <h2>Nouvel exercice</h2>
-            <input type="text" id="new-machine-name" placeholder="Ex: Hack Squat">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
-                <button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">Annuler</button>
-                <button class="btn-primary" id="save-machine-btn">Ajouter</button>
-            </div>
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card">
+        <h2>Nouvel exercice</h2>
+        <input type="text" id="new-machine-name" placeholder="Ex: Hack Squat">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
+            <button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">Annuler</button>
+            <button class="btn-primary" id="save-machine-btn">Ajouter</button>
         </div>
-    </div>
+    </div></div>
 
-    <div id="modal-timer-prompt" class="modal-overlay">
-        <div class="modal-card" style="text-align:center;">
-            <h2>Repos ? ⏳</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
-                <button class="btn-primary timer-btn" data-time="60">1:00</button>
-                <button class="btn-primary timer-btn" data-time="90">1:30</button>
-                <button class="btn-primary timer-btn" data-time="120">2:00</button>
-            </div>
-            <button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;">
+        <h2>Repos ? ⏳</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
+            <button class="btn-primary timer-btn" data-time="60">1:00</button>
+            <button class="btn-primary timer-btn" data-time="90">1:30</button>
+            <button class="btn-primary timer-btn" data-time="120">2:00</button>
         </div>
-    </div>
+        <button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button>
+    </div></div>
 
     <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;"><span id="timer-display">00:00</span><button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button></div></div>
     <div id="success-flash">C'est noté ! 💪</div>
 
     <nav id="bottom-nav">
         <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button>
+        <button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>Exos</button>
         <button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>Calendrier</button>
         <button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
@@ -185,12 +190,13 @@
         let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null;
         setPersistence(auth, browserLocalPersistence);
 
+        // --- THEME ---
         const themeBtn = document.getElementById('theme-btn');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); localStorage.setItem('theme', dark ? 'dark' : 'light'); };
-        const savedTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
-        applyTheme(savedTheme === 'dark');
+        applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
         themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
+        // --- AUTH ---
         const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const errorMsg = document.getElementById('auth-error');
         document.getElementById('auth-toggle-btn').onclick = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Se connecter" : "Créer mon compte"; document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion"; };
         document.getElementById('auth-submit-btn').onclick = async () => { try { if (isLoginMode) await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); else await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); } catch (err) { errorMsg.innerText = err.message; errorMsg.style.display = 'block'; } };
@@ -200,13 +206,15 @@
         });
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
+        // --- TABS ---
         window.showTab = (tabId, btn) => { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); 
-            if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); 
+            if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
+        // --- WORKOUTS & EXERCISES ---
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
@@ -214,6 +222,31 @@
             snap.forEach(d => { opts += `<option value="${d.data().name}">${d.data().name}</option>`; }); 
             select.innerHTML = opts; select.dispatchEvent(new Event('change'));
         }
+
+        async function loadExercisesManageList() {
+            const container = document.getElementById('exercise-manage-list');
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            container.innerHTML = "";
+            snap.forEach(d => {
+                const item = document.createElement('div');
+                item.className = "exercise-item";
+                item.innerHTML = `
+                    <span style="font-weight:700;">${d.data().name}</span>
+                    <div style="display:flex; gap:10px;">
+                        <button class="icon-btn" onclick="renameExo('${d.id}', '${d.data().name}')"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                        <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteExo('${d.id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    </div>`;
+                container.appendChild(item);
+            });
+        }
+
+        window.renameExo = async (id, oldName) => {
+            const newName = prompt("Nouveau nom pour " + oldName + " ?", oldName);
+            if(newName && newName !== oldName) { await updateDoc(doc(db, "exercises", id), { name: newName }); loadExercisesManageList(); loadExercises(); }
+        };
+
+        window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice de la liste ? (Les séances passées resteront enregistrées)")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
 
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
@@ -246,14 +279,9 @@
                     html += `<div class="set-item">
                         <div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong>${isPR?'<span class="pr-badge">🏆 PR</span>':''}</div>
                         <div style="display:flex; gap:10px;">
-                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">
-                                <svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg>
-                            </button>
-                            <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteSeries('${s.id}')">
-                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            </button>
-                        </div>
-                    </div>`;
+                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg></button>
+                            <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        </div></div>`;
                 });
                 html += `</div>`; div.innerHTML = html; container.appendChild(div);
             });
@@ -271,6 +299,7 @@
             loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
+        // --- CALENDAR & STATS ---
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
         async function renderCalendar() {
             const container = document.getElementById('calendar-container'); container.innerHTML = '';
@@ -303,6 +332,7 @@
             window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] } });
         }
 
+        // --- TIMER ---
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
         function startTimer(sec) {
             clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'block';
@@ -313,6 +343,7 @@
         }
         document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
 
+        // --- MODALS ---
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
         window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display = 'none';
