@@ -69,7 +69,9 @@
         .date-input-wrapper { position: relative; }
         .calendar-icon { position: absolute; left: 14px; top: 17px; width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; }
         input[type="date"] { padding-left: 45px; }
-        #success-flash { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent-color); color: white; padding: 20px 40px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; }
+        
+        /* FIX: Notification en haut (Toast) */
+        #success-flash { position: fixed; top: calc(80px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 24px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
         .icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
         .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
@@ -294,10 +296,14 @@
 
         document.getElementById('workout-form').onsubmit = async (e) => { 
             e.preventDefault(); 
-            await addDoc(collection(db, "workouts"), { machine: document.getElementById('machine').value, weight: parseInt(document.getElementById('weight').value), reps: parseInt(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); 
+            const weight = parseInt(document.getElementById('weight').value);
+            const machine = document.getElementById('machine').value;
+            await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); 
             if(navigator.vibrate) navigator.vibrate(50);
-            document.getElementById('success-flash').style.display='block'; setTimeout(()=>document.getElementById('success-flash').style.display='none', 1500); 
-            loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
+            
+            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000); 
+            loadWorkouts(); 
+            document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
         // --- CALENDAR & STATS ---
