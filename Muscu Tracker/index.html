@@ -1,17 +1,16 @@
 <!DOCTYPE html><html lang="fr"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Muscu Pro</title>
+    <title>Muscu Pro Ultra</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Muscu">
+    <meta name="apple-mobile-web-app-title" content="MuscuPro">
     
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121212">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -25,115 +24,131 @@
             --accent-light: rgba(0, 122, 255, 0.1);
             --border-color: #f2f2f7;
             --danger-color: #ff3b30;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --pr-color: #34c759;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            --glow: none;
         }
 
         [data-theme="dark"] {
             --bg-color: #000000;
-            --panel-bg: rgba(28, 28, 30, 0.85);
-            --card-bg: #1c1c1e;
+            --panel-bg: rgba(20, 20, 22, 0.85);
+            --card-bg: #121212;
             --text-main: #ffffff;
             --text-muted: #8e8e93;
             --accent-color: #0a84ff;
-            --accent-light: rgba(10, 132, 255, 0.15);
-            --border-color: #38383a;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --accent-light: rgba(10, 132, 255, 0.2);
+            --border-color: #2c2c2e;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            --glow: 0 0 8px rgba(10, 132, 255, 0.2);
         }
 
         html { background-color: var(--bg-color); }
         body {
             margin: 0; font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-color); color: var(--text-main);
-            transition: background-color 0.4s ease;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding-top: calc(80px + env(safe-area-inset-top, 0px));
             padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
         header {
             position: fixed; top: 0; left: 0; right: 0; height: 64px;
-            background-color: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background-color: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1000;
         }
         .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-        .logo span { color: var(--accent-color); }
+        .logo span { color: var(--accent-color); text-shadow: var(--glow); }
+        
         .header-right { display: flex; align-items: center; gap: 12px; }
-
-        .theme-toggle { cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--accent-light); border-radius: 10px; border: none; font-size: 18px; }
+        .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: var(--accent-light); border-radius: 12px; font-size: 18px; border: 1px solid var(--border-color); }
         .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
         [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
 
         .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent-color); padding: 2px; display: none; }
-        #logout-btn { background: rgba(255, 59, 48, 0.1); border: none; color: var(--danger-color); font-size: 12px; font-weight: 700; cursor: pointer; padding: 8px 14px; border-radius: 20px; display: none; }
+        #logout-btn { background: rgba(255, 59, 48, 0.1); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; cursor: pointer; padding: 8px 14px; border-radius: 20px; display: none; text-transform: uppercase; }
 
         #app-screen { display: none; padding: 0 16px; max-width: 500px; margin: 0 auto; }
-        .tab-content { display: none; animation: slideUp 0.4s ease; }
+        .tab-content { display: none; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 28px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1px; }
-        .card { background-color: var(--card-bg); padding: 20px; border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
+        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
 
-        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 14px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; }
-        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 18px; font-weight: 700; border-radius: 16px; width: 100%; cursor: pointer; font-size: 16px; }
-        .btn-outline { background: var(--accent-light); color: var(--accent-color); border: none; padding: 12px; font-weight: 700; border-radius: 12px; cursor: pointer; }
+        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; transition: all 0.2s; }
+        input:focus { border-color: var(--accent-color); outline: none; box-shadow: var(--glow); }
 
-        /* CALENDRIER REVISITÉ */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .calendar-month-title { font-weight: 800; font-size: 18px; text-transform: capitalize; }
-        .calendar-nav-btns { display: flex; gap: 8px; }
-        .calendar-nav-btn { background: var(--accent-light); border: none; color: var(--accent-color); width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
-        .calendar-weekdays span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-        
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 12px; transition: all 0.2s; position: relative; }
-        .day-cell:empty { cursor: default; }
-        .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background-color: var(--accent-color); border-radius: 50%; }
-        .day-cell.today { background: var(--accent-light); color: var(--accent-color); font-weight: 800; }
-        .day-cell.selected { background: var(--accent-color); color: white; }
-        .day-cell.selected::after { background-color: white; }
+        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 18px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; font-size: 16px; box-shadow: var(--glow); transition: transform 0.1s; }
+        .btn-primary:active { transform: scale(0.97); }
 
-        /* GROUPES D'HISTORIQUE */
-        .history-group { background-color: var(--card-bg); border-radius: 24px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow); }
-        .group-header { background: var(--accent-light); color: var(--accent-color); padding: 14px 20px; font-weight: 800; font-size: 15px; }
-        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .set-item:last-child { border-bottom: none; }
-        .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 6px; margin-right: 8px; }
-        
-        .action-btns { display: flex; gap: 12px; }
-        .copy-btn svg { width: 20px; height: 20px; color: var(--accent-color); }
-
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
-        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 10px; font-size: 12px; font-weight: 600; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-btn span { font-size: 22px; }
-        .nav-btn.active { color: var(--accent-color); }
-
+        /* GHOST & RECORDS */
         #last-workout-ghost { font-size: 13px; color: var(--accent-color); text-align: center; margin-bottom: 12px; font-weight: 700; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal-card { width: 100%; max-width: 350px; background: var(--card-bg); border-radius: 30px; padding: 30px; }
-        #floating-timer { display: none; position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; }
+        .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px; }
+
+        /* ACCORDIONS D'HISTORIQUE */
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow); }
+        .group-header { 
+            background: var(--accent-light); color: var(--accent-color); padding: 16px 20px; 
+            font-weight: 800; font-size: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .group-header::after { content: '↓'; font-size: 12px; transition: transform 0.3s; }
+        .history-group.collapsed .group-sets { display: none; }
+        .history-group.collapsed .group-header::after { transform: rotate(-90deg); }
+
+        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.3s ease; }
+        .set-item:last-child { border-bottom: none; }
+        .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
+        
+        .action-btns { display: flex; gap: 14px; align-items: center; }
+        .copy-btn { background: none; border: none; color: var(--accent-color); cursor: pointer; padding: 4px; }
+        .copy-btn svg { width: 20px; height: 20px; stroke-width: 2.5; }
+
+        /* CALENDRIER NATIVE LOOK */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-month-title { font-weight: 800; font-size: 18px; color: var(--text-main); }
+        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 12px; }
+        .calendar-weekdays span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 14px; position: relative; }
+        .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
+        .day-cell.today { background: var(--accent-light); color: var(--accent-color); font-weight: 800; box-shadow: inset 0 0 0 1px var(--accent-color); }
+        .day-cell.selected { background: var(--accent-color); color: white; }
+
+        /* NAVIGATION BASSE */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background-color: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 12px; font-size: 11px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-btn span { font-size: 24px; transition: transform 0.2s; }
+        .nav-btn.active { color: var(--accent-color); }
+        .nav-btn.active span { transform: translateY(-3px) scale(1.1); }
+
+        /* MODAL GRAPHIQUE */
+        #chart-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 3000; padding: 20px; align-items: center; justify-content: center; }
+        .chart-container { background: var(--card-bg); width: 100%; max-width: 400px; padding: 25px; border-radius: 30px; position: relative; }
+        .close-chart { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+
+        /* FEEDBACK FLASH */
+        .flash-success { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent-color); color: white; padding: 20px 40px; border-radius: 50px; font-weight: 800; font-size: 18px; z-index: 5000; display: none; animation: popIn 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.49); }
+        @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
     </style></head><body>
 
     <header id="main-header">
         <div class="logo">Muscu<span>Pro</span></div>
         <div class="header-right">
-            <label class="theme-toggle">
-                <input type="checkbox" id="theme-switch" style="display:none;">
-                <span class="sun-icon">☀️</span><span class="moon-icon">🌙</span>
-            </label>
+            <label class="theme-toggle"><input type="checkbox" id="theme-switch" style="display:none;"><span class="sun-icon">☀️</span><span class="moon-icon">🌙</span></label>
             <img id="user-photo" class="user-avatar" src="" alt="Profil">
             <button id="logout-btn">Ciao !</button>
         </div>
     </header>
 
     <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; padding:20px; text-align:center;">
-        <h1 style="font-size: 40px; font-weight: 800; letter-spacing: -2px;">Muscu<span>Pro</span></h1>
-        <button id="google-login-btn" style="margin-top:20px; padding: 18px 30px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--card-bg); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow);">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continuer avec Google
+        <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px; margin:0;">Muscu<span>Pro</span></h1>
+        <p style="color: var(--text-muted); margin: 10px 0 35px 0; font-weight: 600;">Domine chaque répétition.</p>
+        <button id="google-login-btn" style="padding: 18px 32px; border-radius: 22px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow);">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Connexion Google
         </button>
     </div>
 
@@ -143,12 +158,12 @@
             <div class="card">
                 <form id="workout-form">
                     <input type="date" id="workout-date" required>
-                    <div class="input-row"><select id="machine" required></select><button type="button" id="add-machine-btn" style="width:56px; height:56px; background:var(--accent-color); color:white; border:none; border-radius:14px; font-size:24px;">+</button></div>
-                    <div class="input-row" style="margin-bottom:0;"><input type="number" id="weight" placeholder="Poids" inputmode="numeric" required onfocus="this.select()"><input type="number" id="reps" placeholder="Reps" inputmode="numeric" required onfocus="this.select()"></div>
+                    <div class="input-row"><select id="machine" required></select><button type="button" id="add-machine-btn">+</button></div>
+                    <div class="input-row" style="margin-bottom:0;"><input type="number" id="weight" placeholder="Kg" inputmode="numeric" required onfocus="this.select()"><input type="number" id="reps" placeholder="Reps" inputmode="numeric" required onfocus="this.select()"></div>
                     <div id="last-workout-ghost"></div>
                     <input type="text" id="series-note" placeholder="Note (facultatif)">
-                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin: 10px 0 20px 0; font-size:14px; font-weight: 600; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
-                    <button type="submit" class="btn-primary">Valider la série</button>
+                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin: 10px 0 20px 0; font-size:14px; font-weight: 600; color:var(--text-muted); cursor:pointer;"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
+                    <button type="submit" class="btn-primary">Enregistrer la série</button>
                 </form>
             </div>
             <div id="history-list"></div>
@@ -159,10 +174,7 @@
             <div class="card">
                 <div class="calendar-header">
                     <div class="calendar-month-title" id="month-display">Mois</div>
-                    <div class="calendar-nav-btns">
-                        <button class="calendar-nav-btn" onclick="changeMonth(-1)">&#10094;</button>
-                        <button class="calendar-nav-btn" onclick="changeMonth(1)">&#10095;</button>
-                    </div>
+                    <div style="display:flex; gap:8px;"><button class="theme-toggle" style="width:32px; height:32px;" onclick="changeMonth(-1)">‹</button><button class="theme-toggle" style="width:32px; height:32px;" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-weekdays"><span>lun</span><span>mar</span><span>mer</span><span>jeu</span><span>ven</span><span>sam</span><span>dim</span></div>
                 <div class="calendar-grid" id="calendar-container"></div>
@@ -172,7 +184,7 @@
         </section>
 
         <section id="stats" class="tab-content">
-            <h2>Statistiques</h2>
+            <h2>Global</h2>
             <div class="stats-summary">
                 <div class="stat-box"><h4>SÉRIES</h4><p id="stat-series">0</p></div>
                 <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0</p></div>
@@ -181,9 +193,19 @@
         </section>
     </div>
 
-    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>Nouvel exercice</h2><input type="text" id="new-machine-name" placeholder="Nom de l'exercice"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;"><button class="btn-outline" onclick="document.getElementById('modal-add-machine').style.display='none'">Annuler</button><button class="btn-primary" id="save-machine-btn" style="padding:12px;">Ajouter</button></div></div></div>
+    <div id="chart-modal" onclick="this.style.display='none'">
+        <div class="chart-container" onclick="event.stopPropagation()">
+            <span class="close-chart" onclick="document.getElementById('chart-modal').style.display='none'">✕</span>
+            <h3 id="chart-exercise-name" style="margin-top:0;">Progression</h3>
+            <canvas id="exerciseProgressionChart"></canvas>
+        </div>
+    </div>
+
+    <div id="success-flash" class="flash-success">Série validée ! 💪</div>
+
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>Nouvel exercice</h2><input type="text" id="new-machine-name" placeholder="Ex: Développé couché"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;"><button class="btn-outline" onclick="document.getElementById('modal-add-machine').style.display='none'">Annuler</button><button class="btn-primary" id="save-machine-btn" style="padding:12px;">Ajouter</button></div></div></div>
     <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card"><h2>Repos ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin: 24px 0;"><button class="btn-outline timer-select-btn" data-time="60">1:00</button><button class="btn-outline timer-select-btn" data-time="90">1:30</button><button class="btn-outline timer-select-btn" data-time="120">2:00</button></div><button class="btn-primary" onclick="document.getElementById('modal-timer-prompt').style.display='none'" style="background:var(--bg-color); color: var(--text-muted); padding: 12px;">Passer</button></div></div>
-    <div id="floating-timer"><div class="timer-content"><span id="timer-display">00:00</span><div style="display:flex; gap:12px;"><button class="btn-outline" id="add-time-btn" style="padding:8px 12px; font-size:12px;">+30s</button><button class="btn-primary" id="stop-timer-btn" style="padding:8px 12px; width:auto; font-size:12px;">✕</button></div></div></div>
+    <div id="floating-timer"><div class="timer-content"><span id="timer-display">00:00</span><div style="display:flex; gap:10px;"><button class="theme-toggle" style="font-size:12px; width:auto; padding:0 10px;" id="add-time-btn">+30s</button><button class="theme-toggle" style="background:var(--danger-color); color:white; border:none;" id="stop-timer-btn">✕</button></div></div></div>
 
     <nav id="bottom-nav">
         <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button>
@@ -202,8 +224,9 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        let currentViewDate = new Date(); // Pour la navigation du calendrier
-        let customExercises = {};
+        let currentViewDate = new Date();
+        let personalRecords = {}; 
+        let collapsedGroups = new Set();
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -213,7 +236,7 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('bottom-nav').style.display = 'flex';
-                loadExercises(); loadWorkouts();
+                loadExercises(); loadWorkouts(); loadPRs();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app-screen').style.display = 'none';
@@ -232,141 +255,165 @@
             if(tabId === 'stats') loadStats();
         };
 
-        // CALENDRIER LOGIQUE AVANCÉE
-        window.changeMonth = (val) => {
-            currentViewDate.setMonth(currentViewDate.getMonth() + val);
-            renderCalendar();
-        };
-
-        async function renderCalendar() {
-            const container = document.getElementById('calendar-container');
-            const monthDisplay = document.getElementById('month-display');
-            container.innerHTML = '';
-            
-            const year = currentViewDate.getFullYear();
-            const month = currentViewDate.getMonth();
-            monthDisplay.innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Ajustement pour commencer le lundi
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            // Récupérer les jours travaillés du mois
+        // GESTION PR (Personal Records)
+        async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
-            const activeDays = new Set();
+            personalRecords = {};
             snap.forEach(d => {
-                const date = d.data().timestamp.toDate();
-                if(date.getMonth() === month && date.getFullYear() === year) activeDays.add(date.getDate());
+                const data = d.data();
+                if(data.isWarmup) return;
+                if(!personalRecords[data.machine] || data.weight > personalRecords[data.machine]) {
+                    personalRecords[data.machine] = data.weight;
+                }
+            });
+        }
+
+        // GRAPHIQUE PAR EXERCICE
+        let exerciseChartInstance = null;
+        window.showExerciseHistory = async (machineName) => {
+            const modal = document.getElementById('chart-modal');
+            const title = document.getElementById('chart-exercise-name');
+            title.innerText = machineName;
+            modal.style.display = 'flex';
+
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", machineName), orderBy("timestamp", "asc"));
+            const snap = await getDocs(q);
+            let historyData = [];
+            snap.forEach(d => {
+                const data = d.data();
+                if(!data.isWarmup) historyData.push({ x: data.timestamp.toDate(), y: data.weight });
             });
 
-            // Cases vides
-            for (let i = 0; i < startOffset; i++) { container.innerHTML += '<div class="day-cell"></div>'; }
-
-            // Jours du mois
-            for (let i = 1; i <= daysInMonth; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'day-cell';
-                if(activeDays.has(i)) cell.classList.add('has-data');
-                if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.classList.add('today');
-                cell.innerText = i;
-                cell.onclick = () => {
-                    document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('selected'));
-                    cell.classList.add('selected');
-                    loadWorkoutsForDay(i, month, year);
-                };
-                container.appendChild(cell);
-            }
-        }
-
-        async function loadWorkoutsForDay(day, month, year) {
-            const details = document.getElementById('day-details');
-            document.getElementById('selected-date-title').innerText = `Séance du ${day}/${month+1}/${year}`;
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q);
-            let filtered = [];
-            snap.forEach(d => { 
-                const date = d.data().timestamp.toDate();
-                if(date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) filtered.push({id: d.id, data: d.data()}); 
+            const ctx = document.getElementById('exerciseProgressionChart').getContext('2d');
+            if(exerciseChartInstance) exerciseChartInstance.destroy();
+            exerciseChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: [{ label: 'Poids (kg)', data: historyData, borderColor: '#0a84ff', tension: 0.3, fill: true, backgroundColor: 'rgba(10, 132, 255, 0.1)' }] },
+                options: { scales: { x: { type: 'time', time: { unit: 'month' }, grid: { display: false } }, y: { beginAtZero: false } }, plugins: { legend: { display: false } } }
             });
-            renderGrouped(filtered, details);
-        }
-
-        // RESTE DES FONCTIONS
-        async function loadExercises() {
-            const select = document.getElementById('machine');
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q);
-            let exercises = []; customExercises = {};
-            snap.forEach(d => { exercises.push(d.data().name); customExercises[d.data().name] = {id: d.id}; });
-            exercises.sort();
-            select.innerHTML = exercises.map(name => `<option value="${name}">${name}</option>`).join('');
-            select.dispatchEvent(new Event('change'));
-        }
-
-        async function loadGhost(machineName) {
-            const ghostDiv = document.getElementById('last-workout-ghost');
-            if(!machineName) return;
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", machineName), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q);
-            let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
-            if(last) {
-                ghostDiv.innerHTML = `Dernier : ${last.weight}kg x ${last.reps}`;
-                document.getElementById('weight').value = last.weight;
-                document.getElementById('reps').value = last.reps;
-            } else { ghostDiv.innerText = ''; }
-        }
-
-        document.getElementById('machine').onchange = (e) => {
-            document.getElementById('delete-machine-btn').style.display = customExercises[e.target.value] ? 'flex' : 'none';
-            loadGhost(e.target.value);
         };
 
+        // RENDU GROUPÉ AVEC ACCORDÉON
         function renderGrouped(arr, container) {
-            container.innerHTML = ''; let groups = []; let cur = null;
+            container.innerHTML = '';
+            let groups = []; let cur = null;
             arr.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
+            
             groups.forEach(g => {
-                g.sets.reverse();
-                let html = `<div class="history-group"><div class="group-header">${g.machine}</div>`;
-                g.sets.forEach((s, i) => {
+                const isCollapsed = collapsedGroups.has(g.machine);
+                const groupDiv = document.createElement('div');
+                groupDiv.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
+                
+                let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span onclick="event.stopPropagation(); showExerciseHistory('${g.machine}')">🏋️ ${g.machine}</span></div><div class="group-sets">`;
+                g.sets.reverse().forEach((s, i) => {
                     const d = s.data;
+                    const isPR = !d.isWarmup && d.weight >= personalRecords[d.machine];
+                    const prBadge = isPR ? `<span class="pr-badge">🏆 PR</span>` : '';
                     const noteHtml = d.note ? `<div class="history-note">📝 ${d.note}</div>` : '';
-                    html += `<div class="set-item"><div style="display:flex; align-items:center;"><span class="set-number">${d.isWarmup?'🔥':i+1}</span><div><strong>${d.weight}kg x ${d.reps}</strong>${noteHtml}</div></div><div class="action-btns"><button class="copy-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})" style="background:none; border:none; cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button style="background:none; border:none; color:var(--danger-color); cursor:pointer;" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
+                    html += `<div class="set-item"><div style="display:flex; align-items:center;"><span class="set-number">${d.isWarmup?'🔥':i+1}</span><div><strong>${d.weight}kg x ${d.reps}</strong>${prBadge}${noteHtml}</div></div><div class="action-btns"><button class="copy-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button style="background:none; border:none; color:var(--danger-color); cursor:pointer;" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
                 });
-                html += `</div>`; container.innerHTML += html;
+                html += `</div>`; groupDiv.innerHTML = html; container.appendChild(groupDiv);
             });
-            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:20px;">Aucune série.</p>';
         }
 
-        async function loadWorkouts() {
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q);
-            let today = document.getElementById('workout-date').value;
-            let filtered = []; snap.forEach(d => { let date = d.data().timestamp.toDate().toISOString().split('T')[0]; if(date === today) filtered.push({id: d.id, data: d.data()}); });
-            renderGrouped(filtered, document.getElementById('history-list'));
-        }
+        window.toggleGroup = (name) => {
+            if(collapsedGroups.has(name)) collapsedGroups.delete(name);
+            else collapsedGroups.add(name);
+            loadWorkouts();
+        };
 
+        // FEEDBACK ET ENREGISTREMENT
         document.getElementById('workout-form').onsubmit = async (e) => {
             e.preventDefault();
-            const data = {
-                machine: document.getElementById('machine').value,
-                weight: parseInt(document.getElementById('weight').value),
+            const weight = parseInt(document.getElementById('weight').value);
+            const machine = document.getElementById('machine').value;
+            
+            await addDoc(collection(db, "workouts"), {
+                machine, weight,
                 reps: parseInt(document.getElementById('reps').value),
                 isWarmup: document.getElementById('is-warmup').checked,
                 note: document.getElementById('series-note').value.trim(),
                 timestamp: new Date(), userId: auth.currentUser.uid
-            };
-            await addDoc(collection(db, "workouts"), data);
+            });
+
+            // Feedback Haptique & Visuel
+            if(navigator.vibrate) navigator.vibrate(50);
+            const flash = document.getElementById('success-flash');
+            flash.style.display = 'block'; setTimeout(() => flash.style.display = 'none', 1500);
+
+            if(!document.getElementById('is-warmup').checked && (!personalRecords[machine] || weight > personalRecords[machine])) {
+                personalRecords[machine] = weight;
+            }
+
             document.getElementById('series-note').value = '';
             document.getElementById('is-warmup').checked = false;
             loadWorkouts();
             document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
-        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine:m, weight:w, reps:r, isWarmup:false, note:'', timestamp:new Date(), userId:auth.currentUser.uid }); loadWorkouts(); };
-        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar').classList.contains('active')) renderCalendar(); } };
+        // BOILERPLATE TECHNIQUE (CALENDRIER / STATS / TIMER)
+        async function loadExercises() {
+            const select = document.getElementById('machine');
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            let exercises = []; snap.forEach(d => { exercises.push(d.data().name); customExercises[d.data().name] = {id: d.id}; });
+            exercises.sort(); select.innerHTML = exercises.map(name => `<option value="${name}">${name}</option>`).join('');
+            select.dispatchEvent(new Event('change'));
+        }
 
-        // STATS
+        async function loadGhost(m) {
+            const ghostDiv = document.getElementById('last-workout-ghost');
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
+            if(last) { ghostDiv.innerHTML = `Record : ${personalRecords[m] || last.weight}kg • Dernier : ${last.weight}kg x ${last.reps}`; document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; }
+            else { ghostDiv.innerText = ''; }
+        }
+
+        document.getElementById('machine').onchange = (e) => loadGhost(e.target.value);
+
+        async function loadWorkouts() {
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            let today = document.getElementById('workout-date').value;
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === today) filtered.push({id: d.id, data: d.data()}); });
+            renderGrouped(filtered, document.getElementById('history-list'));
+        }
+
+        window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
+        async function renderCalendar() {
+            const container = document.getElementById('calendar-container');
+            const monthDisplay = document.getElementById('month-display');
+            container.innerHTML = '';
+            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
+            monthDisplay.innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+            const firstDay = new Date(year, month, 1).getDay();
+            const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            const activeDays = new Set(); snap.forEach(d => { const date = d.data().timestamp.toDate(); if(date.getMonth() === month && date.getFullYear() === year) activeDays.add(date.getDate()); });
+            for (let i = 0; i < startOffset; i++) { container.innerHTML += '<div class="day-cell"></div>'; }
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = document.createElement('div'); cell.className = 'day-cell';
+                if(activeDays.has(i)) cell.classList.add('has-data');
+                if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.classList.add('today');
+                cell.innerText = i; cell.onclick = () => { document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('selected')); cell.classList.add('selected'); loadWorkoutsForDay(i, month, year); };
+                container.appendChild(cell);
+            }
+        }
+
+        async function loadWorkoutsForDay(day, month, year) {
+            const details = document.getElementById('day-details');
+            document.getElementById('selected-date-title').innerText = `${day}/${month+1}/${year}`;
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            let filtered = []; snap.forEach(d => { const date = d.data().timestamp.toDate(); if(date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) filtered.push({id: d.id, data: d.data()}); });
+            renderGrouped(filtered, details);
+        }
+
+        let statChart = null;
         async function loadStats() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
@@ -376,22 +423,17 @@
             document.getElementById('stat-volume').innerText = volume + ' kg';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(statChart) statChart.destroy();
-            statChart = new Chart(document.getElementById('statsChart'), {
-                type: 'bar',
-                data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#007aff', borderRadius: 10 }] },
-                options: { scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
-            });
+            statChart = new Chart(document.getElementById('statsChart').getContext('2d'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] }, options: { scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
         }
 
-        // TIMER
         let timerSeconds = 0; let timerInterval = null;
         function startTimer(sec) {
             clearInterval(timerInterval); timerSeconds = sec;
             document.getElementById('floating-timer').style.display = 'block';
             const update = () => {
                 let m = Math.floor(timerSeconds/60), s = timerSeconds%60;
-                document.getElementById('timer-display').innerText = `⏳ Repos : ${m}:${s<10?'0'+s:s}`;
-                if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "C'est parti ! 🏋️"; document.body.classList.add('flash-active'); setTimeout(() => { document.getElementById('floating-timer').style.display = 'none'; document.body.classList.remove('flash-active'); }, 3000); }
+                document.getElementById('timer-display').innerText = `Repos : ${m}:${s<10?'0'+s:s}`;
+                if(timerSeconds <= 0) { clearInterval(timerInterval); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); document.getElementById('timer-display').innerText = "C'est parti ! 🏋️"; document.body.classList.add('flash-active'); setTimeout(() => { document.getElementById('floating-timer').style.display = 'none'; document.body.classList.remove('flash-active'); }, 3000); }
                 timerSeconds--;
             };
             update(); timerInterval = setInterval(update, 1000);
@@ -400,11 +442,11 @@
         document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
         document.querySelectorAll('.timer-select-btn').forEach(btn => btn.onclick = () => { document.getElementById('modal-timer-prompt').style.display = 'none'; startTimer(parseInt(btn.dataset.time)); });
 
+        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine:m, weight:w, reps:r, isWarmup:false, note:'', timestamp:new Date(), userId:auth.currentUser.uid }); loadWorkouts(); };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar').classList.contains('active')) renderCalendar(); } };
         document.getElementById('add-machine-btn').onclick = () => document.getElementById('modal-add-machine').style.display='flex';
-        document.getElementById('save-machine-btn').onclick = async () => {
-            const name = document.getElementById('new-machine-name').value.trim();
-            if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; }
-        };
+        document.getElementById('save-machine-btn').onclick = async () => { const name = document.getElementById('new-machine-name').value.trim(); if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; } };
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
 
         const themeSwitch = document.getElementById('theme-switch');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); themeSwitch.checked = dark; };
