@@ -102,13 +102,25 @@
             align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: 10px;
         }
 
+        /* MODALS (POP-UPS) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
             display: none; align-items: center; justify-content: center; z-index: 2000;
             padding: 20px;
         }
-        .modal-card { width: 100%; max-width: 400px; margin: 0; }
+        .modal-card { width: 100%; max-width: 400px; margin: 0; text-align: center; }
+
+        /* CHRONO FLOTTANT */
+        #floating-timer {
+            display: none; position: fixed; bottom: calc(70px + env(safe-area-inset-bottom, 0px)); 
+            left: 20px; right: 20px; background: var(--accent-color); color: white; 
+            padding: 15px 20px; border-radius: 12px; text-align: center; 
+            font-weight: 800; font-size: 18px; z-index: 999; 
+            box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .history-item {
             padding: 12px 0; border-bottom: 1px solid var(--border-color);
@@ -176,6 +188,24 @@
                 <button type="button" class="btn-primary" id="save-machine-btn">Ajouter</button>
             </div>
         </div>
+    </div>
+
+    <div id="modal-timer-prompt" class="modal-overlay">
+        <div class="card modal-card">
+            <h2 style="margin-top:0; font-size: 20px;">Série validée ! 💪</h2>
+            <p style="color:var(--text-muted); margin-bottom:20px; font-size:14px;">Lancer le temps de repos ?</p>
+            <div style="display:flex; gap:10px; justify-content: center; margin-bottom:10px;">
+                <button type="button" class="btn-outline timer-select-btn" data-time="60" style="padding: 12px; flex:1;">1 min</button>
+                <button type="button" class="btn-outline timer-select-btn" data-time="90" style="padding: 12px; flex:1;">1m 30</button>
+                <button type="button" class="btn-outline timer-select-btn" data-time="120" style="padding: 12px; flex:1;">2 min</button>
+            </div>
+            <button type="button" class="btn-primary" id="cancel-timer-btn" style="background-color: var(--text-muted);">Non merci</button>
+        </div>
+    </div>
+
+    <div id="floating-timer">
+        ⏳ Repos : <span id="timer-display">00:00</span>
+        <button id="stop-timer-btn" style="background:none; border:none; color:white; float:right; font-size:20px; font-weight:bold; cursor:pointer; padding:0;">✕</button>
     </div>
 
     <div id="app-screen">
@@ -249,6 +279,7 @@
 
         let customExercises = {};
 
+        // SCROLL HEADER
         let lastScrollY = window.scrollY;
         const header = document.getElementById('main-header');
         window.addEventListener('scroll', () => {
@@ -257,6 +288,7 @@
             lastScrollY = window.scrollY;
         });
 
+        // NAVIGATION
         window.showTab = (tabId, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -266,6 +298,7 @@
             if(tabId === 'stats') loadStats(); 
         };
 
+        // AUTHENTIFICATION
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
@@ -288,6 +321,7 @@
         };
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
+        // GESTION MACHINES
         document.getElementById('machine').addEventListener('change', (e) => {
             const machineName = e.target.value;
             const deleteBtn = document.getElementById('delete-machine-btn');
@@ -357,6 +391,58 @@
             loadExercises();
         };
 
+        // --- GESTION DU CHRONO ---
+        let timerInterval = null;
+        const modalTimerPrompt = document.getElementById('modal-timer-prompt');
+        const floatingTimer = document.getElementById('floating-timer');
+        const timerDisplay = document.getElementById('timer-display');
+
+        // Fermer la pop-up sans chrono
+        document.getElementById('cancel-timer-btn').onclick = () => {
+            modalTimerPrompt.style.display = 'none';
+        };
+
+        // Fermer le chrono en cours
+        document.getElementById('stop-timer-btn').onclick = () => {
+            clearInterval(timerInterval);
+            floatingTimer.style.display = 'none';
+        };
+
+        // Démarrer le chrono depuis la pop-up
+        document.querySelectorAll('.timer-select-btn').forEach(btn => {
+            btn.onclick = () => {
+                const seconds = parseInt(btn.getAttribute('data-time'));
+                modalTimerPrompt.style.display = 'none';
+                startTimer(seconds);
+            };
+        });
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            floatingTimer.style.display = 'block';
+            let remaining = seconds;
+            updateTimerDisplay(remaining);
+
+            timerInterval = setInterval(() => {
+                remaining--;
+                if(remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.innerText = "C'est parti ! 🏋️";
+                    if (navigator.vibrate) navigator.vibrate([200, 100, 200]); // Fait vibrer le téléphone
+                    setTimeout(() => { floatingTimer.style.display = 'none'; }, 4000); // Disparaît après 4s
+                } else {
+                    updateTimerDisplay(remaining);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(sec) {
+            let m = Math.floor(sec / 60);
+            let s = sec % 60;
+            timerDisplay.innerText = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        }
+
+        // --- WORKOUT LOGIC ---
         document.getElementById('workout-form').onsubmit = async (e) => {
             e.preventDefault();
             const machineVal = document.getElementById('machine').value;
@@ -373,7 +459,10 @@
             document.getElementById('weight').value = '';
             document.getElementById('reps').value = '';
             btn.innerText = "Enregistrer";
+            
+            // Recharger l'historique ET ouvrir la pop-up du chrono
             loadWorkouts();
+            modalTimerPrompt.style.display = 'flex';
         };
 
         async function loadWorkouts() {
