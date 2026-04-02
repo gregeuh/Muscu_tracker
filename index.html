@@ -8,6 +8,8 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         :root {
             --bg-color: #f8f9fc; --panel-bg: rgba(255, 255, 255, 0.9); --card-bg: #ffffff;
@@ -20,33 +22,10 @@
             --text-main: #ffffff; --text-muted: #8e8e93; --accent-color: #0a84ff;
             --border-color: #2c2c2e; --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
-
-        html, body { 
-            background-color: var(--bg-color); 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-main); 
-            transition: background-color 0.3s; 
-            -webkit-tap-highlight-color: transparent; 
-            overflow-x: hidden;
-            width: 100%;
-            height: 100%;
-        }
-
-        body { 
-            padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
-            padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); 
-            box-sizing: border-box;
-        }
+        html, body { background-color: var(--bg-color); margin: 0; font-family: 'Inter', sans-serif; color: var(--text-main); transition: background-color 0.3s; -webkit-tap-highlight-color: transparent; overflow-x: hidden; width: 100%; height: 100%; }
+        body { padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; }
         
-        header { 
-            position: fixed; top: 0; left: 0; right: 0; height: 64px; 
-            background-color: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color); 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 20px; padding-top: env(safe-area-inset-top); 
-            z-index: 1000; 
-        }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1000; }
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
         
@@ -54,71 +33,38 @@
         .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(0,122,255,0.1); border-radius: 12px; font-size: 18px; border: none; color: var(--accent-color); }
         .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
         [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
-
         #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; padding: 8px 16px; border-radius: 20px; display: none; }
 
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80dvh; padding: 20px; text-align: center; }
-        
-        #app-screen { 
-            display: none; 
-            width: 100%;
-            max-width: 500px; 
-            margin: 0 auto; 
-            padding: 0 16px; 
-            box-sizing: border-box;
-        }
-        
+        #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
         
-        .card { 
-            background-color: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 24px; 
-            margin-bottom: 16px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); 
-            box-sizing: border-box;
-            width: 100%;
-        }
+        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); box-sizing: border-box; width: 100%; }
+        h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
 
-        h2 { font-size: 28px; font-weight: 800; margin: 10px 0 20px 0; letter-spacing: -1.2px; }
-
-        input, select { 
-            width: 100%; 
-            padding: 14px; 
-            background-color: var(--bg-color); 
-            border: 1px solid var(--border-color); 
-            color: var(--text-main); 
-            border-radius: 14px; 
-            font-size: 16px; 
-            font-weight: 600; 
-            box-sizing: border-box; 
-            margin-bottom: 12px; 
-            font-family: inherit;
-        }
-
-        .date-input-wrapper { position: relative; width: 100%; margin-bottom: 12px; box-sizing: border-box; }
-        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100%; display: block; }
+        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; -webkit-appearance: none; appearance: none; }
+        
+        .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
+        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; max-width: 100%; display: block; min-height: 54px; }
         .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
 
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; font-size: 16px; }
         .btn-outline { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px; font-weight: 700; border-radius: 14px; cursor: pointer; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
-        .modal-card { width: 100%; max-width: 400px; background: var(--card-bg); border-radius: 28px; padding: 24px; border: 1px solid var(--border-color); }
+        .modal-card { width: 100%; max-width: 380px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); }
 
-        .history-group { background-color: var(--card-bg); border-radius: 22px; margin-bottom: 12px; border: 1px solid var(--border-color); overflow: hidden; width: 100%; }
-        .group-header { background: rgba(0,122,255,0.05); color: var(--accent-color); padding: 14px 18px; font-weight: 800; display: flex; justify-content: space-between; cursor: pointer; font-size: 15px; }
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+        .group-header { background: rgba(0,122,255,0.05); color: var(--accent-color); padding: 16px 20px; font-weight: 800; display: flex; justify-content: space-between; cursor: pointer; }
         .history-group.collapsed .group-sets { display: none; }
-        .set-item { padding: 12px 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
         .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
 
-        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; max-width: 468px; margin: 0 auto; background: var(--accent-color); color: white; padding: 14px 18px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3); }
-        
+        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border-radius: 12px; position: relative; cursor: pointer; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border-radius: 14px; position: relative; cursor: pointer; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
         .day-cell.today { border: 1.5px solid var(--accent-color); color: var(--accent-color); }
         .day-cell.selected { background: var(--accent-color); color: white; }
@@ -127,11 +73,11 @@
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
 
-        #success-flash { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 14px; white-space: nowrap; }
+        #success-flash { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
         .icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
         .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
-        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border-color); }
     </style></head><body>
 
     <header>
@@ -143,9 +89,9 @@
     </header>
 
     <div id="auth-screen">
-        <h1 style="font-size: 40px; font-weight: 800; letter-spacing: -2px; margin-bottom: 5px;">Muscu<span>Pro</span></h1>
-        <p id="auth-title" style="color:var(--text-muted); margin-bottom:25px; font-weight:600;">Suivi Elite pour tes PR</p>
-        <div style="width:100%; max-width:320px;">
+        <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
+        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Heureux de vous revoir !</p>
+        <div style="width:100%; max-width:320px; margin: 0 auto;">
             <input type="email" id="auth-email" placeholder="Email" autocomplete="off">
             <input type="password" id="auth-password" placeholder="Mot de passe" autocomplete="off">
             <button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Se connecter</button>
@@ -163,11 +109,11 @@
                         <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                         <input type="date" id="workout-date" required>
                     </div>
-                    <div style="display:flex; gap:8px;">
+                    <div style="display:flex; gap:10px;">
                         <select id="machine" required style="margin:0;"></select>
-                        <button type="button" onclick="openModal()" style="width:54px; height:50px; border-radius:14px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button>
+                        <button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button>
                     </div>
-                    <div id="last-workout-ghost" style="font-size: 13px; color: var(--accent-color); text-align: center; margin: 10px 0; font-weight: 700; height: 16px;"></div>
+                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; line-height: 1.4;"></div>
                     <div style="display:flex; gap:10px;">
                         <input type="number" id="weight" placeholder="Kg" required inputmode="numeric">
                         <input type="number" id="reps" placeholder="Reps" required inputmode="numeric">
@@ -188,20 +134,20 @@
         <section id="calendar-tab" class="tab-content">
             <h2>Calendrier</h2>
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <div id="month-display" style="font-weight:800; text-transform:capitalize; font-size: 17px;">Mois</div>
-                    <div style="display:flex; gap:8px;"><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(-1)">‹</button><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(1)">›</button></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div>
+                    <div style="display:flex; gap:10px;"><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(-1)">‹</button><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
-            <div id="day-details" style="margin-top:10px;"></div>
+            <div id="day-details" style="margin-top:20px;"></div>
         </section>
 
         <section id="stats" class="tab-content">
-            <h2>Mes Stats</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:22px; font-weight:800; margin:5px 0 0 0; color:var(--accent-color);">0</p></div>
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:22px; font-weight:800; margin:5px 0 0 0; color:var(--pr-color);">0</p></div>
+            <h2>Stats Globales</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:24px; font-weight:800; margin:0; color:var(--accent-color);">0</p></div>
+                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:24px; font-weight:800; margin:0; color:var(--pr-color);">0</p></div>
             </div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
@@ -217,18 +163,18 @@
     </div></div>
 
     <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;">
-        <h2 style="font-size: 24px;">Repos ? ⏳</h2>
+        <h2>Repos ? ⏳</h2>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
-            <button class="btn-primary timer-btn" data-time="60" style="padding:12px 0;">1:00</button>
-            <button class="btn-primary timer-btn" data-time="90" style="padding:12px 0;">1:30</button>
-            <button class="btn-primary timer-btn" data-time="120" style="padding:12px 0;">2:00</button>
+            <button class="btn-primary timer-btn" data-time="60">1:00</button>
+            <button class="btn-primary timer-btn" data-time="90">1:30</button>
+            <button class="btn-primary timer-btn" data-time="120">2:00</button>
         </div>
-        <button class="btn-outline" style="width:100%; padding:14px;" onclick="closeModalTimer()">Passer</button>
+        <button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button>
     </div></div>
 
     <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;">
-        <span id="timer-display" style="font-size: 18px;">00:00</span>
-        <div style="display:flex; gap:8px;">
+        <span id="timer-display">00:00</span>
+        <div style="display:flex; gap:10px;">
             <button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px; font-weight:700;">+30s</button>
             <button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button>
         </div>
@@ -253,13 +199,11 @@
         let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
         setPersistence(auth, browserLocalPersistence);
 
-        // --- THEME ---
         const themeBtn = document.getElementById('theme-btn');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); localStorage.setItem('theme', dark ? 'dark' : 'light'); };
         applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
         themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
-        // --- AUTH ---
         const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const errorMsg = document.getElementById('auth-error');
         document.getElementById('auth-toggle-btn').onclick = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Se connecter" : "Créer mon compte"; document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion"; };
         document.getElementById('auth-submit-btn').onclick = async () => { try { if (isLoginMode) await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); else await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); } catch (err) { errorMsg.innerText = err.message; errorMsg.style.display = 'block'; } };
@@ -269,7 +213,6 @@
         });
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        // --- TABS ---
         window.showTab = (tabId, btn) => { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
@@ -277,7 +220,6 @@
             if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
-        // --- WORKOUTS & EXERCISES ---
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
@@ -300,23 +242,39 @@
         }
 
         window.renameExo = async (id, oldName) => {
-            const newName = prompt("Nouveau nom pour " + oldName + " ?", oldName);
+            const newName = prompt("Nouveau nom ?", oldName);
             if(newName && newName !== oldName) { await updateDoc(doc(db, "exercises", id), { name: newName }); loadExercisesManageList(); loadExercises(); }
         };
 
-        window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice de la liste ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
+        window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
+
+        const formatDateShort = (date) => {
+            return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date);
+        };
 
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
             const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
-            if(last) { ghostDiv.innerText = `Dernier : ${last.weight}kg x ${last.reps}`; document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; } else { ghostDiv.innerText = ""; }
+            
+            const prInfo = personalRecords[m];
+            let ghostHTML = "";
+            if(last) ghostHTML += `Dernier : ${last.weight}kg x ${last.reps}<br>`;
+            if(prInfo) ghostHTML += `<span style="color:var(--pr-color)">Record : ${prInfo.weight}kg le ${formatDateShort(prInfo.date)}</span>`;
+            
+            ghostDiv.innerHTML = ghostHTML;
         };
 
         async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); personalRecords = {};
-            snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine])) personalRecords[data.machine] = data.weight; });
+            snap.forEach(d => { 
+                const data = d.data(); 
+                const date = data.timestamp.toDate();
+                if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) {
+                    personalRecords[data.machine] = { weight: data.weight, date: date };
+                } 
+            });
         }
 
         async function loadWorkouts() { 
@@ -334,10 +292,14 @@
                 const div = document.createElement('div'); div.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
                 let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
-                    const isPR = !s.data.isWarmup && s.data.weight >= (personalRecords[s.data.machine] || 0);
-                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong>${isPR?'<span class="pr-badge">🏆 PR</span>':''}</div>
+                    const d = s.data; 
+                    const prInfo = personalRecords[s.data.machine];
+                    const isPR = !s.data.isWarmup && s.data.weight >= (prInfo ? prInfo.weight : 0);
+                    const prDate = isPR && prInfo ? ` (${formatDateShort(prInfo.date)})` : "";
+
+                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong>${isPR?`<span class="pr-badge">🏆 PR${prDate}</span>`:''}</div>
                         <div style="display:flex; gap:10px;">
-                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg></button>
+                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9(5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg></button>
                             <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                         </div></div>`;
                 });
@@ -347,23 +309,27 @@
         }
 
         window.toggleGroup = (name) => { if(collapsedGroups.has(name)) collapsedGroups.delete(name); else collapsedGroups.add(name); loadWorkouts(); };
-
-        window.copySeries = async (m, w, r) => {
-            await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid });
-            loadWorkouts();
-        };
+        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
 
         document.getElementById('workout-form').onsubmit = async (e) => { 
             e.preventDefault(); 
             const weight = parseInt(document.getElementById('weight').value);
             const machine = document.getElementById('machine').value;
-            await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); 
+            const isWarmup = document.getElementById('is-warmup').checked;
+            const date = new Date(document.getElementById('workout-date').value);
+            
+            // Détection de PR pour confettis
+            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] });
+                personalRecords[machine] = { weight: weight, date: date };
+            }
+
+            await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid }); 
             if(navigator.vibrate) navigator.vibrate(50);
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000); 
             loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
-        // --- CALENDAR & STATS ---
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
         async function renderCalendar() {
             const container = document.getElementById('calendar-container'); container.innerHTML = '';
@@ -396,7 +362,6 @@
             window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { scales: { y: { beginAtZero: true } } } });
         }
 
-        // --- TIMER ---
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
         function startTimer(sec) {
             clearInterval(timerInterval); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block';
@@ -408,7 +373,6 @@
         window.addTime = () => { timerSeconds += 30; };
         document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
 
-        // --- MODALS ---
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
         window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display = 'none';
@@ -419,5 +383,4 @@
 
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar-tab').classList.contains('active')) renderCalendar(); } };
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
