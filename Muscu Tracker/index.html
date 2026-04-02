@@ -1,10 +1,3 @@
-C'est une excellente idée ! L'icône que tu proposes est bien plus standard et intuitive pour la fonction de "Copier/Coller" (👯 faisait peut-être un peu trop "danse du clonage" 😂).
-
-J'ai remplacé l'icône de copie par un SVG qui correspond exactement au style que tu as demandé. C'est plus sobre et ça s'intègre parfaitement au look de l'application.
-
-Voici le code complet mis à jour :
-
-```html
 <!DOCTYPE html><html lang="fr"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -375,4 +368,4 @@ Voici le code complet mis à jour :
             if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; }
         };
     </script></body></html>
-```
+
