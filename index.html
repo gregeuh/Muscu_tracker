@@ -42,6 +42,7 @@
         
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); box-sizing: border-box; width: 100%; }
         h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
+        h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); display: flex; align-items: center; gap: 8px; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; -webkit-appearance: none; appearance: none; }
         
@@ -75,8 +76,9 @@
 
         #success-flash { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
-        .icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
-        .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; cursor: pointer; color: var(--accent-color); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
+        .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border-color); }
     </style></head><body>
 
@@ -90,7 +92,7 @@
 
     <div id="auth-screen">
         <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
-        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Heureux de vous revoir !</p>
+        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Suivi Elite Musculation</p>
         <div style="width:100%; max-width:320px; margin: 0 auto;">
             <input type="email" id="auth-email" placeholder="Email" autocomplete="off">
             <input type="password" id="auth-password" placeholder="Mot de passe" autocomplete="off">
@@ -113,7 +115,7 @@
                         <select id="machine" required style="margin:0;"></select>
                         <button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button>
                     </div>
-                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; line-height: 1.4;"></div>
+                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; line-height: 1.4; min-height: 32px;"></div>
                     <div style="display:flex; gap:10px;">
                         <input type="number" id="weight" placeholder="Kg" required inputmode="numeric">
                         <input type="number" id="reps" placeholder="Reps" required inputmode="numeric">
@@ -123,6 +125,8 @@
                     <button type="submit" class="btn-primary">Enregistrer la série</button>
                 </form>
             </div>
+            
+            <h3 class="session-title" id="session-date-display">Séance du jour</h3>
             <div id="history-list"></div>
         </section>
 
@@ -136,7 +140,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div>
-                    <div style="display:flex; gap:10px;"><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(-1)">‹</button><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(1)">›</button></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
@@ -220,6 +224,8 @@
             if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
+        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
+
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
@@ -235,8 +241,8 @@
             snap.forEach(d => {
                 const item = document.createElement('div'); item.className = "exercise-item";
                 item.innerHTML = `<span style="font-weight:700;">${d.data().name}</span><div style="display:flex; gap:10px;">
-                        <button class="icon-btn" onclick="renameExo('${d.id}', '${d.data().name}')"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-                        <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteExo('${d.id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="icon-btn" onclick="renameExo('${d.id}', '${d.data().name}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                        <button class="icon-btn danger" onclick="deleteExo('${d.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                     </div>`; container.appendChild(item);
             });
         }
@@ -248,39 +254,35 @@
 
         window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
 
-        const formatDateShort = (date) => {
-            return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date);
-        };
-
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
             const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
-            
             const prInfo = personalRecords[m];
             let ghostHTML = "";
             if(last) ghostHTML += `Dernier : ${last.weight}kg x ${last.reps}<br>`;
             if(prInfo) ghostHTML += `<span style="color:var(--pr-color)">Record : ${prInfo.weight}kg le ${formatDateShort(prInfo.date)}</span>`;
-            
             ghostDiv.innerHTML = ghostHTML;
         };
 
         async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); personalRecords = {};
-            snap.forEach(d => { 
-                const data = d.data(); 
-                const date = data.timestamp.toDate();
-                if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) {
-                    personalRecords[data.machine] = { weight: data.weight, date: date };
-                } 
-            });
+            snap.forEach(d => { const data = d.data(); const date = data.timestamp.toDate(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) { personalRecords[data.machine] = { weight: data.weight, date: date }; } });
         }
 
         async function loadWorkouts() { 
+            const dateInput = document.getElementById('workout-date').value;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const titleDisplay = document.getElementById('session-date-display');
+            
+            // Mise à jour du titre
+            if(dateInput === todayStr) titleDisplay.innerText = "Séance du jour";
+            else titleDisplay.innerText = "Séance du " + formatDateShort(new Date(dateInput));
+
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")); 
-            const snap = await getDocs(q); let today = document.getElementById('workout-date').value; let filtered = [];
-            snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === today) filtered.push({id: d.id, data: d.data()}); });
+            const snap = await getDocs(q); let filtered = [];
+            snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
             renderGrouped(filtered, document.getElementById('history-list'));
         }
 
@@ -292,20 +294,17 @@
                 const div = document.createElement('div'); div.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
                 let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
-                    const d = s.data; 
-                    const prInfo = personalRecords[s.data.machine];
-                    const isPR = !s.data.isWarmup && s.data.weight >= (prInfo ? prInfo.weight : 0);
+                    const d = s.data; const prInfo = personalRecords[s.data.machine]; const isPR = !s.data.isWarmup && s.data.weight >= (prInfo ? prInfo.weight : 0);
                     const prDate = isPR && prInfo ? ` (${formatDateShort(prInfo.date)})` : "";
-
                     html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong>${isPR?`<span class="pr-badge">🏆 PR${prDate}</span>`:''}</div>
                         <div style="display:flex; gap:10px;">
-                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9(5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg></button>
-                            <button class="icon-btn" style="color:var(--danger-color);" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                            <button class="icon-btn danger" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                         </div></div>`;
                 });
                 html += `</div>`; div.innerHTML = html; container.appendChild(div);
             });
-            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune donnée.</p>';
+            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune série pour cette date.</p>';
         }
 
         window.toggleGroup = (name) => { if(collapsedGroups.has(name)) collapsedGroups.delete(name); else collapsedGroups.add(name); loadWorkouts(); };
@@ -313,17 +312,8 @@
 
         document.getElementById('workout-form').onsubmit = async (e) => { 
             e.preventDefault(); 
-            const weight = parseInt(document.getElementById('weight').value);
-            const machine = document.getElementById('machine').value;
-            const isWarmup = document.getElementById('is-warmup').checked;
-            const date = new Date(document.getElementById('workout-date').value);
-            
-            // Détection de PR pour confettis
-            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) {
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] });
-                personalRecords[machine] = { weight: weight, date: date };
-            }
-
+            const weight = parseInt(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const isWarmup = document.getElementById('is-warmup').checked; const date = new Date(document.getElementById('workout-date').value);
+            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] }); personalRecords[machine] = { weight: weight, date: date }; }
             await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid }); 
             if(navigator.vibrate) navigator.vibrate(50);
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000); 
@@ -383,4 +373,5 @@
 
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar-tab').classList.contains('active')) renderCalendar(); } };
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
