@@ -30,7 +30,6 @@
         .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: var(--accent-light); border-radius: 12px; font-size: 18px; border: 1px solid var(--border-color); }
         .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
         [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
-        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent-color); padding: 2px; display: none; }
         #logout-btn { background: rgba(255, 59, 48, 0.1); border: none; color: var(--danger-color); font-size: 10px; font-weight: 800; cursor: pointer; padding: 6px 12px; border-radius: 20px; display: none; }
         #app-screen { display: none; padding: 0 16px; max-width: 500px; margin: 0 auto; }
         .tab-content { display: none; }
@@ -51,7 +50,6 @@
         .group-header { background: var(--accent-light); color: var(--accent-color); padding: 16px 20px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
-        .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 12px; font-size: 11px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .nav-btn.active { color: var(--accent-color); }
@@ -61,13 +59,19 @@
         <div class="logo">Muscu<span>Pro</span></div>
         <div class="header-right">
             <label class="theme-toggle"><input type="checkbox" id="theme-switch" style="display:none;"><span class="sun-icon">☀️</span><span class="moon-icon">🌙</span></label>
-            <img id="user-photo" class="user-avatar" src="" alt="Profil">
             <button id="logout-btn">Ciao !</button>
         </div>
     </header>
-    <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; padding:20px; text-align:center;">
-        <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
-        <button id="google-login-btn" class="btn-primary" style="width:auto; padding: 16px 32px;">Connexion Google</button>
+    <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; padding:20px; text-align:center; max-width:400px; margin:0 auto;">
+        <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px; margin-bottom:10px;">Muscu<span>Pro</span></h1>
+        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Heureux de vous revoir !</p>
+        
+        <input type="email" id="auth-email" placeholder="Email" style="margin-bottom:10px;">
+        <input type="password" id="auth-password" placeholder="Mot de passe" style="margin-bottom:20px;">
+        
+        <button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Se connecter</button>
+        <button id="auth-toggle-btn" style="background:none; border:none; color:var(--accent-color); font-weight:700; cursor:pointer;">Créer un compte</button>
+        <p id="auth-error" style="color:var(--danger-color); font-size:12px; margin-top:15px; display:none;"></p>
     </div>
     <div id="app-screen">
         <section id="workout" class="tab-content active">
@@ -93,38 +97,68 @@
     <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>Nouvel exercice</h2><input type="text" id="new-machine-name" placeholder="Ex: Hack Squat"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"><button class="btn-outline" onclick="document.getElementById('modal-add-machine').style.display='none'">Annuler</button><button class="btn-primary" id="save-machine-btn">Ajouter</button></div></div></div>
     <div id="success-flash">Série validée ! 💪</div>
     <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button></nav>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
 
-        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-        setPersistence(auth, browserSessionPersistence);
+        let isLoginMode = true;
+        setPersistence(auth, browserLocalPersistence);
 
-        // CONNEXION : MODE REDIRECT (Indispensable pour mobile)
-        document.getElementById('google-login-btn').onclick = () => signInWithRedirect(auth, provider);
+        // --- GESTION AUTH ---
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authToggleBtn = document.getElementById('auth-toggle-btn');
+        const emailInput = document.getElementById('auth-email');
+        const passInput = document.getElementById('auth-password');
+        const errorMsg = document.getElementById('auth-error');
 
-        onAuthStateChanged(auth, async (user) => {
+        authToggleBtn.onclick = () => {
+            isLoginMode = !isLoginMode;
+            authSubmitBtn.innerText = isLoginMode ? "Se connecter" : "Créer mon compte";
+            authToggleBtn.innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion";
+            document.getElementById('auth-title').innerText = isLoginMode ? "Heureux de vous revoir !" : "Bienvenue parmi nous !";
+        };
+
+        authSubmitBtn.onclick = async () => {
+            const email = emailInput.value;
+            const pass = passInput.value;
+            errorMsg.style.display = 'none';
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                }
+            } catch (err) {
+                errorMsg.innerText = "Erreur : " + err.message;
+                errorMsg.style.display = 'block';
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('bottom-nav').style.display = 'flex';
+                document.getElementById('logout-btn').style.display = 'block';
                 loadExercises(); loadWorkouts();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app-screen').style.display = 'none';
                 document.getElementById('bottom-nav').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'none';
             }
         });
 
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
+        // --- RESTE DE L'APPLI ---
         window.showTab = (tabId, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -155,8 +189,7 @@
                 const groupDiv = document.createElement('div'); groupDiv.className = `history-group`;
                 let html = `<div class="group-header"><span>🏋️ ${g.machine}</span></div>`;
                 g.sets.reverse().forEach((s, i) => {
-                    const d = s.data;
-                    html += `<div class="set-item"><div><span class="set-number">${i+1}</span><strong>${d.weight}kg x ${d.reps}</strong></div><button style="background:none; border:none; color:var(--danger-color);" onclick="deleteSeries('${s.id}')">🗑️</button></div>`;
+                    html += `<div class="set-item"><div><span class="set-number">${i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong></div><button style="background:none; border:none; color:var(--danger-color);" onclick="deleteSeries('${s.id}')">🗑️</button></div>`;
                 });
                 groupDiv.innerHTML = html; container.appendChild(groupDiv);
             });
@@ -184,4 +217,5 @@
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); } };
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); document.getElementById('theme-switch').checked = dark; }; applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches); document.getElementById('theme-switch').onclick = (e) => applyTheme(e.target.checked);
         document.getElementById('workout-date').onchange = () => loadWorkouts();
+        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
     </script></body></html>
