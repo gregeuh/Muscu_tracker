@@ -175,9 +175,14 @@
             margin-bottom: 15px; cursor: pointer; color: var(--text-muted); font-size: 14px;
         }
         .checkbox-container input { width: 18px; height: 18px; margin: 0; padding: 0; }
-
-        /* Style pour les notes dans l'historique */
         .history-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* NOUVEAU : Style pour le fantôme */
+        #last-workout-ghost {
+            font-size: 13px; color: var(--accent-color); 
+            text-align: center; margin-top: 2px; margin-bottom: 10px; 
+            min-height: 18px; font-weight: 600;
+        }
 
     </style></head><body>
 
@@ -240,10 +245,13 @@
                         <button type="button" id="add-machine-btn">+</button>
                         <button type="button" id="delete-machine-btn">🗑️</button>
                     </div>
-                    <div class="input-row">
+                    <div class="input-row" style="margin-bottom: 0;">
                         <input type="number" id="weight" placeholder="Poids (kg)" inputmode="numeric" required style="margin-bottom: 0;">
                         <input type="number" id="reps" placeholder="Reps" inputmode="numeric" required style="margin-bottom: 0;">
                     </div>
+                    
+                    <div id="last-workout-ghost"></div>
+
                     <input type="text" id="series-note" placeholder="Notes (siège, sensations...)" style="margin-top: 5px;">
                     
                     <label class="checkbox-container">
@@ -327,6 +335,38 @@
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
+        // NOUVEAU : Fonction pour charger le fantôme
+        async function loadGhost(machineName) {
+            const ghostDiv = document.getElementById('last-workout-ghost');
+            if(!machineName) { ghostDiv.innerText = ''; return; }
+            ghostDiv.innerText = 'Recherche... 👻';
+            
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", machineName));
+            const snap = await getDocs(q);
+            
+            let lastWorkout = null;
+            let maxTime = 0;
+            
+            snap.forEach(d => {
+                const data = d.data();
+                // On ignore les échauffements pour ne garder que la "vraie" perf
+                if (data.isWarmup) return;
+                
+                const time = data.timestamp.toMillis();
+                if (time > maxTime) {
+                    maxTime = time;
+                    lastWorkout = data;
+                }
+            });
+            
+            if (lastWorkout) {
+                const dateStr = lastWorkout.timestamp.toDate().toLocaleDateString('fr-FR', {day: '2-digit', month: 'short'});
+                ghostDiv.innerHTML = `👻 Dernière fois (${dateStr}) : <strong>${lastWorkout.weight}kg x ${lastWorkout.reps}</strong>`;
+            } else {
+                ghostDiv.innerText = '';
+            }
+        }
+
         async function loadExercises() {
             const select = document.getElementById('machine');
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
@@ -344,6 +384,7 @@
 
         document.getElementById('machine').onchange = (e) => {
             document.getElementById('delete-machine-btn').style.display = customExercises[e.target.value] ? 'flex' : 'none';
+            loadGhost(e.target.value); // Met à jour le fantôme quand on change de machine
         };
 
         document.getElementById('save-machine-btn').onclick = async () => {
@@ -391,21 +432,23 @@
             const weight = parseInt(document.getElementById('weight').value);
             const reps = parseInt(document.getElementById('reps').value);
             const isWarmup = document.getElementById('is-warmup').checked;
-            const note = document.getElementById('series-note').value.trim(); // NOUVEAU
+            const note = document.getElementById('series-note').value.trim(); 
             const dateStr = document.getElementById('workout-date').value;
             const [y, m, d] = dateStr.split('-');
-            const finalDate = new Date(y, m - 1, d, new Date().getHours(), new Date().getMinutes());
+            const finalDate = new Date(y, m - 1, d, new Date().getHours(), new Date().getMinutes(), new Date().getSeconds());
 
             await addDoc(collection(db, "workouts"), {
-                machine, weight, reps, isWarmup, note, // NOUVEAU
+                machine, weight, reps, isWarmup, note, 
                 timestamp: finalDate, userId: auth.currentUser.uid
             });
 
             document.getElementById('weight').value = '';
             document.getElementById('reps').value = '';
-            document.getElementById('series-note').value = ''; // NOUVEAU
+            document.getElementById('series-note').value = ''; 
             document.getElementById('is-warmup').checked = false;
+            
             loadWorkouts();
+            loadGhost(machine); // Actualise le fantôme avec la série qu'on vient de faire !
             document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
@@ -413,8 +456,6 @@
             const item = document.createElement('div');
             item.className = 'history-item';
             const textStyle = data.isWarmup ? 'color: var(--text-muted); font-style: italic; opacity: 0.8;' : '';
-            
-            // NOUVEAU : Affichage de la note si elle existe
             const noteHtml = data.note ? `<div class="history-note">📝 ${data.note}</div>` : '';
 
             item.innerHTML = `
@@ -425,7 +466,13 @@
                 </div>`;
             const del = document.createElement('button');
             del.className = 'delete-btn'; del.innerHTML = '🗑️';
-            del.onclick = async () => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", docId)); loadWorkouts(); } };
+            del.onclick = async () => { 
+                if(confirm("Supprimer ?")) { 
+                    await deleteDoc(doc(db, "workouts", docId)); 
+                    loadWorkouts(); 
+                    loadGhost(document.getElementById('machine').value); // Maj du fantôme en cas de suppression
+                } 
+            };
             item.appendChild(del);
             container.appendChild(item);
         }
