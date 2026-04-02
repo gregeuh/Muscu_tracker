@@ -11,7 +11,6 @@
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e1e1e">
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
-    <link rel="manifest" href="manifest.json">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,8 +29,8 @@
             margin: 0; font-family: 'Inter', sans-serif;
             background-color: var(--bg-color); color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
-            padding-top: calc(90px + env(safe-area-inset-top, 0px));
-            padding-bottom: calc(120px + env(safe-area-inset-bottom, 20px)); 
+            padding-top: calc(80px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -43,51 +42,66 @@
         }
         .logo { font-size: 18px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border-color); display: none; }
+        #logout-btn { background: rgba(255, 59, 48, 0.1); border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px 12px; border-radius: 20px; display: none; }
 
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border-color); object-fit: cover; display: none; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #app-screen { display: none; padding: 0 20px; }
+        h2 { font-size: 24px; font-weight: 800; margin: 10px 0 20px 0; }
+        h3 { font-size: 16px; margin: 20px 0 10px 0; }
         
-        #logout-btn { 
-            background: rgba(255, 59, 48, 0.1); border: 1px solid var(--danger-color); 
-            color: var(--danger-color); font-size: 12px; font-weight: 800; 
-            cursor: pointer; padding: 6px 12px; border-radius: 20px; display: none;
-        }
-
         .card { background-color: var(--panel-bg); padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border-color); }
         input, select { width: 100%; padding: 14px; background-color: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
-        button.btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 800; border-radius: 10px; width: 100%; cursor: pointer; }
-        button.btn-outline { background: transparent; color: var(--text-muted); border: 2px solid var(--border-color); padding: 16px; font-weight: 800; border-radius: 10px; width: 100%; cursor: pointer; }
         
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        #add-machine-btn, #delete-machine-btn { border-radius: 10px; width: 52px; height: 50px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: 10px; }
-        #add-machine-btn { background-color: var(--accent-color); color: white; border: none; }
-        #delete-machine-btn { background-color: transparent; color: var(--danger-color); border: 2px solid var(--danger-color); display: none; font-size: 20px;}
+        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 800; border-radius: 10px; width: 100%; cursor: pointer; }
+        .btn-outline { background: transparent; color: var(--text-muted); border: 2px solid var(--border-color); padding: 16px; font-weight: 800; border-radius: 10px; width: 100%; cursor: pointer; }
 
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        #add-machine-btn, #delete-machine-btn { border-radius: 10px; width: 52px; height: 50px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #add-machine-btn { background-color: var(--accent-color); color: white; border: none; }
+        #delete-machine-btn { background-color: transparent; color: var(--danger-color); border: 2px solid var(--danger-color); display: none; font-size: 20px; }
+
+        /* TIMER */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
         .modal-card { width: 100%; max-width: 400px; text-align: center; }
-
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 20px; right: 20px; background: var(--accent-color); color: white; padding: 12px 15px; border-radius: 12px; z-index: 999; box-shadow: 0 4px 15px rgba(0,123,255,0.4); }
-        .timer-content { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16px; }
-        .timer-btns { display: flex; gap: 10px; }
-        .timer-mini-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .timer-content { display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
+        .timer-mini-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; }
 
+        /* GROUPES & ITEMS */
         .history-group { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
         .group-header { background-color: rgba(0,123,255,0.08); color: var(--accent-color); padding: 12px 15px; font-weight: 800; font-size: 15px; border-bottom: 1px solid var(--border-color); }
         .set-item { padding: 10px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-item:last-child { border-bottom: none; }
-        .action-btns { display: flex; gap: 5px; align-items: center; }
-        .copy-btn { background: none; border: none; color: var(--accent-color); font-size: 16px; cursor: pointer; padding: 5px; display: flex; align-items: center; }
-        .copy-btn svg { width: 16px; height: 16px; fill: currentColor; }
-        
+        .set-number { background-color: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 50%; margin-right: 5px; }
+        .history-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .action-btns { display: flex; gap: 10px; align-items: center; }
+        .copy-btn { background: none; border: none; color: var(--accent-color); padding: 5px; cursor: pointer; display: flex; }
+        .copy-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* CALENDRIER */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day-cell { background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; cursor: pointer; position: relative; }
+        .day-cell.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background-color: var(--accent-color); border-radius: 50%; }
+        .day-cell.selected { border: 2px solid var(--accent-color); background: rgba(0,123,255,0.1); }
+
+        /* STATS */
+        .stats-summary { display: flex; gap: 10px; text-align: center; margin-bottom: 15px; }
+        .stat-box { flex: 1; padding: 15px 10px; background: rgba(0,123,255,0.08); border-radius: 12px; border: 1px solid rgba(0,123,255,0.2); }
+        .stat-box h4 { margin: 0; font-size: 12px; color: var(--text-muted); }
+        .stat-box p { margin: 5px 0 0 0; font-size: 20px; font-weight: 800; color: var(--accent-color); }
+
         nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--panel-bg); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
-        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 10px; font-size: 11px; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 10px; font-size: 11px; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
         .nav-btn.active { color: var(--accent-color); }
         #last-workout-ghost { font-size: 12px; color: var(--accent-color); text-align: center; margin-bottom: 10px; font-weight: 600; min-height: 15px; }
-        .history-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        .set-number { background-color: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 50%; }
         
-        @keyframes flashScreen { 0%, 100% { background-color: var(--bg-color); } 50% { background-color: rgba(0, 123, 255, 0.4); } }
         .flash-active { animation: flashScreen 0.5s ease-in-out 4; }
+        @keyframes flashScreen { 0%, 100% { background-color: var(--bg-color); } 50% { background-color: rgba(0, 123, 255, 0.4); } }
     </style></head><body>
 
     <header id="main-header">
@@ -101,16 +115,10 @@
 
     <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:70vh; padding:20px; text-align:center;">
         <h2>Prêt à progresser ?</h2>
-        <button id="google-login-btn" style="margin-top:20px; padding: 16px; border-radius: 10px; border: 1px solid #ddd; background: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+        <button id="google-login-btn" style="margin-top:20px; padding: 16px; border-radius: 12px; border: 1px solid #ddd; background: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continuer avec Google
         </button>
     </div>
-
-    <div id="modal-add-machine" class="modal-overlay"><div class="card modal-card"><h2>Nouvelle Machine</h2><input type="text" id="new-machine-name" placeholder="Nom (ex: Hack Squat)"><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn-outline" id="cancel-machine-btn">Annuler</button><button class="btn-primary" id="save-machine-btn">Ajouter</button></div></div></div>
-    
-    <div id="modal-timer-prompt" class="modal-overlay"><div class="card modal-card"><h2>Série validée ! 💪</h2><div style="display:flex; gap:10px; justify-content: center; margin: 20px 0;"><button class="btn-outline timer-select-btn" data-time="60">1 min</button><button class="btn-outline timer-select-btn" data-time="90">1:30</button><button class="btn-outline timer-select-btn" data-time="120">2 min</button></div><button class="btn-primary" id="cancel-timer-btn" style="background:var(--text-muted);">Passer le repos</button></div></div>
-    
-    <div id="floating-timer"><div class="timer-content"><span id="timer-display">00:00</span><div class="timer-btns"><button class="timer-mini-btn" id="add-time-btn">+30s</button><button class="timer-mini-btn" id="stop-timer-btn" style="background:var(--danger-color);">✕</button></div></div></div>
 
     <div id="app-screen">
         <section id="workout" class="tab-content active">
@@ -118,22 +126,44 @@
             <div class="card">
                 <form id="workout-form">
                     <input type="date" id="workout-date" required>
-                    <div class="input-row"><select id="machine" required style="margin-bottom:0;"></select><button type="button" id="add-machine-btn">+</button><button type="button" id="delete-machine-btn">🗑️</button></div>
+                    <div class="input-row"><select id="machine" required></select><button type="button" id="add-machine-btn">+</button><button type="button" id="delete-machine-btn">🗑️</button></div>
                     <div class="input-row" style="margin-bottom:0;"><input type="number" id="weight" placeholder="Poids" inputmode="numeric" required onfocus="this.select()"><input type="number" id="reps" placeholder="Reps" inputmode="numeric" required onfocus="this.select()"></div>
                     <div id="last-workout-ghost"></div>
                     <input type="text" id="series-note" placeholder="Notes (siège, sensations...)">
-                    <label style="display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:15px; font-size:14px; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:18px; height:18px; margin:0;"> 🔥 Échauffement</label>
+                    <label style="display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:15px; font-size:14px; color:var(--text-muted); cursor:pointer;"><input type="checkbox" id="is-warmup" style="width:18px; height:18px; margin:0;"> 🔥 Échauffement</label>
                     <button type="submit" class="btn-primary" id="submit-btn">Enregistrer</button>
                 </form>
             </div>
             <h3>Séance du jour</h3>
             <div id="history-list"></div>
         </section>
-        <section id="calendar" class="tab-content"><h2>Calendrier</h2><div class="card"><div class="calendar-grid" id="calendar-container"></div></div><h3 id="selected-date-title">Détails</h3><div id="day-details"></div></section>
-        <section id="stats" class="tab-content"><h2>Stats</h2><div class="stats-summary"><div class="stat-box"><h4>SÉRIES</h4><p id="stat-series">0</p></div><div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0</p></div></div><div class="card"><canvas id="statsChart"></canvas></div></section>
+
+        <section id="calendar" class="tab-content">
+            <h2>Calendrier</h2>
+            <div class="card"><div class="calendar-grid" id="calendar-container"></div></div>
+            <h3 id="selected-date-title">Détails</h3>
+            <div id="day-details"></div>
+        </section>
+
+        <section id="stats" class="tab-content">
+            <h2>Stats Globales</h2>
+            <div class="stats-summary">
+                <div class="stat-box"><h4>SÉRIES</h4><p id="stat-series">0</p></div>
+                <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0 kg</p></div>
+            </div>
+            <div class="card"><canvas id="statsChart"></canvas></div>
+        </section>
     </div>
 
-    <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button><button class="nav-btn" onclick="showTab('calendar', this)"><span>📅</span>Calendrier</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button></nav>
+    <div id="modal-add-machine" class="modal-overlay"><div class="card modal-card"><h2>Nouvelle Machine</h2><input type="text" id="new-machine-name" placeholder="Nom (ex: Hack Squat)"><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn-outline" id="cancel-machine-btn">Annuler</button><button class="btn-primary" id="save-machine-btn">Ajouter</button></div></div></div>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="card modal-card"><h2>Repos ? ⏳</h2><div style="display:flex; gap:10px; justify-content: center; margin: 20px 0;"><button class="btn-outline timer-select-btn" data-time="60">1 min</button><button class="btn-outline timer-select-btn" data-time="90">1:30</button><button class="btn-outline timer-select-btn" data-time="120">2 min</button></div><button class="btn-primary" id="cancel-timer-btn" style="background:var(--text-muted);">Non merci</button></div></div>
+    <div id="floating-timer"><div class="timer-content"><span id="timer-display">00:00</span><div class="timer-btns"><button class="timer-mini-btn" id="add-time-btn">+30s</button><button class="timer-mini-btn" id="stop-timer-btn" style="background:var(--danger-color);">✕</button></div></div></div>
+
+    <nav id="bottom-nav">
+        <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button>
+        <button class="nav-btn" onclick="showTab('calendar', this)"><span>📅</span>Calendrier</button>
+        <button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
@@ -149,6 +179,16 @@
         let customExercises = {};
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
 
+        // GESTION DES ONGLETS
+        window.showTab = (tabId, btn) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            if(tabId === 'calendar') renderCalendar();
+            if(tabId === 'stats') loadStats();
+        };
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const photoImg = document.getElementById('user-photo');
@@ -159,8 +199,6 @@
                 document.getElementById('bottom-nav').style.display = 'flex';
                 loadExercises(); loadWorkouts();
             } else {
-                document.getElementById('user-photo').style.display = 'none';
-                document.getElementById('logout-btn').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app-screen').style.display = 'none';
                 document.getElementById('bottom-nav').style.display = 'none';
@@ -170,13 +208,16 @@
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        window.showTab = (tabId, btn) => {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
-            if(tabId === 'calendar') renderCalendar();
-            if(tabId === 'stats') loadStats();
-        };
+        async function loadExercises() {
+            const select = document.getElementById('machine');
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            let exercises = []; customExercises = {};
+            snap.forEach(d => { exercises.push(d.data().name); customExercises[d.data().name] = {id: d.id}; });
+            exercises.sort();
+            select.innerHTML = exercises.map(name => `<option value="${name}">${name}</option>`).join('');
+            select.dispatchEvent(new Event('change'));
+        }
 
         async function loadGhost(machineName) {
             const ghostDiv = document.getElementById('last-workout-ghost');
@@ -191,22 +232,12 @@
             } else { ghostDiv.innerText = ''; }
         }
 
-        async function loadExercises() {
-            const select = document.getElementById('machine');
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q);
-            let exercises = []; customExercises = {};
-            snap.forEach(d => { exercises.push(d.data().name); customExercises[d.data().name] = {id: d.id}; });
-            exercises.sort();
-            select.innerHTML = exercises.map(name => `<option value="${name}">${name}</option>`).join('');
-            select.dispatchEvent(new Event('change'));
-        }
-
         document.getElementById('machine').onchange = (e) => {
             document.getElementById('delete-machine-btn').style.display = customExercises[e.target.value] ? 'flex' : 'none';
             loadGhost(e.target.value);
         };
 
+        // GESTION DU TIMER
         let timerSeconds = 0; let timerInterval = null;
         function startTimer(sec) {
             clearInterval(timerInterval); timerSeconds = sec;
@@ -214,7 +245,12 @@
             const update = () => {
                 let m = Math.floor(timerSeconds/60), s = timerSeconds%60;
                 document.getElementById('timer-display').innerText = `⏳ Repos : ${m}:${s<10?'0'+s:s}`;
-                if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "C'est parti ! 🏋️"; document.body.classList.add('flash-active'); setTimeout(() => { document.getElementById('floating-timer').style.display = 'none'; document.body.classList.remove('flash-active'); }, 3000); }
+                if(timerSeconds <= 0) { 
+                    clearInterval(timerInterval); 
+                    document.getElementById('timer-display').innerText = "C'est parti ! 🏋️"; 
+                    document.body.classList.add('flash-active'); 
+                    setTimeout(() => { document.getElementById('floating-timer').style.display = 'none'; document.body.classList.remove('flash-active'); }, 3000); 
+                }
                 timerSeconds--;
             };
             update(); timerInterval = setInterval(update, 1000);
@@ -224,6 +260,7 @@
         document.querySelectorAll('.timer-select-btn').forEach(btn => btn.onclick = () => { document.getElementById('modal-timer-prompt').style.display = 'none'; startTimer(parseInt(btn.dataset.time)); });
         document.getElementById('cancel-timer-btn').onclick = () => document.getElementById('modal-timer-prompt').style.display = 'none';
 
+        // ENREGISTREMENT
         document.getElementById('workout-form').onsubmit = async (e) => {
             e.preventDefault();
             const data = {
@@ -263,22 +300,72 @@
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q);
             let today = document.getElementById('workout-date').value;
-            let filtered = [];
-            snap.forEach(d => { let date = d.data().timestamp.toDate().toISOString().split('T')[0]; if(date === today) filtered.push({id: d.id, data: d.data()}); });
+            let filtered = []; snap.forEach(d => { let date = d.data().timestamp.toDate().toISOString().split('T')[0]; if(date === today) filtered.push({id: d.id, data: d.data()}); });
             renderGrouped(filtered, document.getElementById('history-list'));
         }
 
+        // CALENDRIER FONCTIONS
+        async function renderCalendar() {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = '';
+            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            const activeDays = new Set();
+            snap.forEach(d => activeDays.add(d.data().timestamp.toDate().getDate()));
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell' + (activeDays.has(i) ? ' has-data' : '');
+                cell.innerText = i;
+                cell.onclick = () => { 
+                    document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('selected'));
+                    cell.classList.add('selected');
+                    loadWorkoutsForDay(i);
+                };
+                container.appendChild(cell);
+            }
+        }
+
+        async function loadWorkoutsForDay(day) {
+            const details = document.getElementById('day-details');
+            document.getElementById('selected-date-title').innerText = `Séance du ${day} ${new Date().toLocaleString('fr-fr', { month: 'long' })}`;
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            let filtered = [];
+            snap.forEach(d => { if(d.data().timestamp.toDate().getDate() === day && d.data().timestamp.toDate().getMonth() === new Date().getMonth()) filtered.push({id: d.id, data: d.data()}); });
+            renderGrouped(filtered, details);
+        }
+
+        // STATS FONCTIONS
+        let statChart = null;
+        async function loadStats() {
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q);
+            let series = 0, volume = 0; const counts = {};
+            snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { series++; volume += (data.weight * data.reps); counts[data.machine] = (counts[data.machine] || 0) + 1; } });
+            document.getElementById('stat-series').innerText = series;
+            document.getElementById('stat-volume').innerText = volume + ' kg';
+            const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
+            if(statChart) statChart.destroy();
+            statChart = new Chart(document.getElementById('statsChart'), {
+                type: 'bar',
+                data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#007bff', borderRadius: 6 }] },
+                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // AUTRES
         document.getElementById('add-machine-btn').onclick = () => document.getElementById('modal-add-machine').style.display='flex';
         document.getElementById('cancel-machine-btn').onclick = () => document.getElementById('modal-add-machine').style.display='none';
         document.getElementById('save-machine-btn').onclick = async () => {
             const name = document.getElementById('new-machine-name').value.trim();
             if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; }
         };
-        
         document.getElementById('delete-machine-btn').onclick = async () => {
             const name = document.getElementById('machine').value;
             if(confirm(`Supprimer l'exercice "${name}" ?`)) { await deleteDoc(doc(db, "exercises", customExercises[name].id)); loadExercises(); }
         };
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
 
         const themeSwitch = document.getElementById('theme-switch');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); themeSwitch.checked = dark; };
