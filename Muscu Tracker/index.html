@@ -75,34 +75,45 @@
         .tab-content.active { display: block; }
 
         h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
-        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); box-sizing: border-box; width: 100%; }
 
-        /* INPUTS & DATE PICKER */
+        /* INPUTS & DATE PICKER - CORRECTION DÉBORDEMENT */
         input, select { 
-            width: 100%; padding: 16px; background-color: var(--bg-color); 
-            border: 1px solid var(--border-color); color: var(--text-main); 
-            border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px;
+            width: 100%; 
+            max-width: 100%;
+            padding: 16px; 
+            background-color: var(--bg-color); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-main); 
+            border-radius: 16px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            box-sizing: border-box; 
+            margin-bottom: 12px;
             font-family: inherit;
+            display: block;
         }
 
-        /* NOUVEAU : Wrapper Date avec icône */
         .date-input-wrapper {
             position: relative;
             width: 100%;
+            box-sizing: border-box;
         }
         .date-input-wrapper input[type="date"] {
-            padding-left: 45px; /* Laisse de la place pour l'icône */
+            padding-left: 45px; 
+            min-height: 54px;
             cursor: pointer;
+            -webkit-appearance: none; /* Force le look sur iOS */
         }
         .calendar-icon {
             position: absolute;
-            left: 16px;
-            top: 18px;
-            width: 20px;
-            height: 20px;
+            left: 14px;
+            top: 17px;
+            width: 18px;
+            height: 18px;
             color: var(--accent-color);
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
         }
 
         .btn-primary { 
@@ -117,9 +128,10 @@
             padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; 
         }
 
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
         #add-machine-btn { border-radius: 16px; width: 56px; height: 56px; background: var(--accent-color); color: white; border: none; font-size: 24px; cursor: pointer; flex-shrink: 0; }
 
+        /* MODALS */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -129,9 +141,8 @@
             width: 100%; max-width: 380px; background: var(--card-bg); 
             border-radius: 32px; padding: 28px; border: 1px solid var(--border-color);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; box-sizing: border-box;
         }
-        .modal-card h2 { margin-top: 0; font-size: 24px; text-align: center; margin-bottom: 20px; }
 
         #floating-timer { 
             display: none; position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
@@ -139,8 +150,10 @@
             padding: 16px 20px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3);
         }
 
-        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; width: 100%; box-sizing: border-box; }
         .group-header { background: var(--accent-light); color: var(--accent-color); padding: 16px 20px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .history-group.collapsed .group-sets { display: none; }
+        
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-item:last-child { border-bottom: none; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
@@ -148,7 +161,7 @@
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 14px; position: relative; }
-        .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
+        .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background-color: var(--accent-color); border-radius: 50%; }
         .day-cell.today { background: var(--accent-light); color: var(--accent-color); }
         .day-cell.selected { background: var(--accent-color); color: white; }
 
@@ -181,7 +194,7 @@
             <div class="card">
                 <form id="workout-form">
                     <div class="date-input-wrapper">
-                        <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                         <input type="date" id="workout-date" required>
                     </div>
 
@@ -213,7 +226,7 @@
             <h2>Stats Globales</h2>
             <div class="stats-summary">
                 <div class="stat-box"><h4>SÉRIES</h4><p id="stat-series">0</p></div>
-                <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0</p></div>
+                <div class="stat-box"><h4>VOLUME</h4><p id="stat-volume">0 kg</p></div>
             </div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
@@ -428,6 +441,7 @@
             renderGrouped(filtered, details);
         }
 
+        let statChartInstance = null;
         async function loadStats() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q);
@@ -436,8 +450,8 @@
             document.getElementById('stat-series').innerText = series;
             document.getElementById('stat-volume').innerText = volume + ' kg';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] }, options: { scales: { y: { beginAtZero: true } } } });
+            if(statChartInstance) statChartInstance.destroy();
+            statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] }, options: { scales: { y: { beginAtZero: true } } } });
         }
 
         function startTimer(sec) {
@@ -456,7 +470,7 @@
 
         document.getElementById('add-machine-btn').onclick = () => document.getElementById('modal-add-machine').style.display='flex';
         document.getElementById('save-machine-btn').onclick = async () => { const name = document.getElementById('new-machine-name').value.trim(); if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid, timestamp: new Date()}); loadExercises(); document.getElementById('modal-add-machine').style.display='none'; } };
-        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine:m, weight:w, reps:r, isWarmup:false, timestamp:new Date(), userId:auth.currentUser.uid }); loadWorkouts(); };
+        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine:m, weight:w, reps:r, isWarmup:false, timestamp:new Date(document.getElementById('workout-date').value), userId:auth.currentUser.uid }); loadWorkouts(); };
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar').classList.contains('active')) renderCalendar(); } };
 
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); document.getElementById('theme-switch').checked = dark; };
