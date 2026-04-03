@@ -22,37 +22,12 @@
             --text-main: #ffffff; --text-muted: #8e8e93; --accent-color: #0a84ff;
             --border-color: #2c2c2e; --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
-
-        /* FIX DU SCROLL : On enlève height: 100% qui bloquait tout */
-        html { 
-            background-color: var(--bg-color);
-            scroll-behavior: smooth;
-        }
-        body { 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-main); 
-            transition: background-color 0.3s; 
-            -webkit-tap-highlight-color: transparent; 
-            overflow-x: hidden; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
-            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
-        }
+        html { background-color: var(--bg-color); scroll-behavior: smooth; }
+        body { margin: 0; font-family: 'Inter', sans-serif; color: var(--text-main); transition: background-color 0.3s; -webkit-tap-highlight-color: transparent; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; }
         
-        header { 
-            position: fixed; top: 0; left: 0; right: 0; height: 64px; 
-            background-color: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color); 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 20px; padding-top: env(safe-area-inset-top); 
-            z-index: 1000; 
-        }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1000; }
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
-        
         .header-right { display: flex; align-items: center; gap: 12px; }
         .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(0,122,255,0.1); border-radius: 12px; font-size: 18px; border: none; color: var(--accent-color); }
         .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
@@ -69,7 +44,6 @@
         h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); display: flex; align-items: center; gap: 8px; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; }
-        
         .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
         .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; max-width: 100%; display: block; min-height: 54px; -webkit-appearance: none; appearance: none; }
         .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
@@ -99,7 +73,6 @@
         .nav-btn.active { color: var(--accent-color); }
 
         #success-flash { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; cursor: pointer; color: var(--accent-color); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
         .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -149,7 +122,6 @@
                     <button type="submit" class="btn-primary">Enregistrer la série</button>
                 </form>
             </div>
-            
             <h3 class="session-title" id="session-date-display">Séance du jour</h3>
             <div id="history-list"></div>
         </section>
@@ -164,7 +136,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div>
-                    <div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(-1)">‹</button><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
@@ -189,7 +161,6 @@
             <button class="btn-primary" id="save-machine-btn">Ajouter</button>
         </div>
     </div></div>
-
     <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;">
         <h2>Repos ? ⏳</h2>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
@@ -199,7 +170,6 @@
         </div>
         <button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button>
     </div></div>
-
     <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;">
         <span id="timer-display">00:00</span>
         <div style="display:flex; gap:10px;">
@@ -218,22 +188,26 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         
+        // --- OFFLINE PERSISTENCE ---
+        enableMultiTabIndexedDbPersistence(db).catch((err) => {
+            if (err.code == 'failed-precondition') console.warn("Multi-tab persistence failed");
+            else if (err.code == 'unimplemented') console.warn("Browser doesn't support persistence");
+        });
+
         let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
         setPersistence(auth, browserLocalPersistence);
 
-        // --- THEME ---
         const themeBtn = document.getElementById('theme-btn');
         const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); localStorage.setItem('theme', dark ? 'dark' : 'light'); };
         applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
         themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
-        // --- AUTH ---
         const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const errorMsg = document.getElementById('auth-error');
         document.getElementById('auth-toggle-btn').onclick = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Se connecter" : "Créer mon compte"; document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion"; };
         document.getElementById('auth-submit-btn').onclick = async () => { try { if (isLoginMode) await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); else await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); } catch (err) { errorMsg.innerText = err.message; errorMsg.style.display = 'block'; } };
@@ -243,7 +217,6 @@
         });
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        // --- TABS ---
         window.showTab = (tabId, btn) => { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
@@ -251,7 +224,8 @@
             if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
-        // --- WORKOUTS & EXERCISES ---
+        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
+
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
@@ -279,8 +253,6 @@
         };
 
         window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
-
-        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
 
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
