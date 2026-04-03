@@ -241,7 +241,7 @@
             for(const [cat, items] of Object.entries(grouped)) {
                 const header = document.createElement('h4'); header.className = "category-header"; header.innerText = cat; container.appendChild(header);
                 const card = document.createElement('div'); card.className = "card"; card.style.padding = "0"; card.style.overflow = "hidden";
-                items.forEach(m => { const div = document.createElement('div'); div.className = "machine-item"; div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="renameExo('${m.id}', '${m.name}')">✏️</button><button class="icon-btn danger" onclick="deleteExo('${m.id}')">🗑️</button></div>`; card.appendChild(div); });
+                items.forEach(m => { const div = document.createElement('div'); div.className = "machine-item"; div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="renameExo('${m.id}', '${m.name}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" onclick="deleteExo('${m.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>`; card.appendChild(div); });
                 container.appendChild(card);
             }
         }
@@ -279,7 +279,6 @@
                 let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
                     const d = s.data; 
-                    // FIX: Badge PR seulement si poids === max record ET pas échauffement
                     const machineMax = personalRecords[d.machine]?.weight || 0;
                     const isPR = !d.isWarmup && d.weight === machineMax && machineMax > 0;
                     
@@ -294,12 +293,30 @@
         window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
         
         document.getElementById('workout-form').onsubmit = async (e) => {
-            e.preventDefault(); const weight = parseInt(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value);
-            if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); personalRecords[machine] = { weight, date }; }
+            e.preventDefault(); 
+            const weight = parseInt(document.getElementById('weight').value); 
+            const machine = document.getElementById('machine').value; 
+            const date = new Date(document.getElementById('workout-date').value);
+            
+            if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine]?.weight || 0)) { 
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); 
+                personalRecords[machine] = { weight, date }; 
+            }
+            
             await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid });
+            
             if(navigator.vibrate) navigator.vibrate(50);
-            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000);
-            loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
+            
+            const flash = document.getElementById('success-flash'); 
+            flash.style.display='block'; 
+            setTimeout(()=>flash.style.display='none', 3000); // 3 secondes maintenant
+            
+            loadWorkouts(); 
+            
+            // Délai avant d'afficher la pop-up de repos
+            setTimeout(() => {
+                document.getElementById('modal-timer-prompt').style.display = 'flex';
+            }, 1500);
         };
 
         async function loadStats() {
@@ -341,7 +358,7 @@
         document.getElementById('theme-btn').onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
-        function startTimer(sec) { clearInterval(timerInterval); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
+        function startTimer(sec) { clearInterval(timerInterval); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "Terminé !"; } timerSeconds--; }, 1000); }
         window.addTime = () => { timerSeconds += 30; }; document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
 
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
