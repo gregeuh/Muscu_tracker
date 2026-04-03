@@ -41,7 +41,7 @@
         
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); box-sizing: border-box; width: 100%; }
         h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
-        h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); display: flex; align-items: center; gap: 8px; }
+        h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; }
         .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
@@ -60,6 +60,7 @@
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
         .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+        .rm-small { font-size: 10px; color: var(--text-muted); margin-left: 5px; font-weight: 400; }
 
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -77,6 +78,8 @@
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
         .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border-color); }
+        
+        #one-rm-live { font-size: 13px; font-weight: 800; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
     </style></head><body>
 
     <header>
@@ -117,6 +120,7 @@
                         <input type="number" id="weight" placeholder="Kg" required inputmode="numeric">
                         <input type="number" id="reps" placeholder="Reps" required inputmode="numeric">
                     </div>
+                    <div id="one-rm-live">1RM estimé : -</div>
                     <input type="text" id="series-note" placeholder="Note (facultatif)">
                     <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:600; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
                     <button type="submit" class="btn-primary">Enregistrer la série</button>
@@ -136,7 +140,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div>
-                    <div style="display:flex; gap:10px;"><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(-1)">‹</button><button class="btn-outline" style="padding:6px 12px;" onclick="changeMonth(1)">›</button></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
@@ -194,11 +198,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         
-        // --- OFFLINE PERSISTENCE ---
-        enableMultiTabIndexedDbPersistence(db).catch((err) => {
-            if (err.code == 'failed-precondition') console.warn("Multi-tab persistence failed");
-            else if (err.code == 'unimplemented') console.warn("Browser doesn't support persistence");
-        });
+        enableMultiTabIndexedDbPersistence(db).catch(() => console.warn("Persistence failed"));
 
         let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
         setPersistence(auth, browserLocalPersistence);
@@ -225,6 +225,22 @@
         };
 
         const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
+        
+        // --- 1RM Logic ---
+        const calc1RM = (w, r) => { 
+            if (!w || !r || r <= 0) return 0;
+            if (r === 1) return w;
+            return Math.round(w / (1.0278 - (0.0278 * r)));
+        };
+
+        const updateLive1RM = () => {
+            const w = parseFloat(document.getElementById('weight').value);
+            const r = parseInt(document.getElementById('reps').value);
+            const rm = calc1RM(w, r);
+            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM estimé : ${rm} kg` : `1RM estimé : -`;
+        };
+        document.getElementById('weight').oninput = updateLive1RM;
+        document.getElementById('reps').oninput = updateLive1RM;
 
         async function loadExercises() { 
             const select = document.getElementById('machine'); 
@@ -260,23 +276,21 @@
             const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
             const prInfo = personalRecords[m];
             let ghostHTML = "";
-            if(last) ghostHTML += `Dernier : ${last.weight}kg x ${last.reps}<br>`;
-            if(prInfo) ghostHTML += `<span style="color:var(--pr-color)">Record : ${prInfo.weight}kg le ${formatDateShort(prInfo.date)}</span>`;
+            if(last) ghostHTML += `Dernier : ${last.weight}kg x ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}kg)<br>`;
+            if(prInfo) ghostHTML += `<span style="color:var(--pr-color)">Record : ${prInfo.weight}kg (1RM: ${calc1RM(prInfo.weight, prInfo.reps)}kg) le ${formatDateShort(prInfo.date)}</span>`;
             ghostDiv.innerHTML = ghostHTML;
         };
 
         async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); personalRecords = {};
-            snap.forEach(d => { const data = d.data(); const date = data.timestamp.toDate(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) { personalRecords[data.machine] = { weight: data.weight, date: date }; } });
+            snap.forEach(d => { const data = d.data(); const date = data.timestamp.toDate(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) { personalRecords[data.machine] = { weight: data.weight, date: date, reps: data.reps }; } });
         }
 
         async function loadWorkouts() { 
             const dateInput = document.getElementById('workout-date').value;
-            const todayStr = new Date().toISOString().split('T')[0];
             const titleDisplay = document.getElementById('session-date-display');
-            if(dateInput === todayStr) titleDisplay.innerText = "Séance du jour";
-            else titleDisplay.innerText = "Séance du " + formatDateShort(new Date(dateInput));
+            titleDisplay.innerText = dateInput === new Date().toISOString().split('T')[0] ? "Séance du jour" : "Séance du " + formatDateShort(new Date(dateInput));
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")); 
             const snap = await getDocs(q); let filtered = [];
             snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
@@ -292,8 +306,8 @@
                 let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
                     const d = s.data; const prInfo = personalRecords[s.data.machine]; const isPR = !s.data.isWarmup && s.data.weight >= (prInfo ? prInfo.weight : 0);
-                    const prDate = isPR && prInfo ? ` (${formatDateShort(prInfo.date)})` : "";
-                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong>${isPR?`<span class="pr-badge">🏆 PR${prDate}</span>`:''}</div>
+                    const rm = calc1RM(d.weight, d.reps);
+                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${d.weight}kg x ${d.reps}</strong><span class="rm-small">(1RM: ${rm}kg)</span>${isPR?`<span class="pr-badge">🏆 PR le ${formatDateShort(prInfo.date)}</span>`:''}</div>
                         <div style="display:flex; gap:10px;">
                             <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                             <button class="icon-btn danger" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
@@ -301,7 +315,7 @@
                 });
                 html += `</div>`; div.innerHTML = html; container.appendChild(div);
             });
-            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune série pour cette date.</p>';
+            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune série.</p>';
         }
 
         window.toggleGroup = (name) => { if(collapsedGroups.has(name)) collapsedGroups.delete(name); else collapsedGroups.add(name); loadWorkouts(); };
@@ -309,9 +323,9 @@
 
         document.getElementById('workout-form').onsubmit = async (e) => { 
             e.preventDefault(); 
-            const weight = parseInt(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const isWarmup = document.getElementById('is-warmup').checked; const date = new Date(document.getElementById('workout-date').value);
-            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] }); personalRecords[machine] = { weight: weight, date: date }; }
-            await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid }); 
+            const weight = parseInt(document.getElementById('weight').value); const reps = parseInt(document.getElementById('reps').value); const machine = document.getElementById('machine').value; const isWarmup = document.getElementById('is-warmup').checked; const date = new Date(document.getElementById('workout-date').value);
+            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] }); personalRecords[machine] = { weight: weight, date: date, reps: reps }; }
+            await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid }); 
             if(navigator.vibrate) navigator.vibrate(50);
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000); 
             loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
