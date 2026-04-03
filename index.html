@@ -29,12 +29,13 @@
         .logo { font-size: 20px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
         .header-right { display: flex; align-items: center; gap: 12px; }
-        .theme-toggle { cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(0,122,255,0.1); border-radius: 12px; font-size: 18px; border: none; color: var(--accent-color); }
-        .theme-toggle .moon-icon, [data-theme="dark"] .theme-toggle .sun-icon { display: none; }
-        [data-theme="dark"] .theme-toggle .moon-icon { display: block; }
-        #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 11px; font-weight: 800; padding: 8px 16px; border-radius: 20px; display: none; }
+        .user-photo { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent-color); display: none; }
+
+        #logout-btn { background: rgba(255, 69, 58, 0.15); border: none; color: var(--danger-color); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; display: none; }
 
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
+        .google-btn { background: white; color: #1c1c1e; border: 1px solid #dcdcdc; padding: 14px 24px; border-radius: 14px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; width: 100%; max-width: 320px; cursor: pointer; margin-bottom: 20px; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
         #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
@@ -45,7 +46,7 @@
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; }
         .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
-        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; max-width: 100%; display: block; min-height: 54px; -webkit-appearance: none; appearance: none; }
+        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; min-height: 54px; -webkit-appearance: none; appearance: none; }
         .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
 
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; font-size: 16px; }
@@ -60,7 +61,6 @@
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
         .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
-        .rm-small { font-size: 10px; color: var(--text-muted); margin-left: 5px; font-weight: 400; }
 
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 16px 20px; border-radius: 20px; z-index: 999; box-shadow: 0 8px 24px rgba(0,122,255,0.3); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -78,26 +78,30 @@
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
         .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border-color); }
-        
         #one-rm-live { font-size: 13px; font-weight: 800; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
     </style></head><body>
 
     <header>
         <div class="logo">Muscu<span>Pro</span></div>
         <div class="header-right">
-            <button class="theme-toggle" id="theme-btn"><span class="sun-icon">☀️</span><span class="moon-icon">🌙</span></button>
+            <button class="theme-toggle" id="theme-btn">🌙</button>
+            <img id="user-photo" class="user-photo" src="" alt="Profil">
             <button id="logout-btn">Ciao !</button>
         </div>
     </header>
 
     <div id="auth-screen">
-        <h1 style="font-size: 44px; font-weight: 800; letter-spacing: -2.5px;">Muscu<span>Pro</span></h1>
-        <p id="auth-title" style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Suivi Elite Musculation</p>
-        <div style="width:100%; max-width:320px; margin: 0 auto;">
-            <input type="email" id="auth-email" placeholder="Email" autocomplete="off">
-            <input type="password" id="auth-password" placeholder="Mot de passe" autocomplete="off">
-            <button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Se connecter</button>
-            <button id="auth-toggle-btn" style="background:none; border:none; color:var(--accent-color); font-weight:700;">Créer un compte</button>
+        <h1 style="font-size: 40px; font-weight: 800; letter-spacing: -2px; margin-bottom: 5px;">Muscu<span>Pro</span></h1>
+        <p style="color:var(--text-muted); margin-bottom:30px; font-weight:600;">Choisis ton mode de connexion</p>
+        
+        <button id="google-login-btn" class="google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google"> Continuer avec Google
+        </button>
+
+        <div style="width:100%; max-width:320px; border-top:1px solid var(--border-color); padding-top:20px; margin-top:10px;">
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Mot de passe">
+            <button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Se connecter / Créer</button>
             <p id="auth-error" style="color:var(--danger-color); font-size:12px; margin-top:15px; display:none;"></p>
         </div>
     </div>
@@ -111,15 +115,9 @@
                         <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                         <input type="date" id="workout-date" required>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <select id="machine" required style="margin:0;"></select>
-                        <button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button>
-                    </div>
-                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; line-height: 1.4; min-height: 32px;"></div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="number" id="weight" placeholder="Kg" required inputmode="numeric">
-                        <input type="number" id="reps" placeholder="Reps" required inputmode="numeric">
-                    </div>
+                    <div style="display:flex; gap:10px;"><select id="machine" required style="margin:0;"></select><button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button></div>
+                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; min-height: 32px;"></div>
+                    <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required inputmode="numeric"><input type="number" id="reps" placeholder="Reps" required inputmode="numeric"></div>
                     <div id="one-rm-live">1RM estimé : -</div>
                     <input type="text" id="series-note" placeholder="Note (facultatif)">
                     <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:600; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
@@ -137,163 +135,110 @@
 
         <section id="calendar-tab" class="tab-content">
             <h2>Calendrier</h2>
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div>
-                    <div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div>
-                </div>
-                <div class="calendar-grid" id="calendar-container"></div>
-            </div>
+            <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
             <div id="day-details" style="margin-top:20px;"></div>
         </section>
 
         <section id="stats" class="tab-content">
-            <h2>Stats Globales</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:24px; font-weight:800; margin:0; color:var(--accent-color);">0</p></div>
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:24px; font-weight:800; margin:0; color:var(--pr-color);">0</p></div>
-            </div>
+            <h2>Mes Stats</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;"><div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:24px; font-weight:800; margin:0; color:var(--accent-color);">0</p></div><div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:24px; font-weight:800; margin:0; color:var(--pr-color);">0</p></div></div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
     </div>
 
-    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card">
-        <h2>Nouvel exercice</h2>
-        <input type="text" id="new-machine-name" placeholder="Ex: Hack Squat">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
-            <button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">Annuler</button>
-            <button class="btn-primary" id="save-machine-btn">Ajouter</button>
-        </div>
-    </div></div>
-    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;">
-        <h2>Repos ? ⏳</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
-            <button class="btn-primary timer-btn" data-time="60">1:00</button>
-            <button class="btn-primary timer-btn" data-time="90">1:30</button>
-            <button class="btn-primary timer-btn" data-time="120">2:00</button>
-        </div>
-        <button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button>
-    </div></div>
-    <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;">
-        <span id="timer-display">00:00</span>
-        <div style="display:flex; gap:10px;">
-            <button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px; font-weight:700;">+30s</button>
-            <button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button>
-        </div>
-    </div></div>
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>Nouvel exercice</h2><input type="text" id="new-machine-name" placeholder="Ex: Hack Squat"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">Annuler</button><button class="btn-primary" id="save-machine-btn">Ajouter</button></div></div></div>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>Repos ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button></div></div>
+    <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;"><span id="timer-display">00:00</span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px; font-weight:700;">+30s</button><button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button></div></div></div>
     <div id="success-flash">C'est noté ! 💪</div>
 
-    <nav id="bottom-nav">
-        <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button>
-        <button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>Exos</button>
-        <button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>Calendrier</button>
-        <button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button>
-    </nav>
+    <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button><button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>Exos</button><button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>Calendrier</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button></nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
-        
-        enableMultiTabIndexedDbPersistence(db).catch(() => console.warn("Persistence failed"));
+        const provider = new GoogleAuthProvider();
 
-        let isLoginMode = true; let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
+        enableMultiTabIndexedDbPersistence(db).catch(() => {});
         setPersistence(auth, browserLocalPersistence);
 
-        const themeBtn = document.getElementById('theme-btn');
-        const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); localStorage.setItem('theme', dark ? 'dark' : 'light'); };
-        applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
-        themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
 
-        const emailInput = document.getElementById('auth-email'); const passInput = document.getElementById('auth-password'); const errorMsg = document.getElementById('auth-error');
-        document.getElementById('auth-toggle-btn').onclick = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Se connecter" : "Créer mon compte"; document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Créer un compte" : "Déjà inscrit ? Connexion"; };
-        document.getElementById('auth-submit-btn').onclick = async () => { try { if (isLoginMode) await signInWithEmailAndPassword(auth, emailInput.value, passInput.value); else await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value); } catch (err) { errorMsg.innerText = err.message; errorMsg.style.display = 'block'; } };
+        // --- AUTH ---
+        document.getElementById('google-login-btn').onclick = async () => { try { await signInWithPopup(auth, provider); } catch(err) { alert("Erreur Google : " + err.message); } };
+        document.getElementById('auth-submit-btn').onclick = async () => {
+            const email = document.getElementById('auth-email').value; const pass = document.getElementById('auth-password').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch { try { await createUserWithEmailAndPassword(auth, email, pass); } catch(err) { document.getElementById('auth-error').innerText = err.message; document.getElementById('auth-error').style.display = 'block'; } }
+        };
+
         onAuthStateChanged(auth, (user) => {
-            if (user) { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex'; document.getElementById('logout-btn').style.display = 'block'; loadExercises(); loadWorkouts(); loadPRs(); }
-            else { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none'; document.getElementById('logout-btn').style.display = 'none'; emailInput.value = ""; passInput.value = ""; }
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex'; document.getElementById('logout-btn').style.display = 'block';
+                if(user.photoURL) { document.getElementById('user-photo').src = user.photoURL; document.getElementById('user-photo').style.display = 'block'; }
+                loadExercises(); loadWorkouts(); loadPRs();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none'; document.getElementById('logout-btn').style.display = 'none'; document.getElementById('user-photo').style.display = 'none';
+            }
         });
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        window.showTab = (tabId, btn) => { 
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
-            document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); 
-            if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
-        };
+        // --- THEME ---
+        const applyTheme = (dark) => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); document.getElementById('theme-btn').innerText = dark ? '☀️' : '🌙'; localStorage.setItem('theme', dark ? 'dark' : 'light'); };
+        applyTheme((localStorage.getItem('theme') || 'dark') === 'dark');
+        document.getElementById('theme-btn').onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 
-        const formatDateShort = (date) => { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(date); };
+        // --- LOGIC ---
+        const calc1RM = (w, r) => r === 1 ? w : Math.round(w / (1.0278 - (0.0278 * r)));
+        const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
         
-        // --- 1RM Logic ---
-        const calc1RM = (w, r) => { 
-            if (!w || !r || r <= 0) return 0;
-            if (r === 1) return w;
-            return Math.round(w / (1.0278 - (0.0278 * r)));
-        };
-
-        const updateLive1RM = () => {
-            const w = parseFloat(document.getElementById('weight').value);
-            const r = parseInt(document.getElementById('reps').value);
-            const rm = calc1RM(w, r);
+        document.getElementById('weight').oninput = document.getElementById('reps').oninput = () => {
+            const rm = calc1RM(parseFloat(document.getElementById('weight').value), parseInt(document.getElementById('reps').value));
             document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM estimé : ${rm} kg` : `1RM estimé : -`;
         };
-        document.getElementById('weight').oninput = updateLive1RM;
-        document.getElementById('reps').oninput = updateLive1RM;
 
-        async function loadExercises() { 
-            const select = document.getElementById('machine'); 
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)); 
-            const snap = await getDocs(q); let opts = ""; 
-            snap.forEach(d => { opts += `<option value="${d.data().name}">${d.data().name}</option>`; }); 
-            select.innerHTML = opts; select.dispatchEvent(new Event('change'));
+        async function loadExercises() {
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); let opts = ""; snap.forEach(d => { opts += `<option value="${d.data().name}">${d.data().name}</option>`; });
+            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
         }
 
         async function loadExercisesManageList() {
-            const container = document.getElementById('exercise-manage-list');
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const container = document.getElementById('exercise-manage-list'); const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); container.innerHTML = "";
             snap.forEach(d => {
                 const item = document.createElement('div'); item.className = "exercise-item";
-                item.innerHTML = `<span style="font-weight:700;">${d.data().name}</span><div style="display:flex; gap:10px;">
-                        <button class="icon-btn" onclick="renameExo('${d.id}', '${d.data().name}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-                        <button class="icon-btn danger" onclick="deleteExo('${d.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                    </div>`; container.appendChild(item);
+                item.innerHTML = `<span style="font-weight:700;">${d.data().name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="renameExo('${d.id}', '${d.data().name}')">✏️</button><button class="icon-btn danger" onclick="deleteExo('${d.id}')">🗑️</button></div>`;
+                container.appendChild(item);
             });
         }
 
-        window.renameExo = async (id, oldName) => {
-            const newName = prompt("Nouveau nom ?", oldName);
-            if(newName && newName !== oldName) { await updateDoc(doc(db, "exercises", id), { name: newName }); loadExercisesManageList(); loadExercises(); }
-        };
-
-        window.deleteExo = async (id) => { if(confirm("Supprimer cet exercice ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
+        window.renameExo = async (id, old) => { const n = prompt("Nouveau nom ?", old); if(n && n !== old) { await updateDoc(doc(db, "exercises", id), { name: n }); loadExercisesManageList(); loadExercises(); } };
+        window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
 
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
             const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
-            const prInfo = personalRecords[m];
-            let ghostHTML = "";
-            if(last) ghostHTML += `Dernier : ${last.weight}kg x ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}kg)<br>`;
-            if(prInfo) ghostHTML += `<span style="color:var(--pr-color)">Record : ${prInfo.weight}kg (1RM: ${calc1RM(prInfo.weight, prInfo.reps)}kg) le ${formatDateShort(prInfo.date)}</span>`;
-            ghostDiv.innerHTML = ghostHTML;
+            const pr = personalRecords[m]; let html = last ? `Dernier : ${last.weight}kg x ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}kg)<br>` : "";
+            if(pr) html += `<span style="color:var(--pr-color)">Record : ${pr.weight}kg (1RM: ${calc1RM(pr.weight, pr.reps)}kg) le ${formatDate(pr.date)}</span>`;
+            ghostDiv.innerHTML = html;
         };
 
         async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); personalRecords = {};
-            snap.forEach(d => { const data = d.data(); const date = data.timestamp.toDate(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) { personalRecords[data.machine] = { weight: data.weight, date: date, reps: data.reps }; } });
+            snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate(), reps: data.reps }; });
         }
 
-        async function loadWorkouts() { 
+        async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
-            const titleDisplay = document.getElementById('session-date-display');
-            titleDisplay.innerText = dateInput === new Date().toISOString().split('T')[0] ? "Séance du jour" : "Séance du " + formatDateShort(new Date(dateInput));
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")); 
-            const snap = await getDocs(q); let filtered = [];
-            snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "Séance du jour" : "Séance du " + formatDate(new Date(dateInput));
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q); let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
             renderGrouped(filtered, document.getElementById('history-list'));
         }
 
@@ -301,88 +246,71 @@
             container.innerHTML = ''; let groups = []; let cur = null;
             arr.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
             groups.forEach(g => {
-                const isCollapsed = collapsedGroups.has(g.machine);
-                const div = document.createElement('div'); div.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
+                const isCollapsed = collapsedGroups.has(g.machine); const div = document.createElement('div'); div.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
                 let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
-                    const d = s.data; const prInfo = personalRecords[s.data.machine]; const isPR = !s.data.isWarmup && s.data.weight >= (prInfo ? prInfo.weight : 0);
-                    const rm = calc1RM(d.weight, d.reps);
-                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${d.weight}kg x ${d.reps}</strong><span class="rm-small">(1RM: ${rm}kg)</span>${isPR?`<span class="pr-badge">🏆 PR le ${formatDateShort(prInfo.date)}</span>`:''}</div>
-                        <div style="display:flex; gap:10px;">
-                            <button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                            <button class="icon-btn danger" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        </div></div>`;
+                    const isPR = !s.data.isWarmup && s.data.weight >= (personalRecords[s.data.machine]?.weight || 0);
+                    html += `<div class="set-item"><div><span class="set-number">${s.data.isWarmup?'🔥':i+1}</span><strong>${s.data.weight}kg x ${s.data.reps}</strong><span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}kg)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
                 });
-                html += `</div>`; div.innerHTML = html; container.appendChild(div);
+                div.innerHTML = html + `</div>`; container.appendChild(div);
             });
-            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune série.</p>';
+            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune donnée.</p>';
         }
 
         window.toggleGroup = (name) => { if(collapsedGroups.has(name)) collapsedGroups.delete(name); else collapsedGroups.add(name); loadWorkouts(); };
         window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
-
-        document.getElementById('workout-form').onsubmit = async (e) => { 
-            e.preventDefault(); 
-            const weight = parseInt(document.getElementById('weight').value); const reps = parseInt(document.getElementById('reps').value); const machine = document.getElementById('machine').value; const isWarmup = document.getElementById('is-warmup').checked; const date = new Date(document.getElementById('workout-date').value);
-            if(!isWarmup && weight > (personalRecords[machine] ? personalRecords[machine].weight : 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#0a84ff', '#34c759', '#ffffff'] }); personalRecords[machine] = { weight: weight, date: date, reps: reps }; }
-            await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid }); 
-            if(navigator.vibrate) navigator.vibrate(50);
-            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000); 
+        
+        document.getElementById('workout-form').onsubmit = async (e) => {
+            e.preventDefault(); const weight = parseInt(document.getElementById('weight').value); const reps = parseInt(document.getElementById('reps').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value);
+            if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); personalRecords[machine] = { weight, date, reps }; }
+            await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid });
+            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 2000);
             loadWorkouts(); document.getElementById('modal-timer-prompt').style.display = 'flex';
         };
 
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
         async function renderCalendar() {
-            const container = document.getElementById('calendar-container'); container.innerHTML = '';
-            document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
+            const container = document.getElementById('calendar-container'); container.innerHTML = ''; document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
             const daysInMonth = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth() + 1, 0).getDate();
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); const activeDays = new Set();
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); const activeDays = new Set();
             snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === currentViewDate.getMonth() && dt.getFullYear() === currentViewDate.getFullYear()) activeDays.add(dt.getDate()); });
             for (let i = 1; i <= daysInMonth; i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':'');
-                if(i === new Date().getDate() && currentViewDate.getMonth() === new Date().getMonth()) cell.classList.add('today');
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && currentViewDate.getMonth() === new Date().getMonth()) cell.classList.add('today');
                 cell.innerText = i; cell.onclick = () => { document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
                 container.appendChild(cell);
             }
         }
+
         async function loadDayDetails(day) {
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q); let filtered = [];
-            snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getDate() === day && dt.getMonth() === currentViewDate.getMonth()) filtered.push({id: d.id, data: d.data()}); });
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")));
+            let filtered = []; snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getDate() === day && dt.getMonth() === currentViewDate.getMonth()) filtered.push({id: d.id, data: d.data()}); });
             renderGrouped(filtered, document.getElementById('day-details'));
         }
 
         async function loadStats() {
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); let counts = {}; let volume = 0; let totalSeries = 0;
-            snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { totalSeries++; volume += (data.weight * data.reps); counts[data.machine] = (counts[data.machine] || 0) + 1; }});
-            document.getElementById('stat-series').innerText = totalSeries; document.getElementById('stat-volume').innerText = volume + 'kg';
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            let counts = {}; let volume = 0; let total = 0; snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { total++; volume += (data.weight * data.reps); counts[data.machine] = (counts[data.machine] || 0) + 1; }});
+            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'kg';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { scales: { y: { beginAtZero: true } } } });
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] } });
         }
 
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
-        function startTimer(sec) {
-            clearInterval(timerInterval); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block';
-            timerInterval = setInterval(() => {
-                let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-                if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "C'est parti !"; if(navigator.vibrate) navigator.vibrate([100, 50, 100]); } timerSeconds--;
-            }, 1000);
-        }
-        window.addTime = () => { timerSeconds += 30; };
-        document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
-
+        function startTimer(sec) { clearInterval(timerInterval); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "C'est parti !"; } timerSeconds--; }, 1000); }
+        window.addTime = () => { timerSeconds += 30; }; document.getElementById('stop-timer-btn').onclick = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
         window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display = 'none';
-        document.getElementById('save-machine-btn').onclick = async () => {
-            const name = document.getElementById('new-machine-name').value.trim();
-            if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid}); loadExercises(); closeModal(); }
+        document.getElementById('save-machine-btn').onclick = async () => { const name = document.getElementById('new-machine-name').value.trim(); if(name) { await addDoc(collection(db, "exercises"), {name, userId: auth.currentUser.uid}); loadExercises(); closeModal(); } };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); } };
+
+        window.showTab = (tabId, btn) => { 
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
+            if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList();
         };
 
-        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(document.getElementById('calendar-tab').classList.contains('active')) renderCalendar(); } };
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
