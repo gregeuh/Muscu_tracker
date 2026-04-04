@@ -68,7 +68,6 @@
         .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; }
 
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
-        
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
@@ -85,15 +84,19 @@
         .machine-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
-        .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); }
+        .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); font-size: 12px; padding: 8px 12px; }
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
-        #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-
+        
+        /* FIX MODALE ROUTINE */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
-        .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto; padding: 5px; }
-        .exo-check-item { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 12px; border-radius: 12px; font-weight: 600; font-size: 14px; }
+        .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .exo-check-item { display: flex; align-items: center; gap: 12px; background: var(--bg-color); padding: 14px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; border: 1px solid var(--border-color); }
+        .exo-check-item input { width: 22px; height: 22px; margin: 0; cursor: pointer; flex-shrink: 0; }
+        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 14px; margin: 15px 0 8px 5px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        
+        #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
 
     <header>
@@ -166,7 +169,7 @@
     <div id="modal-routine" class="modal-overlay"><div class="modal-card">
         <h2>CRÉER ROUTINE</h2>
         <input type="text" id="routine-name-input" placeholder="Ex: Séance PUSH">
-        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES :</p>
+        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES (TRIÉS) :</p>
         <div id="routine-exo-selection" class="exo-checkbox-list"></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button class="btn-primary" style="background:#3a3a3c;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button>
@@ -201,7 +204,6 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null;
 
-        // --- GESTION THÈME ---
         window.toggleTheme = () => {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'dark' ? 'light' : 'dark';
@@ -235,14 +237,25 @@
         
         function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
 
-        // --- GESTION DES ROUTINES ---
+        // --- GESTION DES ROUTINES (FIX DESIGN V46) ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
             container.innerHTML = "";
+            
+            let grouped = {};
             snap.forEach(d => {
-                const name = d.data().name;
-                container.innerHTML += `<label class="exo-check-item"><input type="checkbox" value="${name}" class="routine-check"> ${name}</label>`;
+                const data = d.data();
+                const cat = data.category || "Autre";
+                if(!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(data.name);
+            });
+
+            Object.keys(grouped).sort().forEach(cat => {
+                container.innerHTML += `<div class="routine-cat-sub">${cat.toUpperCase()}</div>`;
+                grouped[cat].sort().forEach(name => {
+                    container.innerHTML += `<label class="exo-check-item"><input type="checkbox" value="${name}" class="routine-check"> <span>${name}</span></label>`;
+                });
             });
             document.getElementById('modal-routine').style.display = 'flex';
         };
@@ -253,6 +266,7 @@
             const exos = Array.from(checks).map(c => c.value);
             if(!name || exos.length === 0) return alert("Nom + Exercices requis !");
             await addDoc(collection(db, "routines"), { name, exercises: exos, userId: auth.currentUser.uid });
+            document.getElementById('routine-name-input').value = "";
             document.getElementById('modal-routine').style.display = 'none';
             loadRoutines();
         };
@@ -296,7 +310,6 @@
             loadExercises(); loadExercisesManageList(); alert("Catalogue importé !");
         };
 
-        // --- MACHINE HISTORY ---
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
@@ -314,12 +327,11 @@
 
         window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
 
-        // --- STATS PAR POIDS ---
         document.getElementById('stats-time-filter').onchange = () => loadStats();
         async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             const filter = document.getElementById('stats-time-filter').value;
-            let limitDate = new Date(); limitDate.setHours(0,0,0,0);
+            const now = new Date(); let limitDate = new Date(now.setHours(0,0,0,0));
             if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
             else if (filter === 'month') limitDate.setDate(limitDate.getDate() - 30);
             else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
@@ -399,7 +411,7 @@
             if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
             await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, timestamp: date, userId: auth.currentUser.uid });
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
-            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 200);
+            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 300);
         };
 
         async function renderCalendar() {
@@ -409,10 +421,13 @@
             ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
             const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
+            const activeDays = new Set(); snap.forEach(d => { 
+                const dt = d.data().timestamp.toDate();
+                if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate());
+            });
             for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
             for (let i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.style.border = "1.5px solid var(--accent-color)";
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth()) cell.style.border = "1.5px solid var(--accent-color)";
                 if(i === activeCalendarDay) cell.classList.add('selected');
                 cell.innerText = i; cell.onclick = () => { activeCalendarDay = i; document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
                 container.appendChild(cell);
@@ -421,25 +436,39 @@
         async function loadDayDetails(day) {
             const dateObj = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { const workoutDate = d.data().timestamp.toDate(); if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) { filtered.push({id: d.id, data: d.data()}); } });
+            let filtered = []; snap.forEach(d => { 
+                const workoutDate = d.data().timestamp.toDate();
+                if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) {
+                    filtered.push({id: d.id, data: d.data()});
+                }
+            });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('day-details'));
         }
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
         async function loadExercises() {
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
             machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
             let opts = ""; let currentCat = "";
-            machines.forEach(m => { const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; } opts += `<option value="${m.name}">${m.name}</option>`; });
+            machines.forEach(m => {
+                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
+                opts += `<option value="${m.name}">${m.name}</option>`;
+            });
             document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
         }
         async function loadExercisesManageList() {
             const container = document.getElementById('machine-grouped-list'); const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); container.innerHTML = "";
             let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
-            for(const [cat, items] of Object.entries(grouped)) { container.innerHTML += `<h4 class="category-header">${cat}</h4>`; let html = '<div class="card" style="padding:0; overflow:hidden;">'; items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text">${m.name}</span><div class="machine-actions"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; }); container.innerHTML += html + '</div>'; }
+            for(const [cat, items] of Object.entries(grouped)) {
+                container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
+                let html = '<div class="card" style="padding:0; overflow:hidden;">';
+                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text">${m.name}</span><div class="machine-actions"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
+                container.innerHTML += html + '</div>';
+            }
         }
         window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "MODIFIER"; document.getElementById('modal-add-machine').style.display = 'flex'; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; };
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
