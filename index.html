@@ -31,7 +31,7 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s; }
         body { display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; overflow-y: auto; }
         
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1500; padding-top: env(safe-area-inset-top); }
@@ -72,14 +72,16 @@
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
 
-        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeInUp 0.4s ease-out both; }
         .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-item strong { font-family: var(--font-impact); font-size: 19px; }
         .rm-small { font-family: var(--font-impact); font-size: 14px; color: var(--text-muted); margin-left: 8px; }
         .pr-badge { font-family: var(--font-impact); background: var(--pr-color); color: white; font-size: 12px; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
+
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
+        .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
 
@@ -99,7 +101,7 @@
     </div>
 
     <div id="app-screen">
-        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">+30S</button><button onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">✕</button></div></div></div>
+        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">+30S</button><button id="stop-timer-btn" onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">✕</button></div></div></div>
 
         <section id="workout" class="tab-content active">
             <h2>MA SÉANCE</h2>
@@ -171,7 +173,6 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null;
 
-        // --- GESTION THÈME ---
         window.toggleTheme = () => {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'dark' ? 'light' : 'dark';
@@ -179,8 +180,8 @@
             localStorage.setItem('theme', target);
             document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙';
         };
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        const st = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', st);
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -302,7 +303,7 @@
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('auth-submit-btn').onclick = async () => { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value; try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur"); } } };
 
-        function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
+        window.resetTimerState = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "FINI !"; if(navigator.vibrate) navigator.vibrate([100, 50, 100]); } timerSeconds--; }, 1000); }
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
         window.addTime = () => { timerSeconds += 30; };
@@ -314,7 +315,7 @@
             if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
             await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, timestamp: date, userId: auth.currentUser.uid });
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
-            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 1000);
+            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 300);
         };
 
         async function renderCalendar() {
@@ -350,6 +351,7 @@
         }
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
         async function loadExercises() {
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
@@ -373,4 +375,5 @@
             }
         }
         window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "MODIFIER"; document.getElementById('modal-add-machine').style.display = 'flex'; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; };
+        window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
     </script></body></html>
