@@ -88,13 +88,13 @@
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
         
-        /* FIX MODALE ROUTINE */
+        /* FIX MODALE ROUTINE V47 */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
         .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
         .exo-check-item { display: flex; align-items: center; gap: 12px; background: var(--bg-color); padding: 14px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; border: 1px solid var(--border-color); }
         .exo-check-item input { width: 22px; height: 22px; margin: 0; cursor: pointer; flex-shrink: 0; }
-        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 14px; margin: 15px 0 8px 5px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 18px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
@@ -169,7 +169,7 @@
     <div id="modal-routine" class="modal-overlay"><div class="modal-card">
         <h2>CRÉER ROUTINE</h2>
         <input type="text" id="routine-name-input" placeholder="Ex: Séance PUSH">
-        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES (TRIÉS) :</p>
+        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES (PAR MUSCLE) :</p>
         <div id="routine-exo-selection" class="exo-checkbox-list"></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button class="btn-primary" style="background:#3a3a3c;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button>
@@ -204,6 +204,7 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null;
 
+        // --- GESTION THÈME ---
         window.toggleTheme = () => {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'dark' ? 'light' : 'dark';
@@ -237,20 +238,13 @@
         
         function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
 
-        // --- GESTION DES ROUTINES (FIX DESIGN V46) ---
+        // --- GESTION DES ROUTINES (V47) ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
             container.innerHTML = "";
-            
             let grouped = {};
-            snap.forEach(d => {
-                const data = d.data();
-                const cat = data.category || "Autre";
-                if(!grouped[cat]) grouped[cat] = [];
-                grouped[cat].push(data.name);
-            });
-
+            snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(data.name); });
             Object.keys(grouped).sort().forEach(cat => {
                 container.innerHTML += `<div class="routine-cat-sub">${cat.toUpperCase()}</div>`;
                 grouped[cat].sort().forEach(name => {
@@ -277,22 +271,14 @@
             container.innerHTML = "";
             snap.forEach(d => {
                 const r = d.data();
-                container.innerHTML += `<div class="routine-item">
-                    <span class="routine-name">${r.name}</span>
-                    <div style="display:flex; gap:10px;">
-                        <button class="icon-btn success" onclick="applyRoutine('${d.id}')">▶️ LANCER</button>
-                        <button class="icon-btn danger" onclick="deleteRoutine('${d.id}')">🗑️</button>
-                    </div>
-                </div>`;
+                container.innerHTML += `<div class="routine-item"><span class="routine-name">${r.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn success" onclick="applyRoutine('${d.id}')">▶️ LANCER</button><button class="icon-btn danger" onclick="deleteRoutine('${d.id}')">🗑️</button></div></div>`;
             });
         }
 
         window.deleteRoutine = async (id) => { if(confirm("Supprimer routine ?")) { await deleteDoc(doc(db, "routines", id)); loadRoutines(); } };
-
         window.applyRoutine = async (id) => {
             const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
-            let exercises = null;
-            snap.forEach(d => { if(d.id === id) exercises = d.data().exercises; });
+            let exercises = null; snap.forEach(d => { if(d.id === id) exercises = d.data().exercises; });
             if (exercises) {
                 const select = document.getElementById('machine');
                 select.innerHTML = exercises.map(e => `<option value="${e}">${e}</option>`).join('');
@@ -331,23 +317,14 @@
         async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             const filter = document.getElementById('stats-time-filter').value;
-            const now = new Date(); let limitDate = new Date(now.setHours(0,0,0,0));
+            let limitDate = new Date(); limitDate.setHours(0,0,0,0);
             if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
             else if (filter === 'month') limitDate.setDate(limitDate.getDate() - 30);
             else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
             else if (filter === 'all') limitDate = new Date(0);
 
             let maxWeights = {}; let sumWeights = {}; let countSetsPerMach = {}; let volume = 0; let total = 0;
-            snap.forEach(d => {
-                const data = d.data(); if(data.isWarmup) return;
-                const workoutDate = data.timestamp.toDate();
-                if (workoutDate >= limitDate) {
-                    total++; const weightVal = Number(data.weight); volume += (weightVal * Number(data.reps));
-                    if (!maxWeights[data.machine] || weightVal > maxWeights[data.machine]) maxWeights[data.machine] = weightVal;
-                    sumWeights[data.machine] = (sumWeights[data.machine] || 0) + weightVal;
-                    countSetsPerMach[data.machine] = (countSetsPerMach[data.machine] || 0) + 1;
-                }
-            });
+            snap.forEach(d => { const data = d.data(); if(data.isWarmup) return; if (data.timestamp.toDate() >= limitDate) { total++; const weightVal = Number(data.weight); volume += (weightVal * Number(data.reps)); if (!maxWeights[data.machine] || weightVal > maxWeights[data.machine]) maxWeights[data.machine] = weightVal; sumWeights[data.machine] = (sumWeights[data.machine] || 0) + weightVal; countSetsPerMach[data.machine] = (countSetsPerMach[data.machine] || 0) + 1; } });
             document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
             const topRecords = Object.entries(maxWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
@@ -360,15 +337,8 @@
 
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
-            document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { 
-                const workoutDate = d.data().timestamp.toDate();
-                const dInput = new Date(dateInput);
-                if(workoutDate.getFullYear() === dInput.getFullYear() && workoutDate.getMonth() === dInput.getMonth() && workoutDate.getDate() === dInput.getDate()) {
-                    filtered.push({id: d.id, data: d.data()});
-                }
-            });
+            let filtered = []; snap.forEach(d => { const workoutDate = d.data().timestamp.toDate(); const dInput = new Date(dateInput); if(workoutDate.getFullYear() === dInput.getFullYear() && workoutDate.getMonth() === dInput.getMonth() && workoutDate.getDate() === dInput.getDate()) { filtered.push({id: d.id, data: d.data()}); } });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('history-list'));
         }
@@ -379,10 +349,7 @@
             groups.forEach(g => {
                 const div = document.createElement('div'); div.className = 'history-group';
                 div.innerHTML = `<div class="group-header" onclick="openMachineHistory('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
-                g.sets.map(s => {
-                    const mMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0;
-                    return `<div class="set-item"><div><strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
-                }).join('') + `</div>`; container.appendChild(div);
+                g.sets.map(s => { const mMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0; return `<div class="set-item"><div><strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; }).join('') + `</div>`; container.appendChild(div);
             });
             if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">AUCUNE SÉRIE.</p>';
         }
@@ -411,7 +378,7 @@
             if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
             await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, timestamp: date, userId: auth.currentUser.uid });
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
-            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 300);
+            loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 200);
         };
 
         async function renderCalendar() {
@@ -421,13 +388,10 @@
             ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
             const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set(); snap.forEach(d => { 
-                const dt = d.data().timestamp.toDate();
-                if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate());
-            });
+            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
             for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
             for (let i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth()) cell.style.border = "1.5px solid var(--accent-color)";
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.style.border = "1.5px solid var(--accent-color)";
                 if(i === activeCalendarDay) cell.classList.add('selected');
                 cell.innerText = i; cell.onclick = () => { activeCalendarDay = i; document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
                 container.appendChild(cell);
@@ -436,12 +400,7 @@
         async function loadDayDetails(day) {
             const dateObj = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { 
-                const workoutDate = d.data().timestamp.toDate();
-                if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) {
-                    filtered.push({id: d.id, data: d.data()});
-                }
-            });
+            let filtered = []; snap.forEach(d => { const workoutDate = d.data().timestamp.toDate(); if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) { filtered.push({id: d.id, data: d.data()}); } });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('day-details'));
         }
@@ -453,10 +412,7 @@
             const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
             machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
             let opts = ""; let currentCat = "";
-            machines.forEach(m => {
-                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
-                opts += `<option value="${m.name}">${m.name}</option>`;
-            });
+            machines.forEach(m => { const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; } opts += `<option value="${m.name}">${m.name}</option>`; });
             document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
         }
         async function loadExercisesManageList() {
