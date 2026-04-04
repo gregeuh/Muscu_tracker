@@ -88,7 +88,7 @@
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
-        /* MODALE ROUTINE V51 */
+        /* ROUTINE DESIGN V50/V52 */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
         .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
@@ -99,12 +99,7 @@
             transition: 0.2s; position: relative;
         }
         .exo-check-item input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        .exo-check-item:has(input:checked) {
-            background-color: var(--accent-color) !important;
-            color: white !important;
-            border-color: var(--accent-color) !important;
-        }
-
+        .exo-check-item:has(input:checked) { background-color: var(--accent-color) !important; color: white !important; border-color: var(--accent-color) !important; }
         .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 25px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -218,7 +213,6 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null; let exerciseCategories = {};
 
-        // --- GESTION THÈME ---
         window.toggleTheme = () => {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'dark' ? 'light' : 'dark';
@@ -277,7 +271,7 @@
             document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; 
         }
 
-        // --- GESTION DES ROUTINES (FIX V50) ---
+        // --- ROUTINES ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
@@ -309,7 +303,7 @@
                 {n: "PUSH (Pecs/Épaules/Triceps)", e: ["Développé couché", "Développé militaire", "Dips", "Extensions triceps"]},
                 {n: "PULL (Dos/Biceps)", e: ["Tractions", "Rowing barre", "Tirage vertical", "Curl haltères"]},
                 {n: "LEGS (Cuisses/Mollets)", e: ["Squat", "Presse à cuisses", "Leg Extension", "Leg Curl"]},
-                {n: "CARDIO SESSION", e: ["Tapis de course", "Vélo elliptique", "Rameur"]}
+                {n: "CARDIO SESSION", e: ["Tapis de course", "Vélo d'intérieur", "Rameur"]}
             ];
             for (const r of routines) { await addDoc(collection(db, "routines"), { name: r.n, exercises: r.e, userId: auth.currentUser.uid }); }
             loadRoutines(); alert("Catalogue de routines importé !");
@@ -339,7 +333,7 @@
 
         // --- CATALOGUE MACHINES ---
         window.importDefaults = async () => {
-            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Rowing barre", c: "Dos"}, {n: "Tirage vertical", c: "Dos"}, {n: "Dips", c: "Pectoraux"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo elliptique", c: "Cardio"}, {n: "Rameur", c: "Cardio"}];
+            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Rowing barre", c: "Dos"}, {n: "Tirage vertical", c: "Dos"}, {n: "Dips", c: "Pectoraux"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo d'intérieur", c: "Cardio"}, {n: "Rameur", c: "Cardio"}];
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const existing = new Set(); snap.forEach(d => existing.add(d.data().name.toLowerCase()));
             for (const item of defaults) { if (!existing.has(item.n.toLowerCase())) await addDoc(collection(db, "exercises"), { name: item.n, category: item.c, userId: auth.currentUser.uid }); }
