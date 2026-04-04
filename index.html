@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Muscu Pro Elite V67</title>
+    <title>Suivi Muscu </title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,120 +42,94 @@
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
 
-        /* Animations de transition */
-        @keyframes fadeInUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Mise en page de base */
-        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s ease; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s; }
         body { display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; overflow-y: auto; }
         
-        /* Barre de navigation haute */
+        /* Header */
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1500; padding-top: env(safe-area-inset-top); }
         .logo { font-family: var(--font-impact); font-size: 26px; letter-spacing: 1px; }
         .logo span { color: var(--accent-color); }
         
         .header-right { display: flex; align-items: center; gap: 15px; position: relative; }
-        .user-photo { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; background: var(--border-color); object-fit: cover; transition: 0.2s; }
-        .user-photo:active { transform: scale(0.9); }
-        
-        #logout-btn { position: absolute; top: 55px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; white-space: nowrap; }
+        .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; background: var(--border-color); object-fit: cover; }
+        #logout-btn { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; white-space: nowrap; }
 
-        /* --- MIRE DE CONNEXION CENTRÉE --- */
+        /* MIRE DE CONNEXION PARFAITEMENT CENTRÉE */
         #auth-screen { 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            background-color: var(--bg-color); 
-            z-index: 3000; 
-            padding: 30px; 
-            box-sizing: border-box; 
-            text-align: center;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-color: var(--bg-color); z-index: 3000; padding: 20px; box-sizing: border-box; text-align: center;
         }
-        .google-btn { background: white; color: #1c1c1e; border: 1px solid #dcdcdc; padding: 16px 24px; border-radius: 16px; font-weight: 700; width: 100%; max-width: 340px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 15px; box-shadow: var(--shadow); margin-bottom: 35px; transition: 0.2s; }
-        .google-btn:active { transform: scale(0.98); background: #f9f9f9; }
+        .google-btn { background: white; color: #1c1c1e; border: 1px solid #dcdcdc; padding: 14px 24px; border-radius: 14px; font-weight: 700; width: 100%; max-width: 320px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; box-shadow: var(--shadow); margin-bottom: 30px; }
 
-        /* Conteneur de l'application */
+        /* App Layout */
         #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         
-        /* Design des cartes */
-        .card { background-color: var(--card-bg); padding: 25px; border-radius: 30px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeInUp 0.5s ease-out both; }
-        h2 { font-family: var(--font-impact); font-size: 40px; margin: 10px 0 25px 0; letter-spacing: 1px; text-transform: uppercase; }
-        h3.session-title { font-family: var(--font-impact); font-size: 22px; margin: 30px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; border-left: 4px solid var(--accent-color); padding-left: 12px; }
+        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease-out both; }
+        h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; }
+        h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; }
 
-        /* Formulaires et Inputs */
-        input, select { width: 100%; padding: 18px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 18px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 15px; font-family: var(--font-main); outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--accent-color); }
-        
-        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 18px; font-family: var(--font-impact); font-size: 22px; border-radius: 20px; width: 100%; cursor: pointer; transition: 0.1s ease; box-shadow: 0 6px 20px rgba(0, 122, 255, 0.2); }
-        .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
-        .btn-outline { background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 12px; font-family: var(--font-impact); font-size: 17px; border-radius: 16px; width: 100%; cursor: pointer; margin-bottom: 12px; }
+        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); outline: none; }
+        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; border-radius: 18px; width: 100%; cursor: pointer; transition: transform 0.1s; }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-outline { background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 10px; font-family: var(--font-impact); font-size: 16px; border-radius: 14px; width: 100%; cursor: pointer; margin-bottom: 10px; }
 
-        /* Calendrier Dynamique */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; width: 100%; }
-        .day-label { font-size: 12px; font-weight: 800; color: var(--text-muted); padding: 8px 0; text-transform: uppercase; }
-        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; border-radius: 14px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
-        .day-cell:active { transform: scale(0.9); }
+        /* Calendrier Grid */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; width: 100%; }
+        .day-label { font-size: 11px; font-weight: 800; color: var(--text-muted); padding: 5px 0; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; border: 1px solid transparent; }
         .day-cell.has-data { background: rgba(0, 122, 255, 0.1); color: var(--accent-color); }
-        .day-cell.selected { background: var(--accent-color) !important; color: white !important; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
+        .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
 
-        /* Listes (Machines et Routines) */
-        .list-container { background: var(--card-bg); border-radius: 26px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 25px; box-shadow: var(--shadow); }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+        /* List Design */
+        .list-container { background: var(--card-bg); border-radius: 24px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; width: 100%; box-sizing: border-box; }
         .item-row:last-child { border-bottom: none; }
-        .item-row:active { background: var(--bg-color); }
-        .item-name { flex: 1; font-weight: 700; font-size: 17px; color: var(--text-main); text-align: left; }
+        .item-name { flex: 1; font-weight: 700; font-size: 16px; color: var(--text-main); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Historique de Séance */
-        .history-group { margin-bottom: 30px; animation: fadeInUp 0.5s ease-out both; }
-        .group-header-title { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); margin: 0 0 12px 5px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .set-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border-radius: 22px; margin-bottom: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: 0.2s; }
-        .set-info { font-weight: 700; font-size: 16px; }
-        .set-info strong { font-family: var(--font-impact); font-size: 21px; color: var(--text-main); }
+        /* Séance / History Cards */
+        .history-group { margin-bottom: 25px; animation: fadeInUp 0.4s ease-out both; }
+        .group-header-title { font-family: var(--font-impact); font-size: 18px; color: var(--accent-color); margin: 0 0 10px 5px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .set-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-radius: 20px; margin-bottom: 10px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .set-info { font-weight: 700; }
+        .set-info strong { font-family: var(--font-impact); font-size: 20px; }
 
-        /* Boutons d'Action */
-        .icon-btn { width: 42px; height: 42px; border-radius: 14px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .btn-launch { background: rgba(52, 199, 89, 0.15); color: #34c759; font-family: var(--font-impact); width: auto; padding: 0 18px; font-size: 14px; }
+        /* Buttons Actions */
+        .icon-btn { width: 38px; height: 38px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+        .btn-launch { background: rgba(52, 199, 89, 0.15); color: #34c759; font-family: var(--font-impact); width: auto; padding: 0 15px; font-size: 13px; }
         .btn-del { background: rgba(255, 59, 48, 0.1); color: var(--danger-color); }
-        .btn-copy { background: rgba(0, 122, 255, 0.1); color: var(--accent-color); }
 
-        /* Tableau Cardio */
+        /* Cardio Table */
         .cardio-table { width: 100%; border-collapse: collapse; }
-        .cardio-table th { text-align: left; padding: 14px 10px; font-family: var(--font-impact); color: var(--text-muted); border-bottom: 1px solid var(--border-color); font-size: 14px; text-transform: uppercase; }
-        .cardio-table td { padding: 18px 10px; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 15px; }
-        .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 19px; }
+        .cardio-table th { text-align: left; padding: 12px 8px; color: var(--text-muted); font-family: var(--font-impact); border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        .cardio-table td { padding: 15px 8px; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 14px; }
+        .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 18px; }
 
-        /* Modal Routines XXL */
-        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 24px; margin: 25px 0 15px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; }
-        .exo-check-item { display: block; background: var(--bg-color); padding: 20px; border-radius: 20px; font-weight: 700; margin-bottom: 12px; border: 1px solid var(--border-color); cursor: pointer; text-align: left; transition: 0.2s; }
+        /* Routines XXL */
+        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; }
+        .exo-check-item { display: block; background: var(--bg-color); padding: 18px; border-radius: 18px; font-weight: 700; margin-bottom: 10px; border: 1px solid var(--border-color); cursor: pointer; text-align: left; }
         .exo-check-item input { display: none; }
-        .exo-check-item:has(input:checked) { background: var(--accent-color) !important; color: white !important; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2); }
+        .exo-check-item:has(input:checked) { background: var(--accent-color) !important; color: white !important; border-color: var(--accent-color); }
 
-        /* Divers UI */
-        #last-workout-ghost { font-size: 12px; color: var(--text-muted); text-align: center; margin: 12px 0; min-height: 35px; font-weight: 600; line-height: 1.5; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 12px; }
-        #one-rm-live { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); text-align: center; margin-bottom: 18px; }
-        #floating-timer { display: none; position: fixed; bottom: 85px; left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 22px; z-index: 4000; font-family: var(--font-impact); font-size: 22px; box-shadow: 0 10px 30px rgba(0,122,255,0.4); }
+        /* Misc UI */
+        #last-workout-ghost { font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; min-height: 32px; font-weight: 600; line-height: 1.4; }
+        #one-rm-live { font-family: var(--font-impact); font-size: 18px; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
+        #floating-timer { display: none; position: fixed; bottom: 85px; left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 15px 20px; border-radius: 20px; z-index: 4000; font-family: var(--font-impact); font-size: 20px; box-shadow: 0 10px 30px rgba(0,122,255,0.4); }
 
-        /* Navigation basse */
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
-        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 11px; font-weight: 800; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px 0; transition: 0.2s; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; }
         .nav-btn.active { color: var(--accent-color); }
-        .nav-btn span { font-size: 22px; }
 
-        /* Modales */
-        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
-        .modal-card { width: 100%; max-width: 440px; background: var(--card-bg); border-radius: 35px; padding: 30px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        .stat-badge { background: var(--bg-color); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid var(--border-color); }
-        .stat-badge label { font-family: var(--font-impact); font-size: 13px; color: var(--text-muted); text-transform: uppercase; }
+        /* Modals */
+        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
+        .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; }
+        .stat-badge { background: var(--bg-color); padding: 12px; border-radius: 16px; text-align: center; border: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
@@ -163,37 +137,37 @@
     <header>
         <div class="logo">MUSCU<span>PRO</span></div>
         <div class="header-right">
-            <button onclick="toggleTheme()" id="theme-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">🌙</button>
+            <button onclick="toggleTheme()" id="theme-btn" style="background:none; border:none; font-size:22px; cursor:pointer;">🌙</button>
             <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <button id="logout-btn">CIAO ! 👋</button>
         </div>
     </header>
 
     <div id="auth-screen">
-        <h1 style="font-family: var(--font-impact); font-size: 65px; letter-spacing: 3px; margin-bottom: 45px;">MUSCU<span>PRO</span></h1>
+        <h1 style="font-family: var(--font-impact); font-size: 60px; letter-spacing: 2px; margin-bottom: 40px;">MUSCU<span>PRO</span></h1>
         <button id="google-login-btn" class="google-btn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> CONTINUER AVEC GOOGLE
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> CONTINUER AVEC GOOGLE
         </button>
-        <div style="width:100%; max-width:340px; border-top:1px solid var(--border-color); padding-top:35px;">
-            <input type="email" id="auth-email" placeholder="Adresse Email">
+        <div style="width:100%; max-width:320px; border-top:1px solid var(--border-color); padding-top:30px;">
+            <input type="email" id="auth-email" placeholder="Email">
             <input type="password" id="auth-password" placeholder="Mot de passe">
-            <button id="auth-submit-btn" class="btn-primary" style="margin-top:10px; font-size: 18px;">CONNEXION / CRÉATION</button>
+            <button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION / CRÉATION</button>
         </div>
     </div>
 
     <div id="app-screen">
-        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:12px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px; border-radius:12px; font-family:var(--font-impact);">+30S</button><button onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:8px 15px; border-radius:12px;">✕</button></div></div></div>
+        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px;">+30S</button><button onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px;">✕</button></div></div></div>
 
         <section id="workout" class="tab-content active">
             <h2>MA SÉANCE</h2>
             <div class="card">
                 <form id="workout-form">
                     <input type="date" id="workout-date" required>
-                    <div style="display:flex; gap:12px;"><select id="machine" required></select><button type="button" onclick="openModal()" style="width:60px; border-radius:18px; background:var(--accent-color); color:white; border:none; font-size:28px;">+</button></div>
-                    <div id="last-workout-ghost">Chargement du dernier historique...</div>
-                    <div style="display:flex; gap:12px;"><input type="number" id="weight" placeholder="Kg" required step="any"><input type="number" id="reps" placeholder="Reps" required></div>
+                    <div style="display:flex; gap:10px;"><select id="machine" required></select><button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px;">+</button></div>
+                    <div id="last-workout-ghost">Chargement...</div>
+                    <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required step="any"><input type="number" id="reps" placeholder="Reps" required></div>
                     <div id="one-rm-live">1RM ESTIMÉ : -</div>
-                    <label style="display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:18px; font-size:15px; font-weight:700; cursor:pointer;"><input type="checkbox" id="is-warmup" style="width:22px; height:22px;"> 🔥 ÉCHAUFFEMENT</label>
+                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:700;"><input type="checkbox" id="is-warmup" style="width:20px; height:20px;"> 🔥 ÉCHAUFFEMENT</label>
                     <button type="submit" class="btn-primary">ENREGISTRER LA SÉRIE</button>
                 </form>
             </div>
@@ -203,36 +177,36 @@
 
         <section id="exercises-tab" class="tab-content">
             <h2>MES MACHINES</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:25px;"><button class="btn-primary" onclick="openModal()">+ AJOUTER</button><button class="btn-outline" onclick="importDefaults()">📚 CATALOGUE</button></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary" onclick="openModal()">+ AJOUTER</button><button class="btn-outline" onclick="importDefaults()">📚 CATALOGUE</button></div>
             
             <h3 class="session-title">MES ROUTINES</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;"><button class="btn-outline" onclick="openRoutineModal()">+ CRÉER</button><button class="btn-outline" onclick="importRoutineDefaults()">📚 CATALOGUE</button></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button class="btn-outline" onclick="openRoutineModal()">+ CRÉER</button><button class="btn-outline" onclick="importRoutineDefaults()">📚 CATALOGUE</button></div>
             <div id="routines-list"></div>
             
-            <h3 class="session-title" style="margin-top:35px;">LISTE PAR MUSCLE</h3>
+            <h3 class="session-title" style="margin-top:30px;">LISTE PAR MUSCLE</h3>
             <div id="machine-grouped-list"></div>
         </section>
 
         <section id="calendar-tab" class="tab-content">
             <h2>CALENDRIER</h2>
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; font-family:var(--font-impact); font-size:26px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact); font-size:24px;">
                     <div id="month-display">Mois</div>
-                    <div style="display:flex; gap:12px;"><button class="btn-outline" onclick="changeMonth(-1)" style="width:50px;">‹</button><button class="btn-outline" onclick="changeMonth(1)" style="width:50px;">›</button></div>
+                    <div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div>
                 </div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
-            <div id="day-details" style="margin-top:25px;"></div>
+            <div id="day-details" style="margin-top:20px;"></div>
         </section>
 
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
-            <select id="stats-time-filter" style="margin-bottom: 25px;">
+            <select id="stats-time-filter" style="margin-bottom: 20px;">
                 <option value="day">AUJOURD'HUI</option><option value="week">CETTE SEMAINE</option><option value="month" selected>CE MOIS</option><option value="year">CETTE ANNÉE</option><option value="all">TOUT</option>
             </select>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
-                <div class="card" style="text-align:center; padding:18px;"><h4 style="font-family:var(--font-impact); margin:0;">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:36px; margin:0; color:var(--accent-color);">0</p></div>
-                <div class="card" style="text-align:center; padding:18px;"><h4 style="font-family:var(--font-impact); margin:0;">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:36px; margin:0; color:var(--pr-color);">0</p></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
+                <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div>
             </div>
             <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">TOP RECORDS (KG)</h4><canvas id="statsChart"></canvas></div>
             <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN (KG)</h4><canvas id="avgStatsChart"></canvas></div>
@@ -240,16 +214,10 @@
         </section>
     </div>
 
-    <div id="modal-routine" class="modal-overlay"><div class="modal-card">
-        <h2>CRÉER ROUTINE</h2><input type="text" id="routine-name-input" placeholder="Nom (ex: PUSH DAY)"><div id="routine-exo-selection" style="max-height:380px; overflow-y:auto; margin:18px 0; padding-right:10px;"></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:18px;"><button class="btn-primary" style="background:#3a3a3c; font-size: 18px;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button><button class="btn-primary" onclick="saveRoutine()" style="font-size: 18px;">ENREGISTRER</button></div>
-    </div></div>
-
-    <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()">
-        <h2 id="history-machine-name">DÉTAILS</h2><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;"><div class="stat-badge"><label id="hist-label">RECORD</label><br><span id="hist-max-rm" style="font-weight:800; font-size:20px;">-</span></div><div class="stat-badge"><label>SÉRIES</label><br><span id="hist-total-sets" style="font-weight:800; font-size:20px;">-</span></div></div><div style="height:240px;"><canvas id="historyChart"></canvas></div><button class="btn-primary" style="margin-top:25px; background:#3a3a3c; font-size: 18px;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button></div></div>
-
-    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"><button class="btn-primary" style="background:#3a3a3c; font-size: 18px;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn" style="font-size: 18px;">VALIDER</button></div></div></div>
-    
-    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:25px;"><button class="btn-primary timer-btn" data-time="60" style="font-size: 18px;">1:00</button><button class="btn-primary timer-btn" data-time="90" style="font-size: 18px;">1:30</button><button class="btn-primary timer-btn" data-time="120" style="font-size: 18px;">2:00</button></div><button class="btn-outline" onclick="closeModalTimer()">PASSER</button></div></div>
+    <div id="modal-routine" class="modal-overlay"><div class="modal-card"><h2>CRÉER ROUTINE</h2><input type="text" id="routine-name-input" placeholder="Nom (ex: PUSH)"><div id="routine-exo-selection" style="max-height:350px; overflow-y:auto; margin:15px 0;"></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button><button class="btn-primary" onclick="saveRoutine()">ENREGISTRER</button></div></div></div>
+    <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()"><h2 id="history-machine-name">DÉTAILS</h2><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label id="hist-label">RECORD</label><br><span id="hist-max-rm" style="font-weight:800; font-size:18px;">-</span></div><div class="stat-badge"><label>SÉRIES</label><br><span id="hist-total-sets" style="font-weight:800; font-size:18px;">-</span></div></div><div style="height:220px;"><canvas id="historyChart"></canvas></div><button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button></div></div>
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn">VALIDER</button></div></div></div>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" onclick="closeModalTimer()">PASSER</button></div></div>
 
     <nav id="bottom-nav">
         <button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>SÉANCE</button>
@@ -259,7 +227,7 @@
     </nav>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, limit, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
@@ -273,16 +241,16 @@
         let historyChartInstance = null; let activeCalendarDay = null; 
         let exerciseCategories = {};
 
-        // UI et Header
+        // UI Header Actions
         const userPhoto = document.getElementById('user-photo');
         const logoutBtn = document.getElementById('logout-btn');
         userPhoto.onclick = (e) => { e.stopPropagation(); logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; };
         window.onclick = () => logoutBtn.style.display = 'none';
         logoutBtn.onclick = () => signOut(auth);
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
+        
         document.getElementById('auth-submit-btn').onclick = async () => {
             const e = document.getElementById('auth-email').value, p = document.getElementById('auth-password').value;
-            if(!e || !p) return alert("Champs vides");
             try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur d'authentification"); } }
         };
 
@@ -307,15 +275,19 @@
             }
         });
 
-        function initApp() {
+        async function initApp() {
             document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-            loadExercises(); loadWorkouts(); loadRoutines();
+            await loadExercises(); // On attend le chargement des machines
+            loadWorkouts(); 
+            loadRoutines();
+            updateGhost(); // On force le Ghost au démarrage
+            
             document.getElementById('weight').oninput = updateLive1RM;
             document.getElementById('reps').oninput = updateLive1RM;
             document.getElementById('machine').onchange = () => { adaptInputsForCardio(); updateGhost(); };
         }
 
-        // --- CALCULS ET UNITÉS ---
+        // --- CORE LOGIC (1RM & CARDIO) ---
         const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
         
@@ -328,8 +300,33 @@
         function adaptInputsForCardio() {
             const m = document.getElementById('machine').value; const cat = exerciseCategories[m];
             const wi = document.getElementById('weight'), ri = document.getElementById('reps'), orm = document.getElementById('one-rm-live');
-            if (cat === "Cardio") { wi.placeholder = "Min"; ri.placeholder = "Km / Niv"; orm.style.display = "none"; }
+            if (cat === "Cardio") { wi.placeholder = "Min"; ri.placeholder = "Km"; orm.style.display = "none"; }
             else { wi.placeholder = "Kg"; ri.placeholder = "Reps"; orm.style.display = "block"; updateLive1RM(); }
+        }
+
+        // --- FONCTION GHOST (FIX) ---
+        async function updateGhost() {
+            const m = document.getElementById('machine').value;
+            const ghostDiv = document.getElementById('last-workout-ghost');
+            if (!m) return;
+
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"), limit(1));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) {
+                ghostDiv.innerHTML = "PREMIÈRE FOIS SUR CETTE MACHINE ! 💪";
+                return;
+            }
+
+            const last = snap.docs[0].data();
+            const isCardio = exerciseCategories[m] === "Cardio";
+            
+            if (isCardio) {
+                ghostDiv.innerHTML = `DERNIER : <strong>${last.weight}min | ${last.reps}km</strong>`;
+            } else {
+                const rm = calc1RM(last.weight, last.reps);
+                ghostDiv.innerHTML = `DERNIER : <strong>${last.weight}kg x ${last.reps}</strong> (1RM: ${rm}kg)`;
+            }
         }
 
         // --- GESTION EXERCICES (TRIÉS) ---
@@ -343,7 +340,8 @@
                 grouped[cat].sort().forEach(name => { opts += `<option value="${name}">${name}</option>`; });
                 opts += `</optgroup>`;
             });
-            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
+            document.getElementById('machine').innerHTML = opts; 
+            document.getElementById('machine').dispatchEvent(new Event('change'));
         }
 
         async function loadExercisesManageList() {
@@ -355,45 +353,6 @@
                 grouped[cat].map(m => `<div class="item-row" onclick="window.openMachineHistory('${m.name.replace(/'/g, "\\'")}')"><span class="item-name">${m.name}</span><button class="icon-btn btn-del" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div>`).join('') + `</div>`;
             }
         }
-
-        // --- GESTION ROUTINES ---
-        async function loadRoutines() {
-            const container = document.getElementById('routines-list'); container.innerHTML = '<div class="list-container" id="rout-inner"></div>';
-            const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
-            const inner = document.getElementById('rout-inner');
-            snap.forEach(d => {
-                const r = d.data();
-                inner.innerHTML += `<div class="item-row"><span class="item-name">${r.name}</span><div class="item-actions"><button class="icon-btn btn-launch" onclick="applyRoutine('${d.id}')">▶️ LANCER</button><button class="icon-btn btn-del" onclick="deleteRoutine('${d.id}')">🗑️</button></div></div>`;
-            });
-        }
-
-        window.openRoutineModal = async () => {
-            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            const container = document.getElementById('routine-exo-selection'); container.innerHTML = "";
-            let grouped = {}; snap.forEach(d => { const da = d.data(); const cat = da.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(da.name); });
-            for(const cat in grouped) {
-                container.innerHTML += `<div class="routine-cat-sub">${cat.toUpperCase()}</div>`;
-                grouped[cat].forEach(name => container.innerHTML += `<label class="exo-check-item"><input type="checkbox" value="${name}" class="routine-check"> <span>${name}</span></label>`);
-            }
-            document.getElementById('modal-routine').style.display = 'flex';
-        };
-
-        window.saveRoutine = async () => {
-            const n = document.getElementById('routine-name-input').value.trim();
-            const exos = Array.from(document.querySelectorAll('.routine-check:checked')).map(c => c.value);
-            if(!n || exos.length === 0) return alert("Nom + Exercices requis !");
-            await addDoc(collection(db, "routines"), { name: n, exercises: exos, userId: auth.currentUser.uid });
-            document.getElementById('modal-routine').style.display = 'none'; loadRoutines();
-        };
-
-        window.applyRoutine = async (id) => {
-            const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
-            let exos = null; snap.forEach(d => { if(d.id === id) exos = d.data().exercises; });
-            if (exos) { 
-                document.getElementById('machine').innerHTML = exos.map(e => `<option value="${e}">${e}</option>`).join('');
-                adaptInputsForCardio(); updateGhost(); showTab('workout', document.querySelectorAll('.nav-btn')[0]);
-            }
-        };
 
         // --- GESTION WORKOUTS (SÉANCE DU JOUR) ---
         document.getElementById('workout-form').onsubmit = async (e) => {
@@ -409,6 +368,7 @@
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
+            
             let cont = document.getElementById('history-list'); cont.innerHTML = ''; let cur = null; let groups = [];
             filtered.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
             groups.forEach(g => {
@@ -421,61 +381,6 @@
                 });
                 cont.innerHTML += html + '</div>';
             });
-        }
-
-        async function updateGhost() {
-            const m = document.getElementById('machine').value; const g = document.getElementById('last-workout-ghost');
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
-            const s = await getDocs(q); if(s.empty) { g.innerText = "PREMIÈRE FOIS ! 💪"; return; }
-            const l = s.docs[0].data(); const isC = exerciseCategories[m] === "Cardio";
-            g.innerText = isC ? `DERNIER : ${l.weight}MIN | ${l.reps}KM` : `DERNIER : ${l.weight}KG X ${l.reps} (${calc1RM(l.weight, l.reps)}kg)`;
-        }
-
-        // --- STATS ET HISTORIQUE ---
-        window.openMachineHistory = async (name) => {
-            document.getElementById('history-machine-name').innerText = name.toUpperCase();
-            document.getElementById('modal-machine-history').style.display = 'flex';
-            const isCardio = exerciseCategories[name] === "Cardio";
-            document.getElementById('hist-label').innerText = isCardio ? "MAX KM" : "RECORD 1RM";
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name));
-            const snap = await getDocs(q);
-            let allData = []; snap.forEach(d => allData.push(d.data()));
-            allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
-            let best = {}; let ts = 0; let absM = 0;
-            allData.forEach(data => { if(data.isWarmup) return; ts++; const dk = data.timestamp.toDate().toISOString().split('T')[0]; let val = isCardio ? Number(data.reps) : calc1RM(data.weight, data.reps); if(!best[dk] || val > best[dk]) best[dk] = val; if(val > absM) absM = val; });
-            document.getElementById('hist-max-rm').innerText = absM + (isCardio ? " KM" : " KG");
-            document.getElementById('hist-total-sets').innerText = ts;
-            if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(best).map(d => formatDate(new Date(d))), datasets: [{ label: isCardio ? 'KM' : 'KG', data: Object.values(best), borderColor: '#0a84ff', tension: 0.4, fill: true, backgroundColor: 'rgba(10, 132, 255, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false } });
-        };
-
-        async function loadStats() {
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const filter = document.getElementById('stats-time-filter').value;
-            let limitDate = new Date(); limitDate.setHours(0,0,0,0);
-            if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
-            else if (filter === 'month') limitDate.setDate(limitDate.getDate() - 30);
-            else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
-            let muscuMax = {}, muscuSum = {}, muscuCount = {}, cardioStats = {}, volume = 0, total = 0;
-            snap.forEach(d => {
-                const da = d.data(); if(da.isWarmup || da.timestamp.toDate() < limitDate) return; total++;
-                if (exerciseCategories[da.machine] === "Cardio") {
-                    if (!cardioStats[da.machine]) cardioStats[da.machine] = { t:0, k:0, s:0 };
-                    cardioStats[da.machine].t = Math.max(cardioStats[da.machine].t, Number(da.weight));
-                    cardioStats[da.machine].k = Math.max(cardioStats[da.machine].k, Number(da.reps)); cardioStats[da.machine].s++;
-                } else {
-                    const w = Number(da.weight); volume += (w * Number(da.reps));
-                    if (!muscuMax[da.machine] || w > muscuMax[da.machine]) muscuMax[da.machine] = w;
-                    muscuSum[da.machine] = (muscuSum[da.machine] || 0) + w; muscuCount[da.machine] = (muscuCount[da.machine] || 0) + 1;
-                }
-            });
-            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
-            const tr = Object.entries(muscuMax).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: tr.map(m => m[0].toUpperCase()), datasets: [{ label: 'KG', data: tr.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] } });
-            let html = '<table class="cardio-table"><tr><th>MACHINE</th><th>⏱ MAX</th><th>🏃 MAX</th><th>🔥 SES.</th></tr>';
-            Object.keys(cardioStats).forEach(m => { const s = cardioStats[m]; const sn = m.replace(/'/g, "\\'"); html += `<tr onclick="window.openMachineHistory('${sn}')"><td>${m}</td><td class="cardio-val">${s.t}m</td><td class="cardio-val">${s.k}km</td><td>${s.s}</td></tr>`; });
-            document.getElementById('cardio-summary-list').innerHTML = html + '</table>';
         }
 
         // --- CALENDRIER ---
@@ -504,7 +409,36 @@
             }});
         }
 
-        // --- CATALOGUES ET HELPERS ---
+        // --- STATS ---
+        async function loadStats() {
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            const filter = document.getElementById('stats-time-filter').value;
+            let limitDate = new Date(); limitDate.setHours(0,0,0,0);
+            if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
+            else if (filter === 'month') limitDate.setDate(limitDate.getDate() - 30);
+            else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
+            let muscuMax = {}, cardioStats = {}, volume = 0, total = 0;
+            snap.forEach(d => {
+                const da = d.data(); if(da.isWarmup || da.timestamp.toDate() < limitDate) return; total++;
+                if (exerciseCategories[da.machine] === "Cardio") {
+                    if (!cardioStats[da.machine]) cardioStats[da.machine] = { t:0, k:0, s:0 };
+                    cardioStats[da.machine].t = Math.max(cardioStats[da.machine].t, Number(da.weight));
+                    cardioStats[da.machine].k = Math.max(cardioStats[da.machine].k, Number(da.reps)); cardioStats[da.machine].s++;
+                } else {
+                    const w = Number(da.weight); volume += (w * Number(da.reps));
+                    if (!muscuMax[da.machine] || w > muscuMax[da.machine]) muscuMax[da.machine] = w;
+                }
+            });
+            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
+            const tr = Object.entries(muscuMax).sort((a,b) => b[1]-a[1]).slice(0,5);
+            if(window.statChartInstance) window.statChartInstance.destroy();
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: tr.map(m => m[0].toUpperCase()), datasets: [{ label: 'KG', data: tr.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] } });
+            let html = '<table class="cardio-table"><tr><th>MACHINE</th><th>⏱ MAX</th><th>🏃 MAX</th><th>🔥 SES.</th></tr>';
+            Object.keys(cardioStats).forEach(m => { const s = cardioStats[m]; const sn = m.replace(/'/g, "\\'"); html += `<tr onclick="window.openMachineHistory('${sn}')"><td>${m}</td><td class="cardio-val">${s.t}m</td><td class="cardio-val">${s.k}km</td><td>${s.s}</td></tr>`; });
+            document.getElementById('cardio-summary-list').innerHTML = html + '</table>';
+        }
+
+        // --- HELPERS ---
         window.showTab = (id, btn) => { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active'); btn.classList.add('active');
@@ -512,25 +446,28 @@
         };
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
-        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); renderCalendar(); } };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); renderCalendar(); updateGhost(); } };
         window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
         window.deleteRoutine = async (id) => { if(confirm("Supprimer routine ?")) { await deleteDoc(doc(db, "routines", id)); loadRoutines(); } };
-        window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
         window.resetTimerState = () => { clearInterval(timerInterval); timerInterval = null; document.getElementById('floating-timer').style.display = 'none'; };
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); document.getElementById('modal-timer-prompt').style.display='none'; });
         window.addTime = () => { timerSeconds += 30; };
         window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display='none';
+        window.changeMonth = (v) => { currentViewDate.setMonth(currentViewDate.getMonth() + v); renderCalendar(); };
 
         window.importDefaults = async () => {
             const ds = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo d'intérieur", c: "Cardio"}];
             for (const i of ds) await addDoc(collection(db, "exercises"), { name: i.n, category: i.c, userId: auth.currentUser.uid });
-            loadExercises(); loadExercisesManageList(); alert("Machines importées !");
+            loadExercises(); loadExercisesManageList();
         };
-        window.importRoutineDefaults = async () => {
-            await addDoc(collection(db, "routines"), { name: "PPL PUSH", exercises: ["Développé couché", "Dips"], userId: auth.currentUser.uid });
-            loadRoutines(); alert("Routines importées !");
-        };
+
+        async function loadRoutines() {
+            const container = document.getElementById('routines-list'); container.innerHTML = '<div class="list-container" id="rout-inner"></div>';
+            const inner = document.getElementById('rout-inner');
+            const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
+            snap.forEach(d => { const r = d.data(); inner.innerHTML += `<div class="item-row"><span class="item-name">${r.name}</span><div class="item-actions"><button class="icon-btn btn-launch" onclick="applyRoutine('${d.id}')">▶️ LANCER</button><button class="icon-btn btn-del" onclick="deleteRoutine('${d.id}')">🗑️</button></div></div>`; });
+        }
     </script>
 </body>
 </html>
