@@ -32,13 +32,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); }
-        
-        body { 
-            display: flex; flex-direction: column;
-            padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
-            padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); 
-            box-sizing: border-box; overflow-y: auto;
-        }
+        body { display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; overflow-y: auto; }
         
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1500; }
         .logo { font-family: var(--font-impact); font-size: 26px; letter-spacing: 1px; }
@@ -47,13 +41,7 @@
         .header-right { display: flex; align-items: center; gap: 15px; position: relative; }
         .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; object-fit: cover; background: var(--border-color); }
         
-        #logout-btn { 
-            position: absolute; top: 50px; right: 0; 
-            background: var(--card-bg); border: 1px solid var(--border-color); 
-            color: var(--danger-color); font-size: 13px; font-weight: 800; 
-            padding: 12px 20px; border-radius: 16px; display: none; 
-            box-shadow: var(--shadow); z-index: 2000;
-        }
+        #logout-btn { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; }
 
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
         .google-btn { background: white; color: #1c1c1e; border: 1px solid #dcdcdc; padding: 14px 24px; border-radius: 14px; font-weight: 700; width: 100%; max-width: 320px; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -69,28 +57,12 @@
         h4.category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); }
-
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; }
-        .btn-primary:active { transform: scale(0.98); }
 
-        .modal-overlay { 
-            position: fixed !important; top: 0 !important; left: 0 !important; 
-            width: 100% !important; height: 100% !important; 
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); 
-            display: none; align-items: center; justify-content: center; 
-            z-index: 5000 !important; padding: 20px; box-sizing: border-box; 
-        }
-        .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
+        .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); }
 
-        #floating-timer { 
-            display: none; position: fixed; 
-            bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
-            left: 16px; right: 16px; 
-            background: var(--accent-color); color: white; padding: 18px 22px; 
-            border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4);
-            font-family: var(--font-impact); font-size: 22px;
-        }
-
+        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
@@ -106,17 +78,14 @@
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
         .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
         
-        .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
-        .machine-item:active { background: rgba(0,122,255,0.05); }
+        .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .stat-badge { background: var(--bg-color); padding: 10px; border-radius: 16px; text-align: center; }
+        .stat-badge label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .stat-badge span { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; }
         .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
-
-        /* MACHINE DETAIL STATS */
-        .stat-badge { background: var(--bg-color); padding: 10px; border-radius: 16px; text-align: center; }
-        .stat-badge label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; }
-        .stat-badge span { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); }
     </style></head><body>
 
     <header>
@@ -174,12 +143,12 @@
     </div>
 
     <div id="modal-machine-history" class="modal-overlay" onclick="closeHistory(event)"><div class="modal-card" onclick="event.stopPropagation()">
-        <h2 id="history-machine-name">Détails</h2>
+        <h2 id="history-machine-name">DÉTAILS</h2>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
             <div class="stat-badge"><label>MAX 1RM</label><span id="hist-max-rm">-</span></div>
             <div class="stat-badge"><label>SÉRIES TOTALES</label><span id="hist-total-sets">-</span></div>
         </div>
-        <div style="position:relative; height:250px; width:100%;"><canvas id="historyChart"></canvas></div>
+        <div style="position:relative; height:220px; width:100%;"><canvas id="historyChart"></canvas></div>
         <button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button>
     </div></div>
 
@@ -221,28 +190,40 @@
         });
         logoutBtn.onclick = () => signOut(auth);
 
-        const calc1RM = (w, r) => r === 1 ? w : Math.round(w / (1.0278 - (0.0278 * r)));
+        const calc1RM = (w, r) => {
+            const weight = Number(w); const reps = Number(r);
+            if (!weight || !reps || reps <= 0) return 0;
+            if (reps === 1) return weight;
+            return Math.round(weight / (1.0278 - (0.0278 * reps)));
+        };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
         
-        // --- MACHINE HISTORY & CHART ---
+        // --- MACHINE HISTORY & CHART (CORRECTED) ---
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
             
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name), orderBy("timestamp", "asc"));
+            // Requête simplifiée sans orderBy pour éviter le besoin d'index Firebase manuel
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name));
             const snap = await getDocs(q);
             
+            let allData = [];
+            snap.forEach(d => { allData.push(d.data()); });
+
+            // Tri manuel par date
+            allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
+
             let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
-            snap.forEach(d => {
-                const data = d.data(); if(data.isWarmup) return;
+            allData.forEach(data => {
+                if(data.isWarmup) return;
                 totalSets++;
-                const date = data.timestamp.toDate().toISOString().split('T')[0];
+                const dateKey = data.timestamp.toDate().toISOString().split('T')[0];
                 const rm = calc1RM(data.weight, data.reps);
-                if(!dailyMax[date] || rm > dailyMax[date]) dailyMax[date] = rm;
+                if(!dailyMax[dateKey] || rm > dailyMax[dateKey]) dailyMax[dateKey] = rm;
                 if(rm > absoluteMax) absoluteMax = rm;
             });
 
-            document.getElementById('hist-max-rm').innerText = absoluteMax + " KG";
+            document.getElementById('hist-max-rm').innerText = absoluteMax > 0 ? absoluteMax + " KG" : "-";
             document.getElementById('hist-total-sets').innerText = totalSets;
 
             const labels = Object.keys(dailyMax).map(d => formatDate(new Date(d)));
@@ -255,14 +236,15 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '1RM Estimé (kg)',
+                        label: '1RM (kg)',
                         data: values,
                         borderColor: '#0a84ff',
                         backgroundColor: 'rgba(10, 132, 255, 0.1)',
                         borderWidth: 3,
                         tension: 0.4,
                         fill: true,
-                        pointBackgroundColor: '#0a84ff'
+                        pointBackgroundColor: '#0a84ff',
+                        pointRadius: 4
                     }]
                 },
                 options: {
@@ -271,7 +253,7 @@
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#8e8e93', font: { size: 10 } } },
-                        y: { grid: { color: 'rgba(142, 142, 147, 0.1)' }, ticks: { color: '#8e8e93', font: { size: 10 } } }
+                        y: { grid: { color: 'rgba(142, 142, 147, 0.05)' }, ticks: { color: '#8e8e93', font: { size: 10 } } }
                     }
                 }
             });
@@ -305,8 +287,7 @@
                     div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px; align-items:center;">
                         <button class="icon-btn" style="background:none;" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button>
                         <button class="icon-btn danger" style="background:none;" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button>
-                    </div>`; 
-                    card.appendChild(div); 
+                    </div>`; card.appendChild(div); 
                 }); container.appendChild(card);
             }
         }
@@ -324,24 +305,32 @@
 
         document.getElementById('machine').onchange = async (e) => {
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m));
+            const snap = await getDocs(q); let last = null; 
+            let docs = []; snap.forEach(d => docs.push(d.data()));
+            docs.sort((a,b) => b.timestamp.toDate() - a.timestamp.toDate());
+            docs.forEach(d => { if(!last && !d.isWarmup) last = d; });
+            
             const pr = personalRecords[m]; let html = last ? `DERNIER : ${last.weight}KG X ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}KG)<br>` : "";
             if(pr) html += `<span style="color:var(--pr-color)">RECORD : ${pr.weight}KG LE ${formatDate(pr.date)}</span>`; 
             ghostDiv.innerHTML = html;
-            if(last) { document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; }
+            if(last) { document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; updateLive1RM(); }
         };
+
+        function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
+        document.getElementById('weight').oninput = updateLive1RM; document.getElementById('reps').oninput = updateLive1RM;
 
         async function loadPRs() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {};
-            snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || data.weight > personalRecords[data.machine].weight)) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; });
+            snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; });
         }
 
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
             document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")));
-            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('history-list'));
         }
 
@@ -351,8 +340,8 @@
             groups.forEach(g => {
                 const div = document.createElement('div'); div.className = 'history-group';
                 div.innerHTML = `<div class="group-header"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
-                g.sets.reverse().map((s, i) => {
-                    const machineMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && s.data.weight === machineMax && machineMax > 0;
+                g.sets.map((s, i) => {
+                    const machineMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(machineMax) && machineMax > 0;
                     return `<div class="set-item"><div><strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
                 }).join('') + `</div>`; container.appendChild(div);
             });
@@ -360,16 +349,16 @@
         }
 
         document.getElementById('workout-form').onsubmit = async (e) => {
-            e.preventDefault(); const weight = parseInt(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value);
+            e.preventDefault(); const weight = Number(document.getElementById('weight').value); const reps = Number(document.getElementById('reps').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value);
             if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); personalRecords[machine] = { weight, date }; }
-            await addDoc(collection(db, "workouts"), { machine, weight, reps: parseInt(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid });
+            await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup: document.getElementById('is-warmup').checked, note: document.getElementById('series-note').value, timestamp: date, userId: auth.currentUser.uid });
             const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
             loadWorkouts(); setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 1500);
         };
 
         async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let counts = {}; let volume = 0; let total = 0; snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { total++; volume += (parseInt(data.weight) * parseInt(data.reps)); counts[data.machine] = (counts[data.machine] || 0) + 1; }});
+            let counts = {}; let volume = 0; let total = 0; snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { total++; volume += (Number(data.weight) * Number(data.reps)); counts[data.machine] = (counts[data.machine] || 0) + 1; }});
             document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
@@ -406,11 +395,11 @@
                 container.appendChild(cell);
             }
         }
-
         async function loadDayDetails(day) {
             const dateStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toISOString().split('T')[0];
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")));
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
+            filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('day-details'));
         }
 
@@ -419,7 +408,7 @@
             document.documentElement.setAttribute('data-theme', target); localStorage.setItem('theme', target);
             document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙';
         }
-        if(localStorage.getItem('theme') === 'light') toggleTheme();
+        if(localStorage.getItem('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('theme-btn').innerText = '🌙'; }
 
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('workout-date').onchange = () => loadWorkouts();
