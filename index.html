@@ -40,6 +40,7 @@
         
         .header-right { display: flex; align-items: center; gap: 15px; position: relative; }
         .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; object-fit: cover; background: var(--border-color); }
+        
         #logout-btn { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; }
 
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
@@ -50,7 +51,10 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease-out both; }
+
         h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; }
+        h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; }
+        h4.category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); }
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; }
@@ -59,18 +63,29 @@
         .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); }
 
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
+        #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
 
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+        .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
+        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .set-item strong { font-family: var(--font-impact); font-size: 19px; }
+        
+        .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; }
+        .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
+        .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+        
         .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .stat-badge { background: var(--bg-color); padding: 10px; border-radius: 16px; text-align: center; }
         .stat-badge label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; }
         .stat-badge span { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); }
-        .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .filter-grid select { margin-bottom: 0; padding: 12px; font-size: 14px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; }
+        .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
     </style></head><body>
 
     <header>
@@ -89,19 +104,21 @@
     </div>
 
     <div id="app-screen">
-        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px;">+30S</button><button onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px;">✕</button></div></div></div>
+        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">+30S</button><button id="stop-timer-btn" onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">✕</button></div></div></div>
 
         <section id="workout" class="tab-content active">
             <h2>MA SÉANCE</h2>
             <div class="card">
                 <form id="workout-form">
-                    <input type="date" id="workout-date" required>
-                    <div style="display:flex; gap:10px;"><select id="machine" required></select><button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px;">+</button></div>
-                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 10px; min-height: 24px;"></div>
-                    <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required><input type="number" id="reps" placeholder="Reps" required></div>
-                    <button type="submit" class="btn-primary">ENREGISTRER</button>
+                    <div class="date-input-wrapper"><input type="date" id="workout-date" required></div>
+                    <div style="display:flex; gap:10px;"><select id="machine" required style="margin:0;"></select><button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button></div>
+                    <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; min-height: 32px; line-height: 1.4;"></div>
+                    <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required inputmode="numeric"><input type="number" id="reps" placeholder="Reps" required inputmode="numeric"></div>
+                    <div id="one-rm-live" style="font-family:var(--font-impact); font-size:18px; color:var(--accent-color); text-align:center; margin-bottom:15px;">1RM ESTIMÉ : -</div>
+                    <button type="submit" class="btn-primary">ENREGISTRER LA SÉRIE</button>
                 </form>
             </div>
+            <h3 class="session-title" id="session-date-display">SÉANCE DU JOUR</h3>
             <div id="history-list"></div>
         </section>
 
@@ -113,14 +130,14 @@
 
         <section id="calendar-tab" class="tab-content">
             <h2>CALENDRIER</h2>
-            <div class="card"><div id="month-display" style="font-family:var(--font-impact); font-size:24px; margin-bottom:15px;">Mois</div><div id="calendar-container" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px;"></div></div>
-            <div id="day-details"></div>
+            <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact); font-size:24px;"><div id="month-display">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
+            <div id="day-details" style="margin-top:20px;"></div>
         </section>
 
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
             
-            <select id="stats-time-filter" style="margin-bottom: 10px;">
+            <select id="stats-time-filter" style="margin-bottom: 20px;">
                 <option value="day">AUJOURD'HUI</option>
                 <option value="week">CETTE SEMAINE (7j)</option>
                 <option value="month" selected>CE MOIS (30j)</option>
@@ -128,35 +145,28 @@
                 <option value="all">TOUT</option>
             </select>
 
-            <div class="filter-grid">
-                <select id="stats-cat-filter"><option value="all">TOUS MUSCLES</option></select>
-                <select id="stats-mach-filter"><option value="all">TOUTES MACHINES</option></select>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
-                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div>
-            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;"><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div></div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
     </div>
 
-    <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()">
+    <div id="modal-machine-history" class="modal-overlay" onclick="closeHistory(event)"><div class="modal-card" onclick="event.stopPropagation()">
         <h2 id="history-machine-name">DÉTAILS</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>MAX 1RM</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES</label><span id="hist-total-sets">-</span></div></div>
-        <div style="height:200px;"><canvas id="historyChart"></canvas></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>MAX 1RM</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES TOTALES</label><span id="hist-total-sets">-</span></div></div>
+        <div style="position:relative; height:220px; width:100%;"><canvas id="historyChart"></canvas></div>
         <button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button>
     </div></div>
 
     <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2 id="modal-machine-title">MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option><option value="Autre">Autre</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn">VALIDER</button></div></div></div>
-    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2 style="font-family:var(--font-impact); font-size:30px;">REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" style="width:100%; border:none; padding:10px; cursor:pointer;" onclick="closeModalTimer()">PASSER</button></div></div>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2 style="font-family:var(--font-impact); font-size:30px;">REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" style="width:100%; font-family:var(--font-impact); font-size:18px;" onclick="closeModalTimer()">PASSER</button></div></div>
+    <div id="success-flash">C'EST NOTÉ ! 💪</div>
 
     <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>SÉANCE</button><button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>MACHINES</button><button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>CALENDRIER</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>STATS</button></nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
@@ -165,128 +175,33 @@
         enableMultiTabIndexedDbPersistence(db).catch(() => {});
         setPersistence(auth, browserLocalPersistence);
 
-        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0;
-        let machineToCategory = {}; let editingMachineId = null; let historyChartInstance = null;
+        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null;
+
+        const userPhoto = document.getElementById('user-photo');
+        const logoutBtn = document.getElementById('logout-btn');
+        userPhoto.onclick = (e) => { e.stopPropagation(); logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; };
+        window.onclick = () => { logoutBtn.style.display = 'none'; };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
-                if(user.photoURL) document.getElementById('user-photo').src = user.photoURL;
-                initApp();
+                if(user.photoURL) userPhoto.src = user.photoURL;
+                loadExercises(); loadWorkouts(); loadPRs();
             } else {
-                document.getElementById('auth-screen').style.display = 'block'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none';
+                resetTimerState();
             }
         });
+        logoutBtn.onclick = () => signOut(auth);
 
-        async function initApp() {
-            await loadExercises(); // Remplis machineToCategory
-            loadWorkouts();
-            loadPRs();
-            populateStatFilters();
-        }
-
-        const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
+        const calc1RM = (w, r) => {
+            const weight = Number(w); const reps = Number(r);
+            if (!weight || !reps || reps <= 0) return 0;
+            return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps)));
+        };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
-
-        // --- STATS AVEC FILTRES V25 (STABLE & SECURE) ---
-        const timeFilter = document.getElementById('stats-time-filter');
-        const catFilter = document.getElementById('stats-cat-filter');
-        const machFilter = document.getElementById('stats-mach-filter');
-
-        async function populateStatFilters() {
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q);
-            let cats = new Set(); let machines = [];
-            snap.forEach(d => { 
-                const data = d.data();
-                cats.add(data.category || "Autre");
-                machines.push({name: data.name, cat: data.category || "Autre"});
-                machineToCategory[data.name] = data.category || "Autre";
-            });
-
-            catFilter.innerHTML = '<option value="all">TOUS MUSCLES</option>' + Array.from(cats).sort().map(c => `<option value="${c}">${c.toUpperCase()}</option>`).join('');
-            
-            const updateMachDropdown = () => {
-                const selectedCat = catFilter.value;
-                const filtered = selectedCat === 'all' ? machines : machines.filter(m => m.cat === selectedCat);
-                machFilter.innerHTML = '<option value="all">TOUTES MACHINES</option>' + filtered.sort((a,b)=>a.name.localeCompare(b.name)).map(m => `<option value="${m.name}">${m.name.toUpperCase()}</option>`).join('');
-                loadStats();
-            };
-
-            catFilter.onchange = updateMachDropdown;
-            machFilter.onchange = loadStats;
-            timeFilter.onchange = loadStats;
-            updateMachDropdown();
-        }
-
-        async function loadStats() {
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const selTime = timeFilter.value;
-            const selCat = catFilter.value;
-            const selMach = machFilter.value;
-
-            const now = new Date();
-            let limitDate = new Date(0);
-            if (selTime === 'day') limitDate = new Date(now.setHours(0,0,0,0));
-            else if (selTime === 'week') limitDate = new Date(now.setDate(now.getDate() - 7));
-            else if (selTime === 'month') limitDate = new Date(now.setDate(now.getDate() - 30));
-            else if (selTime === 'year') limitDate = new Date(now.setFullYear(now.getFullYear() - 1));
-
-            let counts = {}; let volume = 0; let total = 0;
-            snap.forEach(d => {
-                const data = d.data();
-                if(data.isWarmup) return;
-                const workoutDate = data.timestamp.toDate();
-                if (workoutDate < limitDate) return;
-
-                const machCat = machineToCategory[data.machine] || "Autre";
-                if(selCat !== 'all' && machCat !== selCat) return;
-                if(selMach !== 'all' && data.machine !== selMach) return;
-
-                total++;
-                volume += (Number(data.weight) * Number(data.reps));
-                counts[data.machine] = (counts[data.machine] || 0) + 1;
-            });
-
-            document.getElementById('stat-series').innerText = total;
-            document.getElementById('stat-volume').innerText = volume + 'KG';
-
-            const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), {
-                type: 'bar',
-                data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'SÉRIES', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] },
-                options: { responsive: true, scales: { y: { beginAtZero: true } } }
-            });
-        }
-
-        // --- MACHINES ---
-        async function loadExercises() {
-            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            let machines = []; snap.forEach(d => { machines.push(d.data()); machineToCategory[d.data().name] = d.data().category || "Autre"; });
-            machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
-            let opts = ""; let currentCat = "";
-            machines.forEach(m => {
-                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
-                opts += `<option value="${m.name}">${m.name}</option>`;
-            });
-            document.getElementById('machine').innerHTML = opts;
-        }
-
-        async function loadExercisesManageList() {
-            const container = document.getElementById('machine-grouped-list');
-            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            container.innerHTML = ""; let grouped = {};
-            snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
-            for(const [cat, items] of Object.entries(grouped)) {
-                container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
-                let html = '<div class="card" style="padding:0; overflow:hidden;">';
-                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span>${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
-                container.innerHTML += html + '</div>';
-            }
-        }
-
-        // --- HISTORIQUE MACHINE ---
+        
+        // --- MACHINE HISTORY ---
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
@@ -295,46 +210,193 @@
             let allData = []; snap.forEach(d => allData.push(d.data()));
             allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
             let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
-            allData.forEach(data => { if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; const rm = calc1RM(data.weight, data.reps); if(!dailyMax[dateKey] || rm > dailyMax[dateKey]) dailyMax[dateKey] = rm; if(rm > absoluteMax) absoluteMax = rm; });
+            allData.forEach(data => {
+                if(data.isWarmup) return; totalSets++;
+                const dateKey = data.timestamp.toDate().toISOString().split('T')[0];
+                const rm = calc1RM(data.weight, data.reps);
+                if(!dailyMax[dateKey] || rm > dailyMax[dateKey]) dailyMax[dateKey] = rm;
+                if(rm > absoluteMax) absoluteMax = rm;
+            });
             document.getElementById('hist-max-rm').innerText = absoluteMax > 0 ? absoluteMax + " KG" : "-";
             document.getElementById('hist-total-sets').innerText = totalSets;
+            const labels = Object.keys(dailyMax).map(d => formatDate(new Date(d)));
+            const values = Object.values(dailyMax);
             if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: '1RM', data: Object.values(dailyMax), borderColor: '#0a84ff', tension: 0.4, fill: true, backgroundColor: 'rgba(10,132,255,0.1)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            historyChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: '1RM (kg)', data: values, borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#8e8e93', font: { size: 10 } } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' }, ticks: { color: '#8e8e93', font: { size: 10 } } } } } });
         };
 
-        // --- FONCTIONS STANDARDS ---
-        window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList(); };
-        window.openModal = () => { editingMachineId = null; document.getElementById('modal-add-machine').style.display = 'flex'; };
-        window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
-        window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display = 'none';
-        document.getElementById('save-machine-btn').onclick = async () => { const n = document.getElementById('new-machine-name').value; const c = document.getElementById('new-machine-category').value; if(editingMachineId) await updateDoc(doc(db, "exercises", editingMachineId), { name: n, category: c }); else await addDoc(collection(db, "exercises"), { name: n, category: c, userId: auth.currentUser.uid }); loadExercises(); loadExercisesManageList(); populateStatFilters(); closeModal(); };
-        document.getElementById('user-photo').onclick = (e) => { e.stopPropagation(); const btn = document.getElementById('logout-btn'); btn.style.display = (btn.style.display === 'block') ? 'none' : 'block'; };
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
-        function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
-        function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
-        document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
-        
-        async function loadWorkouts() {
-            const dateInput = document.getElementById('workout-date').value;
+        window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
+
+        // --- STATS FILTRÉES ---
+        document.getElementById('stats-time-filter').onchange = () => loadStats();
+
+        async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
-            let html = "";
-            filtered.forEach(x => { html += `<div class="card" style="padding:15px; margin-bottom:10px;"><strong>${x.data.machine.toUpperCase()}</strong> : ${x.data.weight}kg x ${x.data.reps}</div>`; });
-            document.getElementById('history-list').innerHTML = html;
+            const filter = document.getElementById('stats-time-filter').value;
+            const now = new Date();
+            let limitDate = new Date(0); // All time par défaut
+
+            if (filter === 'day') limitDate = new Date(now.setHours(0,0,0,0));
+            else if (filter === 'week') limitDate = new Date(now.setDate(now.getDate() - 7));
+            else if (filter === 'month') limitDate = new Date(now.setDate(now.getDate() - 30));
+            else if (filter === 'year') limitDate = new Date(now.setFullYear(now.getFullYear() - 1));
+
+            let counts = {}; let volume = 0; let total = 0;
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.isWarmup) return;
+                const workoutDate = data.timestamp.toDate();
+                if (workoutDate >= limitDate) {
+                    total++;
+                    volume += (Number(data.weight) * Number(data.reps));
+                    counts[data.machine] = (counts[data.machine] || 0) + 1;
+                }
+            });
+
+            document.getElementById('stat-series').innerText = total;
+            document.getElementById('stat-volume').innerText = volume + 'KG';
+
+            const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
+            if(window.statChartInstance) window.statChartInstance.destroy();
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { 
+                type: 'bar', 
+                data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'SÉRIES', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(142, 142, 147, 0.1)' } } } }
+            });
         }
 
-        async function renderCalendar() {
-            const container = document.getElementById('calendar-container'); container.innerHTML = '';
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set(); snap.forEach(d => { if(d.data().timestamp.toDate().getMonth() === currentViewDate.getMonth()) activeDays.add(d.data().timestamp.toDate().getDate()); });
-            for (let i = 1; i <= new Date(currentViewDate.getFullYear(), currentViewDate.getMonth() + 1, 0).getDate(); i++) {
-                container.innerHTML += `<div class="day-cell" style="${activeDays.has(i)?'background:rgba(0,122,255,0.1);':''}">${i}</div>`;
+        // --- MACHINES ---
+        async function loadExercises() {
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
+            machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
+            let opts = ""; let currentCat = "";
+            machines.forEach(m => {
+                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
+                opts += `<option value="${m.name}">${m.name}</option>`;
+            });
+            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
+        }
+
+        async function loadExercisesManageList() {
+            const container = document.getElementById('machine-grouped-list'); const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); container.innerHTML = "";
+            let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
+            for(const [cat, items] of Object.entries(grouped)) {
+                const header = document.createElement('h4'); header.className = "category-header"; header.innerText = cat; container.appendChild(header);
+                const card = document.createElement('div'); card.className = "card"; card.style.padding = "0"; card.style.overflow = "hidden";
+                items.forEach(m => { 
+                    const div = document.createElement('div'); div.className = "machine-item"; div.onclick = () => openMachineHistory(m.name);
+                    div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div>`; 
+                    card.appendChild(div); 
+                }); container.appendChild(card);
             }
         }
 
-        window.addTime = () => { timerSeconds += 30; };
-        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "MODIFIER"; document.getElementById('save-machine-btn').innerText = "VALIDER"; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; document.getElementById('modal-add-machine').style.display = 'flex'; };
+        window.openModal = () => { editingMachineId = null; document.getElementById('modal-machine-title').innerText = "AJOUTER"; document.getElementById('save-machine-btn').innerText = "VALIDER"; document.getElementById('new-machine-name').value = ""; document.getElementById('modal-add-machine').style.display = 'flex'; };
+        window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
+        window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display = 'none';
+
+        document.getElementById('save-machine-btn').onclick = async () => {
+            const name = document.getElementById('new-machine-name').value.trim(); const category = document.getElementById('new-machine-category').value;
+            if(!name) return; if(editingMachineId) await updateDoc(doc(db, "exercises", editingMachineId), { name, category }); else await addDoc(collection(db, "exercises"), { name, category, userId: auth.currentUser.uid });
+            loadExercises(); loadExercisesManageList(); closeModal();
+        };
+
+        document.getElementById('machine').onchange = async (e) => {
+            const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m));
+            const snap = await getDocs(q); let last = null; let docs = []; snap.forEach(d => docs.push(d.data()));
+            docs.sort((a,b) => b.timestamp.toDate() - a.timestamp.toDate());
+            docs.forEach(d => { if(!last && !d.isWarmup) last = d; });
+            const pr = personalRecords[m]; let html = last ? `DERNIER : ${last.weight}KG X ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}KG)<br>` : "";
+            if(pr) html += `<span style="color:var(--pr-color)">RECORD : ${pr.weight}KG LE ${formatDate(pr.date)}</span>`; 
+            ghostDiv.innerHTML = html;
+            if(last) { document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; updateLive1RM(); }
+        };
+
+        function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
+        document.getElementById('weight').oninput = updateLive1RM; document.getElementById('reps').oninput = updateLive1RM;
+
+        async function loadPRs() {
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {};
+            snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; });
+        }
+
+        async function loadWorkouts() {
+            const dateInput = document.getElementById('workout-date').value;
+            document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
+            renderGrouped(filtered, document.getElementById('history-list'));
+        }
+
+        function renderGrouped(arr, container) {
+            container.innerHTML = ''; let groups = []; let cur = null;
+            arr.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
+            groups.forEach(g => {
+                const div = document.createElement('div'); div.className = 'history-group';
+                div.innerHTML = `<div class="group-header"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
+                g.sets.map(s => {
+                    const mMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0;
+                    return `<div class="set-item"><div><strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
+                }).join('') + `</div>`; container.appendChild(div);
+            });
+            if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">AUCUNE SÉRIE.</p>';
+        }
+
+        document.getElementById('workout-form').onsubmit = async (e) => {
+            e.preventDefault(); const weight = Number(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value);
+            if(!document.getElementById('is-warmup').checked && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); personalRecords[machine] = { weight, date }; }
+            await addDoc(collection(db, "workouts"), { machine, weight, reps: Number(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, timestamp: date, userId: auth.currentUser.uid });
+            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
+            loadWorkouts(); setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 1500);
+        };
+
+        window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
+        window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList(); };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); } };
+        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
+        window.deleteExo = async (id) => { if(confirm("Supprimer cette machine ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
+        document.getElementById('google-login-btn').onclick = async () => { try { await signInWithPopup(auth, provider); } catch(err) { alert("Erreur Google"); } };
+        document.getElementById('auth-submit-btn').onclick = async () => { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value; try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur connexion"); } } };
+        
         function toggleTheme() { const target = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', target); localStorage.setItem('theme', target); document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙'; }
-        function loadPRs() {}
+        if(localStorage.getItem('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('theme-btn').innerText = '🌙'; }
+
+        document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
+        function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
+        window.addTime = () => { timerSeconds += 30; };
+        function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
+
+        async function renderCalendar() {
+            const container = document.getElementById('calendar-container'); container.innerHTML = '';
+            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
+            document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate).toUpperCase();
+            ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
+            const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
+            for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':'');
+                if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.style.border = "1.5px solid var(--accent-color)";
+                cell.innerText = i; cell.onclick = () => { document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
+                container.appendChild(cell);
+            }
+        }
+        async function loadDayDetails(day) {
+            const dateStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toISOString().split('T')[0];
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
+            filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
+            renderGrouped(filtered, document.getElementById('day-details'));
+        }
+
+        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
