@@ -31,7 +31,7 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
         body { display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; overflow-y: auto; }
         
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1500; padding-top: env(safe-area-inset-top); }
@@ -72,21 +72,14 @@
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
 
-        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeInUp 0.4s ease-out both; }
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
         .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-item strong { font-family: var(--font-impact); font-size: 19px; }
         .rm-small { font-family: var(--font-impact); font-size: 14px; color: var(--text-muted); margin-left: 8px; }
         .pr-badge { font-family: var(--font-impact); background: var(--pr-color); color: white; font-size: 12px; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
-
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
-        .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-        
-        .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; }
-        .stat-badge { background: var(--bg-color); padding: 10px; border-radius: 16px; text-align: center; }
-        .stat-badge label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; }
-        .stat-badge span { font-family: var(--font-impact); font-size: 20px; color: var(--accent-color); }
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
 
@@ -137,7 +130,7 @@
         <section id="calendar-tab" class="tab-content">
             <h2>CALENDRIER</h2>
             <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact); font-size:24px;"><div id="month-display">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
-            <div id="day-details" style="margin-top:20px;"></div>
+            <div id="day-details"></div>
         </section>
 
         <section id="stats" class="tab-content">
@@ -188,29 +181,30 @@
         };
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        window.onload = () => { if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerText = savedTheme === 'dark' ? '☀️' : '🌙'; };
-
-        const userPhoto = document.getElementById('user-photo');
-        const logoutBtn = document.getElementById('logout-btn');
-        userPhoto.onclick = (e) => { e.stopPropagation(); logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; };
-        window.onclick = () => { logoutBtn.style.display = 'none'; };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
-                if(user.photoURL) userPhoto.src = user.photoURL;
-                loadExercises(); loadWorkouts(); loadPRs();
+                if(user.photoURL) document.getElementById('user-photo').src = user.photoURL;
+                initApp();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none';
                 resetTimerState();
             }
         });
-        logoutBtn.onclick = () => signOut(auth);
+
+        function initApp() {
+            loadExercises(); loadWorkouts(); loadPRs();
+            document.getElementById('weight').addEventListener('input', updateLive1RM);
+            document.getElementById('reps').addEventListener('input', updateLive1RM);
+            if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerText = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+        }
 
         const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
         
-        // --- CATALOGUE ---
+        function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
+
         window.importDefaults = async () => {
             const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}];
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
@@ -219,7 +213,6 @@
             loadExercises(); loadExercisesManageList(); alert("Catalogue importé !");
         };
 
-        // --- MACHINE HISTORY (Graph Indiv) ---
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
@@ -232,11 +225,11 @@
             document.getElementById('hist-max-rm').innerText = absoluteMax > 0 ? absoluteMax + " KG" : "-";
             document.getElementById('hist-total-sets').innerText = totalSets;
             if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: '1RM (kg)', data: Object.values(dailyMax), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#8e8e93', font: { size: 10 } } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' }, ticks: { color: '#8e8e93', font: { size: 10 } } } } } });
+            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: '1RM (kg)', data: Object.values(dailyMax), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' } } } } });
         };
+
         window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
 
-        // --- STATS PAR POIDS (RECORDS & MOYENNES) ---
         document.getElementById('stats-time-filter').onchange = () => loadStats();
         async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
@@ -268,37 +261,17 @@
             window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: topAvg.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: topAvg.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
         }
 
-        // --- MACHINES ---
-        async function loadExercises() {
-            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            let machines = []; snap.forEach(d => machines.push(d.data()));
-            machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
-            let opts = ""; let currentCat = "";
-            machines.forEach(m => {
-                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
-                opts += `<option value="${m.name}">${m.name}</option>`;
-            });
-            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
-        }
-
-        async function loadExercisesManageList() {
-            const container = document.getElementById('machine-grouped-list'); const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            container.innerHTML = ""; let grouped = {};
-            snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
-            for(const [cat, items] of Object.entries(grouped)) {
-                container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
-                let html = '<div class="card" style="padding:0; overflow:hidden;">';
-                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span>${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
-                container.innerHTML += html + '</div>';
-            }
-        }
-
-        // --- RENDU HISTORIQUE (Synchronisation tabs) ---
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
             document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            let filtered = []; snap.forEach(d => { 
+                const workoutDate = d.data().timestamp.toDate();
+                const dInput = new Date(dateInput);
+                if(workoutDate.getFullYear() === dInput.getFullYear() && workoutDate.getMonth() === dInput.getMonth() && workoutDate.getDate() === dInput.getDate()) {
+                    filtered.push({id: d.id, data: d.data()});
+                }
+            });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('history-list'));
         }
@@ -317,15 +290,7 @@
             if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">AUCUNE SÉRIE.</p>';
         }
 
-        // --- TOOLS & FIX SUPPRESSION LENTE ---
-        window.deleteSeries = async (id) => { 
-            if(confirm("Supprimer ?")) { 
-                await deleteDoc(doc(db, "workouts", id)); 
-                loadWorkouts(); 
-                // Rafraîchissement forcé du calendrier si on est sur cet onglet
-                if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); }
-            } 
-        };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } } };
         window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList(); };
         window.openModal = () => { editingMachineId = null; document.getElementById('modal-machine-title').innerText = "AJOUTER"; document.getElementById('modal-add-machine').style.display = 'flex'; };
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
@@ -333,6 +298,9 @@
         document.getElementById('save-machine-btn').onclick = async () => { const n = document.getElementById('new-machine-name').value; const c = document.getElementById('new-machine-category').value; if(editingMachineId) await updateDoc(doc(db, "exercises", editingMachineId), { name: n, category: c }); else await addDoc(collection(db, "exercises"), { name: n, category: c, userId: auth.currentUser.uid }); loadExercises(); loadExercisesManageList(); closeModal(); };
         window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
         window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } };
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('auth-submit-btn').onclick = async () => { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value; try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur"); } } };
 
         function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "FINI !"; if(navigator.vibrate) navigator.vibrate([100, 50, 100]); } timerSeconds--; }, 1000); }
@@ -341,9 +309,6 @@
         
         async function loadPRs() { const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {}; snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; }); }
         
-        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('workout-date').onchange = () => loadWorkouts();
-
         document.getElementById('workout-form').onsubmit = async (e) => {
             e.preventDefault(); const weight = Number(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const reps = Number(document.getElementById('reps').value); const date = new Date(document.getElementById('workout-date').value); const isWarmup = document.getElementById('is-warmup').checked;
             if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
@@ -359,21 +324,53 @@
             ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
             const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
+            const activeDays = new Set(); snap.forEach(d => { 
+                const dt = d.data().timestamp.toDate();
+                if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate());
+            });
             for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
             for (let i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth()) cell.style.border = "1.5px solid var(--accent-color)";
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.style.border = "1.5px solid var(--accent-color)";
                 if(i === activeCalendarDay) cell.classList.add('selected');
                 cell.innerText = i; cell.onclick = () => { activeCalendarDay = i; document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
                 container.appendChild(cell);
             }
         }
         async function loadDayDetails(day) {
-            const dateStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toISOString().split('T')[0];
+            const dateObj = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
+            let filtered = []; snap.forEach(d => { 
+                const workoutDate = d.data().timestamp.toDate();
+                if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) {
+                    filtered.push({id: d.id, data: d.data()});
+                }
+            });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('day-details'));
         }
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
+        document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
+        async function loadExercises() {
+            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
+            machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
+            let opts = ""; let currentCat = "";
+            machines.forEach(m => {
+                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
+                opts += `<option value="${m.name}">${m.name}</option>`;
+            });
+            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
+        }
+        async function loadExercisesManageList() {
+            const container = document.getElementById('machine-grouped-list'); const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
+            const snap = await getDocs(q); container.innerHTML = "";
+            let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
+            for(const [cat, items] of Object.entries(grouped)) {
+                container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
+                let html = '<div class="card" style="padding:0; overflow:hidden;">';
+                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span>${m.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="icon-btn" onclick="event.stopPropagation(); openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
+                container.innerHTML += html + '</div>';
+            }
+        }
+        window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "MODIFIER"; document.getElementById('modal-add-machine').style.display = 'flex'; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; };
     </script></body></html>
