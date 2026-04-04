@@ -54,11 +54,10 @@
 
         h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; }
         h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; }
-        h4.category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 25px 0 10px 10px; text-transform: uppercase; }
+        h4.category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); }
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; }
-        .btn-primary:active { transform: scale(0.98); }
 
         .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
         .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); }
@@ -116,8 +115,6 @@
                     <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; min-height: 32px; line-height: 1.4;"></div>
                     <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required inputmode="numeric"><input type="number" id="reps" placeholder="Reps" required inputmode="numeric"></div>
                     <div id="one-rm-live" style="font-family:var(--font-impact); font-size:18px; color:var(--accent-color); text-align:center; margin-bottom:15px;">1RM ESTIMÉ : -</div>
-                    <input type="text" id="series-note" placeholder="Note (facultatif)">
-                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:700; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 ÉCHAUFFEMENT</label>
                     <button type="submit" class="btn-primary">ENREGISTRER LA SÉRIE</button>
                 </form>
             </div>
@@ -139,6 +136,15 @@
 
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
+            
+            <select id="stats-time-filter" style="margin-bottom: 20px;">
+                <option value="day">AUJOURD'HUI</option>
+                <option value="week">CETTE SEMAINE (7j)</option>
+                <option value="month" selected>CE MOIS (30j)</option>
+                <option value="year">CETTE ANNÉE (365j)</option>
+                <option value="all">TOUT</option>
+            </select>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;"><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div></div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
@@ -169,8 +175,7 @@
         enableMultiTabIndexedDbPersistence(db).catch(() => {});
         setPersistence(auth, browserLocalPersistence);
 
-        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let collapsedGroups = new Set();
-        let editingMachineId = null; let historyChartInstance = null;
+        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null;
 
         const userPhoto = document.getElementById('user-photo');
         const logoutBtn = document.getElementById('logout-btn');
@@ -196,6 +201,7 @@
         };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
         
+        // --- MACHINE HISTORY ---
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
@@ -222,6 +228,45 @@
 
         window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
 
+        // --- STATS FILTRÉES ---
+        document.getElementById('stats-time-filter').onchange = () => loadStats();
+
+        async function loadStats() {
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            const filter = document.getElementById('stats-time-filter').value;
+            const now = new Date();
+            let limitDate = new Date(0); // All time par défaut
+
+            if (filter === 'day') limitDate = new Date(now.setHours(0,0,0,0));
+            else if (filter === 'week') limitDate = new Date(now.setDate(now.getDate() - 7));
+            else if (filter === 'month') limitDate = new Date(now.setDate(now.getDate() - 30));
+            else if (filter === 'year') limitDate = new Date(now.setFullYear(now.getFullYear() - 1));
+
+            let counts = {}; let volume = 0; let total = 0;
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.isWarmup) return;
+                const workoutDate = data.timestamp.toDate();
+                if (workoutDate >= limitDate) {
+                    total++;
+                    volume += (Number(data.weight) * Number(data.reps));
+                    counts[data.machine] = (counts[data.machine] || 0) + 1;
+                }
+            });
+
+            document.getElementById('stat-series').innerText = total;
+            document.getElementById('stat-volume').innerText = volume + 'KG';
+
+            const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
+            if(window.statChartInstance) window.statChartInstance.destroy();
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { 
+                type: 'bar', 
+                data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'SÉRIES', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(142, 142, 147, 0.1)' } } } }
+            });
+        }
+
+        // --- MACHINES ---
         async function loadExercises() {
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
             const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
@@ -267,7 +312,8 @@
             docs.sort((a,b) => b.timestamp.toDate() - a.timestamp.toDate());
             docs.forEach(d => { if(!last && !d.isWarmup) last = d; });
             const pr = personalRecords[m]; let html = last ? `DERNIER : ${last.weight}KG X ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}KG)<br>` : "";
-            if(pr) html += `<span style="color:var(--pr-color)">RECORD : ${pr.weight}KG LE ${formatDate(pr.date)}</span>`; ghostDiv.innerHTML = html;
+            if(pr) html += `<span style="color:var(--pr-color)">RECORD : ${pr.weight}KG LE ${formatDate(pr.date)}</span>`; 
+            ghostDiv.innerHTML = html;
             if(last) { document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; updateLive1RM(); }
         };
 
@@ -282,8 +328,8 @@
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
             document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
             renderGrouped(filtered, document.getElementById('history-list'));
         }
@@ -310,14 +356,21 @@
             loadWorkouts(); setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 1500);
         };
 
-        async function loadStats() {
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let counts = {}; let volume = 0; let total = 0; snap.forEach(d => { if(!d.data().isWarmup) { total++; volume += (Number(d.data().weight) * Number(d.data().reps)); counts[d.data().machine] = (counts[d.data().machine] || 0) + 1; }});
-            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
-            const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'SÉRIES', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
-        }
+        window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
+        window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList(); };
+        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); } };
+        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
+        window.deleteExo = async (id) => { if(confirm("Supprimer cette machine ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
+        document.getElementById('google-login-btn').onclick = async () => { try { await signInWithPopup(auth, provider); } catch(err) { alert("Erreur Google"); } };
+        document.getElementById('auth-submit-btn').onclick = async () => { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value; try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur connexion"); } } };
+        
+        function toggleTheme() { const target = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', target); localStorage.setItem('theme', target); document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙'; }
+        if(localStorage.getItem('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('theme-btn').innerText = '🌙'; }
+
+        document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
+        function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
+        window.addTime = () => { timerSeconds += 30; };
+        function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
 
         async function renderCalendar() {
             const container = document.getElementById('calendar-container'); container.innerHTML = '';
@@ -344,19 +397,6 @@
             renderGrouped(filtered, document.getElementById('day-details'));
         }
 
-        window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
-        window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') loadExercisesManageList(); };
-        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); } };
-        window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
-        window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
-        document.getElementById('google-login-btn').onclick = async () => { try { await signInWithPopup(auth, provider); } catch(err) { alert("Erreur Google"); } };
-        document.getElementById('auth-submit-btn').onclick = async () => { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-password').value; try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur connexion"); } } };
-        function toggleTheme() { const target = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', target); localStorage.setItem('theme', target); document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙'; }
-        if(localStorage.getItem('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('theme-btn').innerText = '🌙'; }
-        document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
-        function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) clearInterval(timerInterval); timerSeconds--; }, 1000); }
-        window.addTime = () => { timerSeconds += 30; };
-        function resetTimerState() { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; }
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('workout-date').onchange = () => loadWorkouts();
     </script></body></html>
