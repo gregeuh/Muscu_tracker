@@ -87,8 +87,8 @@
         .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); font-size: 12px; padding: 8px 12px; }
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
-        
-        /* MODALE ROUTINE V48 - PAS DE CHECKBOX VISIBLE */
+
+        /* DESIGN ROUTINE V50 */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
         .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
@@ -99,16 +99,14 @@
             transition: 0.2s; position: relative;
         }
         .exo-check-item input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        
-        /* STYLE QUAND SÉLECTIONNÉ */
         .exo-check-item:has(input:checked) {
             background-color: var(--accent-color) !important;
             color: white !important;
             border-color: var(--accent-color) !important;
-            transform: scale(0.98);
         }
 
-        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 18px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
+        /* NOM DES MUSCLES EN GROS (V50) */
+        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 25px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
@@ -156,7 +154,10 @@
             </div>
             
             <h3 class="session-title">MES ROUTINES</h3>
-            <button class="btn-outline" onclick="openRoutineModal()" style="width:100%;">+ CRÉER UNE ROUTINE</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <button class="btn-outline" onclick="openRoutineModal()" style="margin-bottom:0;">+ CRÉER</button>
+                <button class="btn-outline" onclick="importRoutineDefaults()" style="margin-bottom:0; color:var(--pr-color); border-color:var(--pr-color);">📚 CATALOGUE</button>
+            </div>
             <div id="routines-list" style="margin-top:15px;"></div>
             
             <h3 class="session-title" style="margin-top:30px;">LISTE DES MACHINES</h3>
@@ -249,10 +250,9 @@
 
         const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
-        
         function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
 
-        // --- GESTION DES ROUTINES (V48 FIX) ---
+        // --- GESTION DES ROUTINES (FIX XXL V50) ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
@@ -279,6 +279,17 @@
             loadRoutines();
         };
 
+        window.importRoutineDefaults = async () => {
+            const routines = [
+                {n: "PUSH (Pecs/Épaules/Triceps)", e: ["Développé couché", "Développé militaire", "Dips", "Extensions triceps"]},
+                {n: "PULL (Dos/Biceps)", e: ["Tractions", "Rowing barre", "Tirage vertical", "Curl haltères"]},
+                {n: "LEGS (Cuisses/Mollets)", e: ["Squat", "Presse à cuisses", "Leg Extension", "Leg Curl"]},
+                {n: "FULL BODY (Complet)", e: ["Développé couché", "Squat", "Tractions", "Soulevé de terre"]}
+            ];
+            for (const r of routines) { await addDoc(collection(db, "routines"), { name: r.n, exercises: r.e, userId: auth.currentUser.uid }); }
+            loadRoutines(); alert("Catalogue de routines importé !");
+        };
+
         async function loadRoutines() {
             const container = document.getElementById('routines-list');
             const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
@@ -301,13 +312,13 @@
             }
         };
 
-        // --- CATALOGUE ---
+        // --- CATALOGUE MACHINES ---
         window.importDefaults = async () => {
-            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}];
+            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Rowing barre", c: "Dos"}, {n: "Tirage vertical", c: "Dos"}, {n: "Dips", c: "Pectoraux"}];
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const existing = new Set(); snap.forEach(d => existing.add(d.data().name.toLowerCase()));
             for (const item of defaults) { if (!existing.has(item.n.toLowerCase())) await addDoc(collection(db, "exercises"), { name: item.n, category: item.c, userId: auth.currentUser.uid }); }
-            loadExercises(); loadExercisesManageList(); alert("Catalogue importé !");
+            loadExercises(); loadExercisesManageList(); alert("Catalogue machines importé !");
         };
 
         window.openMachineHistory = async (name) => {
@@ -324,8 +335,6 @@
             if(historyChartInstance) historyChartInstance.destroy();
             historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: '1RM (kg)', data: Object.values(dailyMax), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' } } } } });
         };
-
-        window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
 
         document.getElementById('stats-time-filter').onchange = () => loadStats();
         async function loadStats() {
@@ -384,9 +393,7 @@
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "FINI !"; if(navigator.vibrate) navigator.vibrate([100, 50, 100]); } timerSeconds--; }, 1000); }
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); closeModalTimer(); });
         window.addTime = () => { timerSeconds += 30; };
-        
         async function loadPRs() { const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {}; snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; }); }
-        
         document.getElementById('workout-form').onsubmit = async (e) => {
             e.preventDefault(); const weight = Number(document.getElementById('weight').value); const machine = document.getElementById('machine').value; const reps = Number(document.getElementById('reps').value); const date = new Date(document.getElementById('workout-date').value); const isWarmup = document.getElementById('is-warmup').checked;
             if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
