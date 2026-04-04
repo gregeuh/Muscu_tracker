@@ -2,113 +2,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Muscu Pro Elite</title>
-    
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <style>
         :root {
             --bg-color: #f8f9fc; --panel-bg: rgba(255, 255, 255, 0.9); --card-bg: #ffffff;
             --text-main: #1c1c1e; --text-muted: #8e8e93; --accent-color: #007aff;
             --border-color: #f2f2f7; --danger-color: #ff3b30; --pr-color: #34c759;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-            --font-impact: 'Bebas Neue', sans-serif;
-            --font-main: 'Inter', sans-serif;
+            --font-impact: 'Bebas Neue', sans-serif; --font-main: 'Inter', sans-serif;
         }
         [data-theme="dark"] {
             --bg-color: #000000; --panel-bg: rgba(20, 20, 22, 0.9); --card-bg: #121212;
             --text-main: #ffffff; --text-muted: #8e8e93; --accent-color: #0a84ff;
             --border-color: #2c2c2e; --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s; }
+        html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); overflow-x: hidden; font-family: var(--font-main); color: var(--text-main); transition: 0.3s; }
         body { display: flex; flex-direction: column; padding-top: calc(70px + env(safe-area-inset-top, 0px)); padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); box-sizing: border-box; overflow-y: auto; }
-        
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1500; padding-top: env(safe-area-inset-top); }
         .logo { font-family: var(--font-impact); font-size: 26px; letter-spacing: 1px; }
         .logo span { color: var(--accent-color); }
-        
         .header-right { display: flex; align-items: center; gap: 15px; position: relative; }
         .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; background: var(--border-color); object-fit: cover; }
-        #logout-btn { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; }
-
+        #logout-btn { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--danger-color); font-size: 13px; font-weight: 800; padding: 12px 20px; border-radius: 16px; display: none; box-shadow: var(--shadow); z-index: 2000; white-space: nowrap; }
         #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease-out both; }
         h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; }
-
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); }
-        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; transition: transform 0.1s; }
-        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; border-radius: 18px; width: 100%; cursor: pointer; }
         .btn-outline { background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 10px; font-family: var(--font-impact); font-size: 16px; border-radius: 14px; width: 100%; cursor: pointer; margin-bottom: 10px; }
-
         #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
-
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-        .day-label { font-family: var(--font-impact); font-size: 12px; color: var(--text-muted); padding-bottom: 8px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; position: relative; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
         .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
-
-        .cardio-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .cardio-table th { text-align: left; padding: 12px 8px; color: var(--text-muted); font-family: var(--font-impact); border-bottom: 1px solid var(--border-color); }
-        .cardio-table td { padding: 14px 8px; border-bottom: 1px solid var(--border-color); font-weight: 700; }
+        .cardio-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .cardio-table th { text-align: left; padding: 8px; color: var(--text-muted); font-family: var(--font-impact); border-bottom: 1px solid var(--border-color); }
+        .cardio-table td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); font-weight: 700; }
         .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 18px; }
-
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
-
         .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeInUp 0.4s ease-out both; }
         .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .set-item strong { font-family: var(--font-impact); font-size: 19px; }
-
-        .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
         .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); padding: 8px 12px; }
-
-        /* ROUTINE V54 - XXL Titles & No Checkbox */
+        .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         .exo-check-item { display: block; background: var(--bg-color); padding: 18px; border-radius: 18px; font-weight: 700; margin-bottom: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .exo-check-item input { display: none; }
         .exo-check-item:has(input:checked) { background: var(--accent-color) !important; color: white !important; border-color: var(--accent-color); }
-        
-        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 20px; box-sizing: border-box; }
         .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; }
-        #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style></head><body>
-
     <header>
         <div class="logo">MUSCU<span>PRO</span></div>
         <div class="header-right">
-            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" style="background:none; border:none; font-size:22px;">🌙</button>
-            <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil">
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size:22px; cursor:pointer;" id="theme-btn">🌙</button>
+            <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
             <button id="logout-btn">CIAO ! 👋</button>
         </div>
     </header>
-
     <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; padding:20px; text-align:center;">
         <h1 style="font-family: var(--font-impact); font-size: 55px; letter-spacing: 2px;">MUSCU<span>PRO</span></h1>
-        <button id="google-login-btn" class="btn-primary" style="background:white; color:#1c1c1e; border:1px solid #dcdcdc; width:100%; max-width:320px; display:flex; align-items:center; justify-content:center; gap:10px; font-family:var(--font-main); font-size:14px;"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> CONTINUER AVEC GOOGLE</button>
-        <div style="width:100%; max-width:320px; margin-top:20px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Pass"><button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION / CRÉATION</button></div>
+        <button id="google-login-btn" class="btn-primary" style="background:white; color:#1c1c1e; border:1px solid #dcdcdc; width:100%; max-width:320px; display:flex; align-items:center; justify-content:center; gap:10px; font-family:var(--font-main); font-size:14px; font-weight:700;"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> CONTINUER AVEC GOOGLE</button>
+        <div style="width:100%; max-width:320px; margin-top:20px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Mot de passe"><button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION</button></div>
     </div>
-
     <div id="app-screen">
         <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px;">+30S</button><button onclick="resetTimerState()" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px;">✕</button></div></div></div>
-
         <section id="workout" class="tab-content active">
             <h2>MA SÉANCE</h2>
             <div class="card">
@@ -124,48 +95,41 @@
             </div>
             <div id="history-list"></div>
         </section>
-
         <section id="exercises-tab" class="tab-content">
             <h2>MES MACHINES</h2>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary" onclick="openModal()">+ AJOUTER</button><button class="btn-outline" onclick="importDefaults()">📚 CATALOGUE</button></div>
-            <h3 class="session-title">MES ROUTINES</h3>
+            <h3 style="font-family:var(--font-impact); font-size:22px; margin:20px 0 10px 5px;">MES ROUTINES</h3>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="btn-outline" onclick="openRoutineModal()">+ CRÉER</button><button class="btn-outline" onclick="importRoutineDefaults()">📚 CATALOGUE</button></div>
             <div id="routines-list" style="margin-top:15px;"></div>
             <div id="machine-grouped-list"></div>
         </section>
-
         <section id="calendar-tab" class="tab-content">
             <h2>CALENDRIER</h2>
             <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact); font-size:24px;"><div id="month-display">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
             <div id="day-details"></div>
         </section>
-
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
             <select id="stats-time-filter" style="margin-bottom: 20px;">
-                <option value="day">AUJOURD'HUI</option><option value="week">CETTE SEMAINE</option><option value="month" selected>CE MOIS</option><option value="year">CETTE ANNÉE</option><option value="all">TOUT</option>
+                <option value="week">CETTE SEMAINE</option><option value="month" selected>CE MOIS</option><option value="year">CETTE ANNÉE</option><option value="all">TOUT</option>
             </select>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
                 <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
                 <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div>
             </div>
-            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">TOP RECORDS (KG)</h4><canvas id="statsChart"></canvas></div>
-            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN (KG)</h4><canvas id="avgStatsChart"></canvas></div>
-            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4><div id="cardio-summary-list"></div></div>
+            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">TOP RECORDS (Muscu)</h4><canvas id="statsChart"></canvas></div>
+            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN (Muscu)</h4><canvas id="avgStatsChart"></canvas></div>
+            <div class="card" id="cardio-stats-container"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4><div id="cardio-summary-list"></div></div>
         </section>
     </div>
-
     <div id="modal-routine" class="modal-overlay"><div class="modal-card">
         <h2>CRÉER ROUTINE</h2><input type="text" id="routine-name-input" placeholder="Ex: PUSH"><div id="routine-exo-selection" class="exo-checkbox-list"></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button><button class="btn-primary" onclick="saveRoutine()">ENREGISTRER</button></div>
     </div></div>
-
     <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()">
         <h2 id="history-machine-name">DÉTAILS</h2><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>RECORD</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES</label><span id="hist-total-sets">-</span></div></div><div style="height:220px;"><canvas id="historyChart"></canvas></div><button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button></div></div>
-
     <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn">VALIDER</button></div></div></div>
     <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" onclick="closeModalTimer()">PASSER</button></div></div>
     <div id="success-flash">C'EST NOTÉ ! 💪</div>
-
     <nav id="bottom-nav"><button class="nav-btn active" id="nav-workout" onclick="showTab('workout', this)"><span>🏋️</span>SÉANCE</button><button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>MACHINES</button><button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>CALENDRIER</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>STATS</button></nav>
 
     <script type="module">
@@ -181,6 +145,13 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null; let exerciseCategories = {};
 
+        const userPhoto = document.getElementById('user-photo');
+        const logoutBtn = document.getElementById('logout-btn');
+        userPhoto.onclick = (e) => { e.stopPropagation(); logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; };
+        window.onclick = () => { logoutBtn.style.display = 'none'; };
+        logoutBtn.onclick = () => signOut(auth);
+        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
+
         window.toggleTheme = () => {
             const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
@@ -191,6 +162,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
+                if(user.photoURL) userPhoto.src = user.photoURL;
                 resetTimerState(); initApp();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none';
@@ -333,7 +305,6 @@
         window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') { loadExercisesManageList(); loadRoutines(); } };
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
-        window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } } };
         window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
         window.resetTimerState = () => { clearInterval(timerInterval); timerInterval = null; document.getElementById('floating-timer').style.display = 'none'; };
@@ -369,14 +340,13 @@
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             let filtered = []; snap.forEach(d => { const wd = d.data().timestamp.toDate(); if(wd.getFullYear() === dObj.getFullYear() && wd.getMonth() === dObj.getMonth() && wd.getDate() === dObj.getDate()) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
-            let container = document.getElementById('day-details'); container.innerHTML = ''; let cur = null;
+            let container = document.getElementById('day-details'); container.innerHTML = '';
             filtered.forEach(x => { 
                 const isC = exerciseCategories[x.data.machine] === "Cardio"; const val = isC ? `<strong>${x.data.weight}MIN | ${x.data.reps}KM</strong>` : `<strong>${x.data.weight}KG X ${x.data.reps}</strong>`;
                 container.innerHTML += `<div class="set-item"><div><strong>${x.data.machine}</strong>: ${val}</div><button class="icon-btn danger" onclick="deleteSeries('${x.id}')">🗑️</button></div>`;
             });
         }
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
-
         async function loadExercises() {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             let mList = []; exerciseCategories = {}; snap.forEach(d => { const da = d.data(); mList.push(da); exerciseCategories[da.name] = da.category; });
@@ -390,15 +360,13 @@
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name}); });
             for(const [cat, items] of Object.entries(grouped)) {
-                container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
+                container.innerHTML += `<h4 class="category-header" style="font-family:var(--font-impact); color:var(--text-muted); margin:20px 0 10px 10px;">${cat}</h4>`;
                 let html = '<div class="card" style="padding:0; overflow:hidden;">';
-                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text">${m.name}</span><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div>`; });
+                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text" style="padding-left:15px; font-weight:700;">${m.name}</span><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')" style="margin-right:15px;">🗑️</button></div>`; });
                 container.innerHTML += html + '</div>';
             }
         }
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
         async function loadPRs() { const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {}; snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight }; }); }
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('auth-submit-btn').onclick = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch { try { await createUserWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch(err) { alert("Erreur identifiants"); } } };
     </script></body></html>
