@@ -3,277 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Muscu Pro Elite - Liquid Glass</title>
+    <title>Muscu Pro Elite V80 - Liquid Glass</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         :root {
-            /* Palette Liquid Glass Light */
             --bg-gradient: radial-gradient(at 0% 0%, #f8f9fc 0%, #e2e8f0 100%);
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.7);
             --text-main: #1c1c1e;
             --text-muted: #636366;
             --accent-color: #007aff;
             --accent-glass: rgba(0, 122, 255, 0.1);
             --danger-color: #ff3b30;
             --pr-color: #34c759;
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            --blur: blur(12px);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+            --blur: blur(16px);
             --font-impact: 'Bebas Neue', sans-serif;
             --font-main: 'Inter', sans-serif;
         }
 
         [data-theme="dark"] {
-            /* Palette Liquid Glass Dark */
             --bg-gradient: radial-gradient(at 0% 0%, #1c1c1e 0%, #000000 100%);
-            --glass-bg: rgba(28, 28, 30, 0.6);
+            --glass-bg: rgba(28, 28, 30, 0.65);
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-muted: #a1a1a6;
             --accent-color: #0a84ff;
-            --accent-glass: rgba(10, 132, 255, 0.15);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --accent-glass: rgba(10, 132, 255, 0.2);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
         }
 
-        /* RESET & BASE */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
         html, body { 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            font-family: var(--font-main); 
-            color: var(--text-main); 
-            transition: 0.3s ease;
-            overflow-x: hidden;
+            height: 100%; margin: 0; padding: 0; 
+            background: var(--bg-gradient); background-attachment: fixed;
+            font-family: var(--font-main); color: var(--text-main); 
+            transition: 0.4s; overflow-x: hidden;
         }
 
         body { 
-            display: flex; 
-            flex-direction: column; 
-            padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
-            padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)); 
-            box-sizing: border-box; 
-            overflow-y: auto; 
+            display: flex; flex-direction: column; 
+            padding-top: calc(75px + env(safe-area-inset-top, 0px)); 
+            padding-bottom: 130px; box-sizing: border-box; overflow-y: auto; 
         }
 
-        /* HEADER GLASS */
         header { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; 
-            height: 64px; 
-            background: var(--glass-bg); 
-            backdrop-filter: var(--blur); 
-            -webkit-backdrop-filter: var(--blur);
-            border-bottom: 1px solid var(--glass-border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 20px; 
-            z-index: 2000; 
-            padding-top: env(safe-area-inset-top); 
+            position: fixed; top: 0; left: 0; right: 0; height: 64px; 
+            background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 20px; z-index: 2000; padding-top: env(safe-area-inset-top); 
         }
 
-        .logo { font-family: var(--font-impact); font-size: 26px; letter-spacing: 1px; }
+        .logo { font-family: var(--font-impact); font-size: 28px; letter-spacing: 1px; }
         .logo span { color: var(--accent-color); }
 
-        .user-photo { 
-            width: 36px; height: 36px; 
-            border-radius: 50%; 
-            border: 2px solid var(--accent-color); 
-            background: var(--accent-glass);
-            cursor: pointer; 
-            object-fit: cover; 
-        }
-
-        #logout-btn { 
-            position: absolute; top: 55px; right: 20px; 
-            background: var(--glass-bg); 
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); 
-            color: var(--danger-color); 
-            font-weight: 800; padding: 12px 20px; 
-            border-radius: 16px; display: none; 
-            box-shadow: var(--shadow); 
-            z-index: 2100; 
-        }
-
-        /* AUTH SCREEN */
         #auth-screen { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 85vh; 
-            padding: 20px; 
-            text-align: center; 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--bg-gradient); z-index: 6000; padding: 30px; box-sizing: border-box; text-align: center;
         }
 
-        .google-btn { 
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(5px);
-            color: #1c1c1e; 
-            border: 1px solid var(--glass-border); 
-            padding: 15px 25px; 
-            border-radius: 16px; 
-            font-weight: 700; 
-            width: 100%; max-width: 320px; 
-            cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; gap: 10px; 
-            box-shadow: var(--shadow);
-            transition: 0.2s;
+        nav { 
+            position: fixed; bottom: calc(25px + env(safe-area-inset-bottom)); 
+            left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; height: 72px; 
+            background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 35px; 
+            display: flex; justify-content: space-around; align-items: center; 
+            z-index: 4500; box-shadow: var(--shadow); padding: 0 10px;
         }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; transition: 0.3s; }
+        .nav-btn span { font-size: 24px; transition: 0.2s; }
+        .nav-btn.active { color: var(--accent-color); }
+        .nav-btn.active span { transform: scale(1.2) translateY(-4px); }
 
-        /* CARDS LIQUID GLASS */
         .card { 
-            background: var(--glass-bg); 
-            backdrop-filter: var(--blur); 
-            -webkit-backdrop-filter: var(--blur);
-            padding: 24px; 
-            border-radius: 30px; 
-            margin-bottom: 20px; 
-            border: 1px solid var(--glass-border); 
-            box-shadow: var(--shadow); 
-            animation: fadeInUp 0.5s ease-out both; 
+            background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            padding: 25px; border-radius: 32px; margin-bottom: 25px; 
+            border: 1px solid var(--glass-border); box-shadow: var(--shadow); 
+            animation: fadeInUp 0.6s ease-out both; 
         }
 
-        h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; text-transform: uppercase; }
-        h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; }
-
-        /* INPUTS GLASS */
         input, select { 
-            width: 100%; 
-            padding: 16px; 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid var(--glass-border); 
-            color: var(--text-main); 
-            border-radius: 18px; 
-            font-size: 16px; font-weight: 600; 
-            box-sizing: border-box; 
-            margin-bottom: 12px; 
-            outline: none; 
-            backdrop-filter: blur(5px);
+            width: 100%; padding: 18px; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); 
+            color: var(--text-main); border-radius: 18px; font-size: 16px; font-weight: 600; 
+            box-sizing: border-box; margin-bottom: 12px; outline: none; transition: 0.3s; 
         }
 
         .btn-primary { 
-            background: var(--accent-color); 
-            color: white; 
-            border: none; 
-            padding: 18px; 
-            font-family: var(--font-impact); 
-            font-size: 22px; 
-            border-radius: 20px; 
-            width: 100%; 
-            cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
-            transition: 0.2s;
+            background: var(--accent-color); color: white; border: none; padding: 18px; 
+            font-family: var(--font-impact); font-size: 22px; border-radius: 22px; 
+            width: 100%; cursor: pointer; transition: 0.2s; 
         }
-        .btn-primary:active { transform: scale(0.96); }
 
-        /* CALENDRIER GLASS */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-label { font-size: 11px; font-weight: 800; color: var(--text-muted); padding: 5px 0; }
-        .day-cell { 
-            aspect-ratio: 1; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 14px; font-weight: 700; 
-            border-radius: 14px; 
-            cursor: pointer; 
-            transition: 0.2s;
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+        .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; border-radius: 14px; cursor: pointer; transition: 0.2s; }
         .day-cell.has-data { background: var(--accent-glass); color: var(--accent-color); }
-        .day-cell.selected { background: var(--accent-color) !important; color: white !important; box-shadow: 0 0 15px var(--accent-color); }
+        .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
 
-        /* SEANCE / HISTORY ITEMS */
-        .set-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 16px 20px; 
-            background: rgba(255, 255, 255, 0.03); 
-            border-radius: 22px; 
-            margin-bottom: 10px; 
-            border: 1px solid var(--glass-border); 
-        }
-
-        .icon-btn { 
-            width: 40px; height: 40px; 
-            border-radius: 14px; 
-            border: none; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 18px; 
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-        }
-
-        /* NAV GLASS */
-        nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            height: 75px; 
-            background: var(--glass-bg); 
-            backdrop-filter: var(--blur); 
-            -webkit-backdrop-filter: var(--blur);
-            border-top: 1px solid var(--glass-border); 
-            display: flex; justify-content: space-around; 
-            padding-bottom: env(safe-area-inset-bottom); 
-            z-index: 2000; 
-        }
-        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; }
-        .nav-btn.active { color: var(--accent-color); }
-
-        /* MISC */
-        #last-workout-ghost { font-size: 12px; color: var(--text-muted); text-align: center; margin: 10px 0; min-height: 32px; font-weight: 600; line-height: 1.4; opacity: 0.8; }
-        #one-rm-live { font-family: var(--font-impact); font-size: 18px; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
-
-        .modal-overlay { 
-            position: fixed !important; top: 0 !important; left: 0 !important; 
-            width: 100% !important; height: 100% !important; 
-            background: rgba(0,0,0,0.7); 
-            backdrop-filter: blur(8px); 
-            display: none; align-items: center; justify-content: center; 
-            z-index: 3000; padding: 20px; box-sizing: border-box; 
-        }
-        .modal-card { 
-            width: 100%; max-width: 420px; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(25px);
-            border-radius: 35px; padding: 30px; 
-            border: 1px solid var(--glass-border); 
-            box-shadow: var(--shadow);
-            max-height: 85vh; overflow-y: auto; 
-        }
+        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 6000; padding: 20px; box-sizing: border-box; }
+        .modal-card { width: 100%; max-width: 440px; background: var(--glass-bg); backdrop-filter: blur(25px); border-radius: 38px; padding: 35px; border: 1px solid var(--glass-border); box-shadow: var(--shadow); max-height: 85vh; overflow-y: auto; }
     </style>
 </head>
 <body>
-
     <header>
         <div class="logo">MUSCU<span>PRO</span></div>
         <div class="header-right">
-            <button onclick="toggleTheme()" id="theme-btn" style="background:none; border:none; font-size:22px; cursor:pointer;">🌙</button>
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size:24px; cursor:pointer;">🌙</button>
+            <button onclick="openTrash()" style="background:none; border:none; font-size:24px; cursor:pointer;">🗑️</button>
             <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-            <button id="logout-btn">CIAO ! 👋</button>
+            <button id="logout-btn" style="position: absolute; top: 65px; right: 20px; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 10px; border-radius: 12px; display:none;">DÉCONNEXION</button>
         </div>
     </header>
 
     <div id="auth-screen">
-        <h1 style="font-family: var(--font-impact); font-size: 55px; letter-spacing: 2px;">MUSCU<span>PRO</span></h1>
-        <button id="google-login-btn" class="google-btn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> CONTINUER AVEC GOOGLE
-        </button>
-        <div style="width:100%; max-width:320px; border-top:1px solid var(--glass-border); padding-top:20px; margin-top:10px;">
-            <input type="email" id="auth-email" placeholder="Email">
-            <input type="password" id="auth-password" placeholder="Mot de passe">
-            <button id="auth-submit-btn" class="btn-primary" style="margin-top:10px; font-size:18px;">CONNEXION / CRÉER</button>
+        <h1 style="font-family: var(--font-impact); font-size: 70px; letter-spacing: 4px; margin-bottom: 50px;">MUSCU<span>PRO</span></h1>
+        <button id="google-login-btn" class="google-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> CONTINUER AVEC GOOGLE</button>
+        <div style="width:100%; max-width:340px; border-top:1px solid var(--glass-border); padding-top:35px;">
+            <input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Pass">
+            <button id="auth-submit-btn" class="btn-primary" style="margin-top:10px; font-size: 18px;">CONNEXION / CRÉATION</button>
         </div>
     </div>
 
@@ -283,45 +140,29 @@
             <div class="card">
                 <form id="workout-form">
                     <input type="date" id="workout-date" required>
-                    <div style="display:flex; gap:10px;">
-                        <select id="machine" required></select>
-                        <button type="button" onclick="openModal()" style="width:56px; border-radius:18px; background:var(--accent-color); color:white; border:none; font-size:24px;">+</button>
-                    </div>
-                    <div id="last-workout-ghost"></div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="number" id="weight" placeholder="Kg" required step="any">
-                        <input type="number" id="reps" placeholder="Reps" required>
-                    </div>
+                    <div style="display:flex; gap:12px;"><select id="machine" required></select><button type="button" onclick="openModal()" style="width:60px; border-radius:18px; background:var(--accent-color); color:white; border:none; font-size:28px;">+</button></div>
+                    <div id="last-workout-ghost">Chargement...</div>
+                    <div style="display:flex; gap:12px;"><input type="number" id="weight" placeholder="Kg" required step="any"><input type="number" id="reps" placeholder="Reps" required></div>
                     <div id="one-rm-live">1RM ESTIMÉ : -</div>
-                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:700;">
-                        <input type="checkbox" id="is-warmup" style="width:20px; height:20px;"> 🔥 ÉCHAUFFEMENT
-                    </label>
+                    <label style="display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:18px; font-size:15px; font-weight:700;"><input type="checkbox" id="is-warmup" style="width:22px; height:22px;"> 🔥 ÉCHAUFFEMENT</label>
                     <button type="submit" class="btn-primary">ENREGISTRER LA SÉRIE</button>
                 </form>
             </div>
-            <h3 class="session-title">SÉANCE DU JOUR</h3>
+            <h3 class="session-title">SÉANCE DU JOUR <button style="font-size:12px; opacity:0.6; background:none; border:none; color:var(--danger-color);" onclick="deleteAllSeries()">TOUT SUPPRIMER</button></h3>
             <div id="history-list"></div>
         </section>
 
         <section id="exercises-tab" class="tab-content">
             <h2>MES MACHINES</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-                <button class="btn-primary" onclick="openModal()">+ AJOUTER</button>
-                <button class="btn-primary" style="background:var(--card-bg); color:var(--text-main); border:1px solid var(--glass-border);" onclick="importDefaults()">📚 CATALOGUE</button>
-            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:30px;"><button class="btn-primary" onclick="openModal()">+ AJOUTER</button><button class="btn-primary" style="background:var(--accent-glass); color:var(--accent-color);" onclick="importDefaults()">📚 CATALOGUE</button></div>
+            <h3 class="session-title">LISTE PAR MUSCLE</h3>
             <div id="machine-grouped-list"></div>
         </section>
 
         <section id="calendar-tab" class="tab-content">
             <h2>CALENDRIER</h2>
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact); font-size:24px;">
-                    <div id="month-display">Mois</div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="icon-btn" onclick="changeMonth(-1)">‹</button>
-                        <button class="icon-btn" onclick="changeMonth(1)">›</button>
-                    </div>
-                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><div id="month-display" style="font-family:var(--font-impact); font-size:24px;">Mois</div><div><button onclick="changeMonth(-1)" class="nav-btn">‹</button><button onclick="changeMonth(1)" class="nav-btn">›</button></div></div>
                 <div class="calendar-grid" id="calendar-container"></div>
             </div>
             <div id="day-details"></div>
@@ -329,36 +170,12 @@
 
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
-            <select id="stats-time-filter" style="margin-bottom: 20px;">
-                <option value="week">CETTE SEMAINE</option>
-                <option value="month" selected>CE MOIS</option>
-                <option value="year">CETTE ANNÉE</option>
-                <option value="all">TOUT</option>
-            </select>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
-                <div class="card" style="text-align:center; padding:15px;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:32px; margin:0; color:var(--accent-color); font-family:var(--font-impact);">0</p></div>
-                <div class="card" style="text-align:center; padding:15px;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:32px; margin:0; color:var(--pr-color); font-family:var(--font-impact);">0</p></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+                <div class="card" style="text-align:center;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:32px; color:var(--accent-color); font-family:var(--font-impact);">0</p></div>
+                <div class="card" style="text-align:center;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:32px; color:var(--pr-color); font-family:var(--font-impact);">0</p></div>
             </div>
-            <div class="card"><h4>TOP RECORDS (KG)</h4><canvas id="statsChart"></canvas></div>
-            <div class="card"><h4>POIDS MOYEN (KG)</h4><canvas id="avgStatsChart"></canvas></div>
+            <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
-    </div>
-
-    <div id="modal-add-machine" class="modal-overlay">
-        <div class="modal-card">
-            <h2>MACHINE</h2>
-            <input type="text" id="new-machine-name" placeholder="Nom">
-            <select id="new-machine-category">
-                <option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option>
-                <option value="Jambes">Jambes</option><option value="Épaules">Épaules</option>
-                <option value="Bras">Bras</option><option value="Abdos">Abdos</option>
-                <option value="Cardio">Cardio</option>
-            </select>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button class="btn-primary" style="background:rgba(0,0,0,0.1); color:var(--text-main);" onclick="closeModal()">ANNULER</button>
-                <button class="btn-primary" id="save-machine-btn">VALIDER</button>
-            </div>
-        </div>
     </div>
 
     <nav id="bottom-nav">
@@ -367,298 +184,106 @@
         <button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>CALENDRIER</button>
         <button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>STATS</button>
     </nav>
+
+    <div id="modal-trash" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()"><h2>CORBEILLE</h2><div id="trash-list"></div><button class="btn-primary" style="background:var(--danger-color); margin-top:20px;" onclick="emptyTrash()">VIDER</button></div></div>
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option>Pectoraux</option><option>Dos</option><option>Jambes</option><option>Épaules</option><option>Bras</option><option>Abdos</option><option value="Cardio">Cardio</option></select><button class="btn-primary" id="save-machine-btn">VALIDER</button><button onclick="closeModal()" style="background:none; border:none; width:100%; margin-top:10px; color:var(--text-muted);">ANNULER</button></div></div>
     <script type="module">
-        // Importation des modules Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc, updateDoc, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, limit, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
 
-        // Configuration Firebase
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", 
-            authDomain: "suivi-muscu-8dd6d.firebaseapp.com", 
-            projectId: "suivi-muscu-8dd6d", 
-            storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", 
-            messagingSenderId: "1011748268882", 
-            appId: "G-P9TLE42VZ1" 
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
+        const provider = new GoogleAuthProvider(); setPersistence(auth, browserLocalPersistence);
 
-        // Initialisation Firestore et Auth
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        
-        enableMultiTabIndexedDbPersistence(db).catch(() => {});
-        setPersistence(auth, browserLocalPersistence);
+        let curDate = new Date(); let exCats = {}; let statChart = null;
 
-        // Variables d'état Globales
-        let currentViewDate = new Date();
-        let historyChartInstance = null;
-        let statChartInstance = null;
-        let avgStatsChartInstance = null;
-        let activeCalendarDay = null;
-        let exerciseCategories = {};
-
-        // --- GESTION DE L'AUTHENTIFICATION ---
-        const userPhoto = document.getElementById('user-photo');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        userPhoto.onclick = (e) => { 
-            e.stopPropagation(); 
-            logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; 
-        };
-        
-        window.onclick = () => logoutBtn.style.display = 'none';
-        logoutBtn.onclick = () => signOut(auth);
-        
-        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
-        
-        document.getElementById('auth-submit-btn').onclick = async () => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) return alert("Champs vides");
-            try { 
-                await signInWithEmailAndPassword(auth, email, pass); 
-            } catch { 
-                try { await createUserWithEmailAndPassword(auth, email, pass); } catch(err) { alert("Erreur d'authentification"); } 
-            }
-        };
-
-        // Surveillance de l'utilisateur
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-screen').style.display = 'none'; 
-                document.getElementById('app-screen').style.display = 'block'; 
-                document.getElementById('bottom-nav').style.display = 'flex';
-                if(user.photoURL) userPhoto.src = user.photoURL;
+        // --- AUTH LOGIC ---
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block';
+                if(u.photoURL) document.getElementById('user-photo').src = u.photoURL;
                 initApp();
             } else {
-                document.getElementById('auth-screen').style.display = 'flex'; 
-                document.getElementById('app-screen').style.display = 'none'; 
-                document.getElementById('bottom-nav').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none';
             }
         });
 
-        // --- INITIALISATION DE L'APPLICATION ---
+        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('auth-submit-btn').onclick = async () => {
+            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-password').value;
+            try { await signInWithEmailAndPassword(auth, e, p); } catch { try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { alert("Erreur d'auth"); } }
+        };
+
+        const uPhoto = document.getElementById('user-photo'); const outBtn = document.getElementById('logout-btn');
+        uPhoto.onclick = (e) => { e.stopPropagation(); outBtn.style.display = (outBtn.style.display === 'block') ? 'none' : 'block'; };
+        outBtn.onclick = () => signOut(auth);
+
+        // --- CORE LOGIC ---
         async function initApp() {
             document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-            await loadExercises(); 
-            loadWorkouts(); 
-            updateGhost();
-            
-            document.getElementById('weight').oninput = updateCalculations;
-            document.getElementById('reps').oninput = updateCalculations;
-            document.getElementById('machine').onchange = () => { 
-                adaptInputsForCardio(); 
-                updateGhost(); 
-            };
+            await loadExs(); loadWorkouts(); updateGhost();
+            document.getElementById('weight').oninput = upCalc;
+            document.getElementById('reps').oninput = upCalc;
+            document.getElementById('machine').onchange = () => { adaptCardio(); updateGhost(); };
         }
 
-        // --- LOGIQUE METIER (1RM, GHOST, CARDIO) ---
-        const calc1RM = (w, r) => { 
-            const weight = Number(w); const reps = Number(r);
-            if (!weight || !reps || reps <= 0) return 0; 
-            return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); 
-        };
-
-        function updateCalculations() {
-            const m = document.getElementById('machine').value;
-            if (exerciseCategories[m] === "Cardio") return;
-            const w = document.getElementById('weight').value;
-            const r = document.getElementById('reps').value;
-            const rm = calc1RM(w, r);
-            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`;
-        }
-
-        function adaptInputsForCardio() {
-            const m = document.getElementById('machine').value;
-            const cat = exerciseCategories[m];
-            const wi = document.getElementById('weight');
-            const ri = document.getElementById('reps');
-            const orm = document.getElementById('one-rm-live');
-            
-            if (cat === "Cardio") { 
-                wi.placeholder = "Minutes"; ri.placeholder = "Km"; orm.style.display = "none"; 
-            } else { 
-                wi.placeholder = "Poids (kg)"; ri.placeholder = "Reps"; orm.style.display = "block"; updateCalculations(); 
-            }
-        }
+        const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
 
         async function updateGhost() {
-            const m = document.getElementById('machine').value;
-            const ghost = document.getElementById('last-workout-ghost');
-            if (!m || !auth.currentUser) return;
-
+            const m = document.getElementById('machine').value; const ghost = document.getElementById('last-workout-ghost');
+            if(!m) return;
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m));
             const snap = await getDocs(q);
-            
-            if (snap.empty) { ghost.innerHTML = "NOUVEL EXERCICE ! 💪"; return; }
-            
-            let all = []; snap.forEach(d => all.push(d.data()));
-            all.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
-            
-            const last = all[0];
-            const isC = exerciseCategories[m] === "Cardio";
-            
-            if (isC) {
-                ghost.innerHTML = `DERNIER : <strong>${last.weight}min | ${last.reps}km</strong>`;
-            } else {
-                const rm = calc1RM(last.weight, last.reps);
-                ghost.innerHTML = `DERNIER : <strong>${last.weight}kg x ${last.reps}</strong> (${rm}kg)`;
-            }
+            if(snap.empty) { ghost.innerHTML = "NOUVEAU ! 💪"; return; }
+            let all = []; snap.forEach(d => all.push(d.data())); all.sort((a,b) => b.timestamp.toDate() - a.timestamp.toDate());
+            const last = all[0]; const isC = exCats[m] === "Cardio";
+            ghost.innerHTML = isC ? `DERNIER : <strong>${last.weight}min | ${last.reps}km</strong>` : `DERNIER : <strong>${last.weight}kg x ${last.reps}</strong> (${calc1RM(last.weight, last.reps)}kg)`;
         }
 
-        // --- GESTION DES EXERCICES ---
-        async function loadExercises() {
+        async function loadExs() {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            let grouped = {}; exerciseCategories = {};
-            
-            snap.forEach(d => { 
-                const da = d.data(); const cat = da.category || "Autre"; 
-                if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(da.name); exerciseCategories[da.name] = cat; 
-            });
-
-            let opts = "";
-            Object.keys(grouped).sort().forEach(cat => {
+            let grouped = {}; exCats = {};
+            snap.forEach(d => { const da = d.data(); const cat = da.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(da.name); exCats[da.name] = cat; });
+            let opts = ""; Object.keys(grouped).sort().forEach(cat => {
                 opts += `<optgroup label="${cat.toUpperCase()}">`;
-                grouped[cat].sort().forEach(name => { opts += `<option value="${name}">${name}</option>`; });
+                grouped[cat].sort().forEach(name => opts += `<option value="${name}">${name}</option>`);
                 opts += `</optgroup>`;
             });
-            document.getElementById('machine').innerHTML = opts;
-            document.getElementById('machine').dispatchEvent(new Event('change'));
-            renderManageList(grouped);
+            document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
+            renderExList(grouped);
         }
 
-        function renderManageList(grouped) {
-            const container = document.getElementById('machine-grouped-list');
-            container.innerHTML = "";
+        function renderExList(grouped) {
+            const cont = document.getElementById('machine-grouped-list'); cont.innerHTML = "";
             Object.keys(grouped).sort().forEach(cat => {
-                let html = `<h4 class="session-title" style="font-size:14px; margin-left:10px;">${cat.toUpperCase()}</h4><div class="list-container">`;
-                grouped[cat].sort().forEach(name => {
-                    html += `<div class="item-row"><span class="item-name">${name}</span></div>`;
-                });
-                container.innerHTML += html + "</div>";
+                let html = `<h4 class="session-title" style="font-size:14px;">${cat.toUpperCase()}</h4><div style="background:rgba(255,255,255,0.05); border-radius:20px; border:1px solid var(--glass-border); overflow:hidden; margin-bottom:20px;">`;
+                grouped[cat].forEach(name => html += `<div style="padding:15px; border-bottom:1px solid var(--glass-border);">${name}</div>`);
+                cont.innerHTML += html + "</div>";
             });
         }
-
-        // --- GESTION DES WORKOUTS ---
-        document.getElementById('workout-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const machine = document.getElementById('machine').value;
-            const weight = Number(document.getElementById('weight').value);
-            const reps = Number(document.getElementById('reps').value);
-            const isWarmup = document.getElementById('is-warmup').checked;
-            const dateVal = document.getElementById('workout-date').value;
-
-            await addDoc(collection(db, "workouts"), {
-                machine: machine, weight: weight, reps: reps, isWarmup: isWarmup,
-                timestamp: new Date(dateVal + "T12:00:00"),
-                userId: auth.currentUser.uid
-            });
-            confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-            loadWorkouts(); updateGhost();
-        };
 
         async function loadWorkouts() {
             const ds = document.getElementById('workout-date').value;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            
-            let filtered = [];
-            snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === ds) filtered.push({id: d.id, data: d.data()}); });
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === ds) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
-            
-            const cont = document.getElementById('history-list');
-            cont.innerHTML = ''; let curM = "";
-
+            const cont = document.getElementById('history-list'); cont.innerHTML = ''; let curM = "";
             filtered.forEach(x => {
-                if(curM !== x.data.machine) {
-                    curM = x.data.machine;
-                    cont.innerHTML += `<div class="history-group" id="grp-${x.id}"><div class="group-header-title">🏋️ ${curM.toUpperCase()}</div></div>`;
-                }
-                const isC = exerciseCategories[x.data.machine] === "Cardio";
-                const val = isC ? `${x.data.weight}min | ${x.data.reps}km` : `${x.data.weight}kg x ${x.data.reps}`;
-                document.getElementById(`grp-${x.id}`).innerHTML += `
-                    <div class="set-item">
-                        <div><strong>${val}</strong></div>
-                        <button class="icon-btn btn-del" onclick="deleteSeries('${x.id}')">🗑️</button>
-                    </div>`;
+                if(curM !== x.data.machine) { curM = x.data.machine; cont.innerHTML += `<div id="g-${x.id}" style="margin-bottom:15px;"><div class="group-header-title">🏋️ ${curM.toUpperCase()}</div></div>`; }
+                const val = exCats[x.data.machine] === "Cardio" ? `${x.data.weight}min | ${x.data.reps}km` : `${x.data.weight}kg x ${x.reps}`;
+                document.getElementById(`g-${x.id}`).innerHTML += `<div class="set-item"><div>${val}</div><button style="background:none; border:none; color:var(--danger-color); cursor:pointer;" onclick="deleteSeries('${x.id}')">🗑️</button></div>`;
             });
         }
 
-        // --- STATS & CALENDRIER ---
-        async function loadStats() {
-            const filter = document.getElementById('stats-time-filter').value;
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            
-            let limit = new Date();
-            if(filter === 'week') limit.setDate(limit.getDate() - 7);
-            else if(filter === 'month') limit.setDate(limit.getDate() - 30);
-            else if(filter === 'year') limit.setFullYear(limit.getFullYear() - 1);
-            else limit = new Date(0);
-
-            let vol = 0, count = 0, recs = {};
-            snap.forEach(d => {
-                const x = d.data(); const dx = x.timestamp.toDate();
-                if(dx >= limit && !x.isWarmup) {
-                    count++;
-                    if(exerciseCategories[x.machine] !== "Cardio") {
-                        vol += (x.weight * x.reps);
-                        if(!recs[x.machine] || x.weight > recs[x.machine]) recs[x.machine] = x.weight;
-                    }
-                }
-            });
-
-            document.getElementById('stat-series').innerText = count;
-            document.getElementById('stat-volume').innerText = Math.round(vol) + " KG";
-            
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            const data = Object.entries(recs).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(statChartInstance) statChartInstance.destroy();
-            statChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: data.map(r => r[0]), datasets: [{ label: 'KG', data: data.map(r => r[1]), backgroundColor: '#0a84ff', borderRadius: 10 }] },
-                options: { responsive: true, plugins: { legend: { display: false } } }
-            });
-        }
-
-        async function renderCalendar() {
-            const container = document.getElementById('calendar-container'); container.innerHTML = '';
-            const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
-            document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate).toUpperCase();
-            
-            ['L','M','M','J','V','S','D'].forEach(d => container.innerHTML += `<div class="day-label">${d}</div>`);
-            
-            const first = new Date(y, m, 1).getDay();
-            const offset = first === 0 ? 6 : first - 1;
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const active = new Set();
-            snap.forEach(d => { if(d.data().timestamp.toDate().getMonth() === m && d.data().timestamp.toDate().getFullYear() === y) active.add(d.data().timestamp.toDate().getDate()); });
-
-            for(let i=0; i<offset; i++) container.appendChild(document.createElement('div'));
-            for(let i=1; i<=new Date(y, m+1, 0).getDate(); i++) {
-                const cell = document.createElement('div');
-                cell.className = 'day-cell' + (active.has(i) ? ' has-data' : '');
-                if(i === activeCalendarDay) cell.classList.add('selected');
-                cell.innerText = i;
-                cell.onclick = () => { activeCalendarDay = i; renderCalendar(); loadDayDetails(i); };
-                container.appendChild(cell);
+        window.deleteSeries = async (id) => {
+            const ref = doc(db, "workouts", id); const snap = await getDoc(ref);
+            if(snap.exists() && confirm("Corbeille ?")) {
+                await addDoc(collection(db, "trash"), { ...snap.data(), deletedAt: new Date() });
+                await deleteDoc(ref); loadWorkouts(); updateGhost();
             }
-        }
+        };
 
-        async function loadDayDetails(day) {
-            const dStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toDateString();
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let cont = document.getElementById('day-details'); cont.innerHTML = '';
-            snap.forEach(d => {
-                if(d.data().timestamp.toDate().toDateString() === dStr) {
-                    const x = d.data();
-                    cont.innerHTML += `<div class="set-item"><div><strong>${x.machine}</strong>: ${x.weight}${exerciseCategories[x.machine]==='Cardio'?'min':'kg'}</div></div>`;
-                }
-            });
-        }
-
-        // --- UI & TOOLS ---
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -666,21 +291,14 @@
             if(id === 'stats') loadStats(); if(id === 'calendar-tab') renderCalendar();
         };
 
-        window.toggleTheme = () => {
-            const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
-        };
-        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
-
+        window.toggleTheme = () => { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); };
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
-        window.changeMonth = (v) => { currentViewDate.setMonth(currentViewDate.getMonth() + v); renderCalendar(); };
-        window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); updateGhost(); } };
-
-        window.importDefaults = async () => {
-            const ds = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Tapis de course", c: "Cardio"}];
-            for (const i of ds) { await addDoc(collection(db, "exercises"), { name: i.n, category: i.c, userId: auth.currentUser.uid }); }
-            loadExercises();
+        function upCalc() { const m = document.getElementById('machine').value; if(exCats[m]==="Cardio") return; const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm>0?`1RM: ${rm}kg`:'-'; }
+        function adaptCardio() { const m = document.getElementById('machine').value; const c = exCats[m]==="Cardio"; document.getElementById('weight').placeholder = c?"Min":"Kg"; document.getElementById('reps').placeholder = c?"Km":"Reps"; }
+        document.getElementById('workout-form').onsubmit = async (e) => {
+            e.preventDefault(); await addDoc(collection(db, "workouts"), { machine: document.getElementById('machine').value, weight: Number(document.getElementById('weight').value), reps: Number(document.getElementById('reps').value), isWarmup: document.getElementById('is-warmup').checked, timestamp: new Date(document.getElementById('workout-date').value + "T12:00:00"), userId: auth.currentUser.uid });
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } }); loadWorkouts(); updateGhost();
         };
     </script>
 </body>
