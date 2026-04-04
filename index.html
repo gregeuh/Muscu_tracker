@@ -154,7 +154,16 @@
             </select>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;"><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div><div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div></div>
-            <div class="card"><canvas id="statsChart"></canvas></div>
+            
+            <div class="card">
+                <h4 style="font-family:var(--font-impact); margin-top:0; color:var(--text-muted); text-align:center;">TOP RECORDS (KG)</h4>
+                <canvas id="statsChart"></canvas>
+            </div>
+            
+            <div class="card">
+                <h4 style="font-family:var(--font-impact); margin-top:0; color:var(--text-muted); text-align:center;">POIDS MOYEN PAR SÉRIE (KG)</h4>
+                <canvas id="avgStatsChart"></canvas>
+            </div>
         </section>
     </div>
 
@@ -185,7 +194,7 @@
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null;
 
-        // --- GESTION THÈME (Mise à jour) ---
+        // --- GESTION THÈME ---
         window.toggleTheme = () => {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'dark' ? 'light' : 'dark';
@@ -195,7 +204,7 @@
         };
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        window.onload = () => { document.getElementById('theme-btn').innerText = savedTheme === 'dark' ? '☀️' : '🌙'; };
+        window.onload = () => { if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerText = savedTheme === 'dark' ? '☀️' : '🌙'; };
 
         const userPhoto = document.getElementById('user-photo');
         const logoutBtn = document.getElementById('logout-btn');
@@ -257,7 +266,7 @@
 
         window.closeHistory = (e) => { if(e.target.id === 'modal-machine-history') e.target.style.display = 'none'; };
 
-        // --- STATS PAR POIDS (Mise à jour) ---
+        // --- STATS PAR POIDS (TOP RECORDS & MOYENNES) ---
         document.getElementById('stats-time-filter').onchange = () => loadStats();
 
         async function loadStats() {
@@ -271,30 +280,45 @@
             else if (filter === 'month') limitDate = new Date(now.setDate(now.getDate() - 30));
             else if (filter === 'year') limitDate = new Date(now.setFullYear(now.getFullYear() - 1));
 
-            let maxWeights = {}; let volume = 0; let total = 0;
+            let maxWeights = {}; let sumWeights = {}; let countSetsPerMach = {}; let volume = 0; let total = 0;
             snap.forEach(d => {
                 const data = d.data();
                 if(data.isWarmup) return;
                 const workoutDate = data.timestamp.toDate();
                 if (workoutDate >= limitDate) {
                     total++;
-                    volume += (Number(data.weight) * Number(data.reps));
-                    // On prend le record de poids par machine
-                    if (!maxWeights[data.machine] || Number(data.weight) > maxWeights[data.machine]) {
-                        maxWeights[data.machine] = Number(data.weight);
-                    }
+                    const weightVal = Number(data.weight);
+                    volume += (weightVal * Number(data.reps));
+                    
+                    // Stats pour Records
+                    if (!maxWeights[data.machine] || weightVal > maxWeights[data.machine]) maxWeights[data.machine] = weightVal;
+                    
+                    // Stats pour Moyennes
+                    sumWeights[data.machine] = (sumWeights[data.machine] || 0) + weightVal;
+                    countSetsPerMach[data.machine] = (countSetsPerMach[data.machine] || 0) + 1;
                 }
             });
 
             document.getElementById('stat-series').innerText = total;
             document.getElementById('stat-volume').innerText = volume + 'KG';
 
-            // Top 5 par Poids
-            const top = Object.entries(maxWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
+            // Chart 1 : Records
+            const topRecords = Object.entries(maxWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
             window.statChartInstance = new Chart(document.getElementById('statsChart'), { 
                 type: 'bar', 
-                data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD POIDS (KG)', data: top.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] },
+                data: { labels: topRecords.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG)', data: topRecords.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(142, 142, 147, 0.1)' } } } }
+            });
+
+            // Chart 2 : Moyennes
+            let avgWeights = {};
+            Object.keys(sumWeights).forEach(m => { avgWeights[m] = Math.round(sumWeights[m] / countSetsPerMach[m]); });
+            const topAvg = Object.entries(avgWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
+            if(window.avgStatsChartInstance) window.avgStatsChartInstance.destroy();
+            window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { 
+                type: 'bar', 
+                data: { labels: topAvg.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: topAvg.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] },
                 options: { responsive: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(142, 142, 147, 0.1)' } } } }
             });
         }
