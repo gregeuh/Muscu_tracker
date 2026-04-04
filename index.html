@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
@@ -18,115 +19,143 @@
             --text-main: #1c1c1e; --text-muted: #8e8e93; --accent-color: #007aff;
             --border-color: #f2f2f7; --danger-color: #ff3b30; --pr-color: #34c759;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            --font-impact: 'Bebas Neue', sans-serif;
+            --font-main: 'Inter', sans-serif;
         }
         [data-theme="dark"] {
             --bg-color: #000000; --panel-bg: rgba(20, 20, 22, 0.9); --card-bg: #121212;
             --text-main: #ffffff; --text-muted: #8e8e93; --accent-color: #0a84ff;
             --border-color: #2c2c2e; --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
+
+        /* ANIMATIONS KEYFRAMES */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         html { background-color: var(--bg-color); height: 100%; overflow: hidden; }
         body { 
-            margin: 0; font-family: 'Inter', sans-serif; color: var(--text-main); 
+            margin: 0; font-family: var(--font-main); color: var(--text-main); 
             transition: background-color 0.3s; -webkit-tap-highlight-color: transparent; 
             height: 100%; overflow-y: auto; display: flex; flex-direction: column;
             padding-top: calc(70px + env(safe-area-inset-top, 0px)); 
-            padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px)); 
+            padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); 
             box-sizing: border-box;
         }
         
         header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background-color: var(--panel-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; padding-top: env(safe-area-inset-top); z-index: 1000; }
-        .logo { font-size: 20px; font-weight: 800; }
+        .logo { font-family: var(--font-impact); font-size: 26px; letter-spacing: 1px; }
         .logo span { color: var(--accent-color); }
         
-        /* HEADER RIGHT & PROFILE MENU */
         .header-right { display: flex; align-items: center; gap: 15px; position: relative; }
-        .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; object-fit: cover; background: var(--border-color); }
+        .user-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); cursor: pointer; object-fit: cover; background: var(--border-color); transition: transform 0.2s; }
+        .user-photo:active { transform: scale(0.9); }
+        
         #logout-btn { 
             position: absolute; top: 50px; right: 0; 
             background: var(--card-bg); border: 1px solid var(--border-color); 
             color: var(--danger-color); font-size: 13px; font-weight: 800; 
             padding: 12px 20px; border-radius: 16px; display: none; 
-            box-shadow: var(--shadow); z-index: 1100; white-space: nowrap;
+            box-shadow: var(--shadow); z-index: 1100; animation: fadeIn 0.2s ease;
         }
-        .theme-toggle { cursor: pointer; border: none; background: none; color: var(--accent-color); font-size: 20px; padding: 0; }
 
-        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; text-align: center; }
-        .google-btn { background: white; color: #1c1c1e; border: 1px solid #dcdcdc; padding: 14px 24px; border-radius: 14px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; width: 100%; max-width: 320px; cursor: pointer; margin-bottom: 20px; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; animation: fadeIn 0.5s ease; }
         
         #app-screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
-        .tab-content { display: none; width: 100%; }
+        .tab-content { display: none; width: 100%; animation: fadeIn 0.3s ease-out; }
         .tab-content.active { display: block; }
         
-        .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); box-sizing: border-box; width: 100%; }
-        h2 { font-size: 32px; font-weight: 800; margin: 10px 0 24px 0; letter-spacing: -1.5px; }
-        h3.session-title { font-size: 18px; font-weight: 700; margin: 25px 0 15px 5px; color: var(--accent-color); }
-        h4.category-header { font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 20px 0 10px 10px; letter-spacing: 1px; }
+        .card { 
+            background-color: var(--card-bg); padding: 22px; border-radius: 28px; 
+            margin-bottom: 20px; border: 1px solid var(--border-color); 
+            box-shadow: var(--shadow); box-sizing: border-box; width: 100%;
+            animation: fadeInUp 0.4s ease-out both;
+        }
 
-        input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: inherit; }
-        .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
-        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; display: block; min-height: 54px; -webkit-appearance: none; }
-        .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
+        h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; color: var(--text-main); }
+        h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); letter-spacing: 0.5px; text-transform: uppercase; }
+        h4.category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; letter-spacing: 1px; text-transform: uppercase; }
 
-        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 18px; width: 100%; cursor: pointer; font-size: 16px; }
-        .btn-outline { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px; font-weight: 700; border-radius: 14px; cursor: pointer; }
+        input, select { 
+            width: 100%; padding: 16px; background-color: var(--bg-color); 
+            border: 1px solid var(--border-color); color: var(--text-main); 
+            border-radius: 16px; font-size: 16px; font-weight: 600; 
+            box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main);
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--accent-color); outline: none; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
-        .modal-card { width: 100%; max-width: 380px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); }
+        .btn-primary { 
+            background-color: var(--accent-color); color: white; border: none; 
+            padding: 16px; font-family: var(--font-impact); font-size: 20px; 
+            letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; 
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.96); }
 
-        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; }
-        .group-header { background: rgba(0,122,255,0.05); color: var(--accent-color); padding: 16px 20px; font-weight: 800; display: flex; justify-content: space-between; cursor: pointer; }
-        .history-group.collapsed .group-sets { display: none; }
-        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .set-number { width: 22px; height: 22px; background: var(--bg-color); color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 10px; }
-        .pr-badge { background: var(--pr-color); color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+        /* LISTE HISTORIQUE */
+        .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeInUp 0.4s ease-out both; }
+        .group-header { 
+            background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; 
+            font-family: var(--font-impact); font-size: 18px; letter-spacing: 0.5px;
+            display: flex; justify-content: space-between; cursor: pointer;
+        }
+        .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-main); }
+        .set-item strong { font-family: var(--font-impact); font-size: 19px; letter-spacing: 0.5px; }
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-        .day-label { font-size: 10px; font-weight: 800; color: var(--text-muted); padding-bottom: 8px; }
-        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border-radius: 12px; position: relative; cursor: pointer; }
-        .day-cell.has-data::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
-        .day-cell.today { border: 1.5px solid var(--accent-color); color: var(--accent-color); }
-        .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
-
-        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
-        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-btn.active { color: var(--accent-color); }
-
+        /* CHRONO */
         #floating-timer { 
             display: none; position: fixed; 
             bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
             left: 16px; right: 16px; 
-            background: var(--accent-color); color: white; padding: 16px 20px; 
-            border-radius: 24px; z-index: 999; box-shadow: 0 10px 30px rgba(0,122,255,0.4); 
+            background: var(--accent-color); color: white; padding: 18px 22px; 
+            border-radius: 24px; z-index: 999; box-shadow: 0 10px 30px rgba(0,122,255,0.4);
+            font-family: var(--font-impact); font-size: 22px; letter-spacing: 1px;
+            animation: fadeInUp 0.3s ease-out;
         }
 
-        #success-flash { position: fixed; top: calc(20px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 5000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; cursor: pointer; color: var(--accent-color); display: flex; align-items: center; justify-content: center; }
-        .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
-        .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-        .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); }
-        #one-rm-live { font-size: 13px; font-weight: 800; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
+        /* NAVIGATION */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
+        .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color 0.2s; }
+        .nav-btn.active { color: var(--accent-color); }
+        .nav-btn span:first-child { font-size: 20px; }
+
+        .pr-badge { font-family: var(--font-impact); background: var(--pr-color); color: white; font-size: 12px; padding: 2px 8px; border-radius: 6px; margin-left: 8px; vertical-align: middle; }
+        .rm-small { font-family: var(--font-impact); font-size: 14px; color: var(--text-muted); margin-left: 8px; }
+        
+        #one-rm-live { font-family: var(--font-impact); font-size: 18px; letter-spacing: 0.5px; color: var(--accent-color); text-align: center; margin-bottom: 15px; }
+
+        .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
+        .date-input-wrapper input[type="date"] { padding-left: 45px; margin-bottom: 0; width: 100% !important; display: block; min-height: 54px; -webkit-appearance: none; }
+        .calendar-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--accent-color); pointer-events: none; z-index: 5; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .day-label { font-family: var(--font-impact); font-size: 12px; color: var(--text-muted); padding-bottom: 8px; }
+        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; position: relative; cursor: pointer; transition: 0.2s; }
     </style></head><body>
 
     <header>
-        <div class="logo">Muscu<span>Pro</span></div>
+        <div class="logo">MUSCU<span>PRO</span></div>
         <div class="header-right">
             <button class="theme-toggle" id="theme-btn">🌙</button>
             <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil">
-            <button id="logout-btn">Ciao ! 👋</button>
+            <button id="logout-btn">CIAO ! 👋</button>
         </div>
     </header>
 
     <div id="auth-screen">
-        <h1 style="font-size: 40px; font-weight: 800; letter-spacing: -2px; margin-bottom: 5px;">Muscu<span>Pro</span></h1>
-        <button id="google-login-btn" class="google-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google"> Continuer avec Google</button>
-        <div style="width:100%; max-width:320px; border-top:1px solid var(--border-color); padding-top:20px; margin-top:10px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Mot de passe"><button id="auth-submit-btn" class="btn-primary" style="margin-bottom:15px;">Connexion / Inscription</button></div>
+        <h1 style="font-family: var(--font-impact); font-size: 50px; letter-spacing: 2px; margin-bottom: 10px;">MUSCU<span>PRO</span></h1>
+        <button id="google-login-btn" class="google-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google"> CONTINUER AVEC GOOGLE</button>
+        <div style="width:100%; max-width:320px; border-top:1px solid var(--border-color); padding-top:20px; margin-top:10px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Mot de passe"><button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION</button></div>
     </div>
 
     <div id="app-screen">
-        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center; font-weight:800;"><span id="timer-display">00:00</span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 12px; border-radius:10px; font-weight:700;">+30s</button><button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:8px 12px; border-radius:10px; font-weight:800;">✕</button></div></div></div>
+        <div id="floating-timer"><div style="display:flex; justify-content:space-between; align-items:center;"><span>REPOS : <span id="timer-display">00:00</span></span><div style="display:flex; gap:10px;"><button onclick="addTime()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">+30S</button><button id="stop-timer-btn" style="background:white; border:none; color:var(--accent-color); padding:6px 12px; border-radius:10px; font-family:var(--font-impact); font-size:16px;">✕</button></div></div></div>
 
         <section id="workout" class="tab-content active">
-            <h2>Ma Séance</h2>
+            <h2>MA SÉANCE</h2>
             <div class="card">
                 <form id="workout-form">
                     <div class="date-input-wrapper">
@@ -136,39 +165,42 @@
                     <div style="display:flex; gap:10px;"><select id="machine" required style="margin:0;"></select><button type="button" onclick="openModal()" style="width:56px; border-radius:16px; background:var(--accent-color); color:white; border:none; font-size:24px; flex-shrink:0;">+</button></div>
                     <div id="last-workout-ghost" style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 10px 0; font-weight: 600; min-height: 32px; line-height: 1.4;"></div>
                     <div style="display:flex; gap:10px;"><input type="number" id="weight" placeholder="Kg" required inputmode="numeric"><input type="number" id="reps" placeholder="Reps" required inputmode="numeric"></div>
-                    <div id="one-rm-live">1RM estimé : -</div>
+                    <div id="one-rm-live">1RM ESTIMÉ : -</div>
                     <input type="text" id="series-note" placeholder="Note (facultatif)">
-                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:600; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 Échauffement</label>
-                    <button type="submit" class="btn-primary">Enregistrer la série</button>
+                    <label style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:15px; font-size:14px; font-weight:700; color:var(--text-muted);"><input type="checkbox" id="is-warmup" style="width:20px; height:20px; margin:0;"> 🔥 ÉCHAUFFEMENT</label>
+                    <button type="submit" class="btn-primary">ENREGISTRER LA SÉRIE</button>
                 </form>
             </div>
-            <h3 class="session-title" id="session-date-display">Séance du jour</h3>
+            <h3 class="session-title" id="session-date-display">SÉANCE DU JOUR</h3>
             <div id="history-list"></div>
         </section>
 
         <section id="exercises-tab" class="tab-content">
-            <h2>Mes Machines</h2>
+            <h2>MES MACHINES</h2>
             <div id="machine-grouped-list"></div>
         </section>
 
         <section id="calendar-tab" class="tab-content">
-            <h2>Calendrier</h2>
-            <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><div id="month-display" style="font-weight:800; text-transform:capitalize;">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
+            <h2>CALENDRIER</h2>
+            <div class="card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-family:var(--font-impact);"><div id="month-display" style="font-size:24px;">Mois</div><div style="display:flex; gap:10px;"><button class="btn-outline" onclick="changeMonth(-1)">‹</button><button class="btn-outline" onclick="changeMonth(1)">›</button></div></div><div class="calendar-grid" id="calendar-container"></div></div>
             <div id="day-details" style="margin-top:20px;"></div>
         </section>
 
         <section id="stats" class="tab-content">
-            <h2>Mes Stats</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;"><div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>SÉRIES</h4><p id="stat-series" style="font-size:24px; font-weight:800; margin:0; color:var(--accent-color);">0</p></div><div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4>VOLUME</h4><p id="stat-volume" style="font-size:24px; font-weight:800; margin:0; color:var(--pr-color);">0</p></div></div>
+            <h2>MES STATS</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
+                <div class="card" style="text-align:center; padding:15px; margin-bottom:0;"><h4 style="font-family:var(--font-impact); margin:0; color:var(--text-muted);">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div>
+            </div>
             <div class="card"><canvas id="statsChart"></canvas></div>
         </section>
     </div>
 
-    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2 id="modal-machine-title">Nouvelle machine</h2><input type="text" id="new-machine-name" placeholder="Nom (ex: Leg Press)"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option><option value="Autre">Autre</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">Annuler</button><button class="btn-primary" id="save-machine-btn">Ajouter</button></div></div></div>
-    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>Repos ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" style="width:100%;" onclick="closeModalTimer()">Passer</button></div></div>
-    <div id="success-flash">C'est noté ! 💪</div>
+    <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2 id="modal-machine-title">NOUVELLE MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom (ex: Leg Press)"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option><option value="Autre">Autre</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn">AJOUTER</button></div></div></div>
+    <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" style="width:100%; font-family:var(--font-impact); font-size:18px;" onclick="closeModalTimer()">PASSER</button></div></div>
+    <div id="success-flash">C'EST NOTÉ ! 💪</div>
 
-    <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>Séance</button><button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>Machines</button><button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>Calendrier</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>Stats</button></nav>
+    <nav id="bottom-nav"><button class="nav-btn active" onclick="showTab('workout', this)"><span>🏋️</span>SÉANCE</button><button class="nav-btn" onclick="showTab('exercises-tab', this)"><span>⚙️</span>MACHINES</button><button class="nav-btn" onclick="showTab('calendar-tab', this)"><span>📅</span>CALENDRIER</button><button class="nav-btn" onclick="showTab('stats', this)"><span>📊</span>STATS</button></nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
@@ -189,7 +221,7 @@
         const userPhoto = document.getElementById('user-photo');
         const logoutBtn = document.getElementById('logout-btn');
         userPhoto.onclick = (e) => { e.stopPropagation(); logoutBtn.style.display = (logoutBtn.style.display === 'block') ? 'none' : 'block'; };
-        window.onclick = () => { logoutBtn.style.display = 'none'; }; // Ferme si on clique ailleurs
+        window.onclick = () => { logoutBtn.style.display = 'none'; };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -203,39 +235,16 @@
         });
         logoutBtn.onclick = () => signOut(auth);
 
-        // --- CALENDRIER ---
-        async function renderCalendar() {
-            const container = document.getElementById('calendar-container'); container.innerHTML = '';
-            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
-            document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate);
-            ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
-            const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set();
-            snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
-            for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
-            for (let i = 1; i <= daysInMonth; i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':'');
-                if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.classList.add('today');
-                cell.innerText = i; cell.onclick = () => { document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
-                container.appendChild(cell);
-            }
-        }
-
-        async function loadDayDetails(day) {
-            const dateStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toISOString().split('T')[0];
-            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")));
-            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
-            renderGrouped(filtered, document.getElementById('day-details'));
-        }
-
+        // --- LOGIQUE METIER ---
         const calc1RM = (w, r) => r === 1 ? w : Math.round(w / (1.0278 - (0.0278 * r)));
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
-        document.getElementById('weight').oninput = document.getElementById('reps').oninput = () => {
+        
+        const updateLive1RM = () => {
             const rm = calc1RM(parseFloat(document.getElementById('weight').value), parseInt(document.getElementById('reps').value));
-            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM estimé : ${rm} kg` : `1RM estimé : -`;
+            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`;
         };
+        document.getElementById('weight').oninput = updateLive1RM;
+        document.getElementById('reps').oninput = updateLive1RM;
 
         async function loadExercises() {
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
@@ -243,7 +252,7 @@
             machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
             let opts = ""; let currentCat = "";
             machines.forEach(m => {
-                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat}">`; currentCat = cat; }
+                const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; }
                 opts += `<option value="${m.name}">${m.name}</option>`;
             });
             document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
@@ -258,14 +267,14 @@
                 const card = document.createElement('div'); card.className = "card"; card.style.padding = "0"; card.style.overflow = "hidden";
                 items.forEach(m => { 
                     const div = document.createElement('div'); div.className = "machine-item"; 
-                    div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="openEditMachine('${m.id}', '${m.name}', '${m.category}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn danger" onclick="deleteExo('${m.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>`; 
+                    div.innerHTML = `<span style="font-weight:700;">${m.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="openEditMachine('${m.id}', '${m.name}', '${m.category}')">✏️</button><button class="icon-btn danger" onclick="deleteExo('${m.id}')">🗑️</button></div>`; 
                     card.appendChild(div); 
                 }); container.appendChild(card);
             }
         }
 
-        window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "Modifier la machine"; document.getElementById('save-machine-btn').innerText = "Enregistrer"; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; document.getElementById('modal-add-machine').style.display = 'flex'; };
-        window.openModal = () => { editingMachineId = null; document.getElementById('modal-machine-title').innerText = "Nouvelle machine"; document.getElementById('save-machine-btn').innerText = "Ajouter"; document.getElementById('new-machine-name').value = ""; document.getElementById('modal-add-machine').style.display = 'flex'; };
+        window.openEditMachine = (id, name, cat) => { editingMachineId = id; document.getElementById('modal-machine-title').innerText = "MODIFIER LA MACHINE"; document.getElementById('save-machine-btn').innerText = "ENREGISTRER"; document.getElementById('new-machine-name').value = name; document.getElementById('new-machine-category').value = cat; document.getElementById('modal-add-machine').style.display = 'flex'; };
+        window.openModal = () => { editingMachineId = null; document.getElementById('modal-machine-title').innerText = "NOUVELLE MACHINE"; document.getElementById('save-machine-btn').innerText = "AJOUTER"; document.getElementById('new-machine-name').value = ""; document.getElementById('modal-add-machine').style.display = 'flex'; };
         document.getElementById('save-machine-btn').onclick = async () => { const name = document.getElementById('new-machine-name').value.trim(); const category = document.getElementById('new-machine-category').value; if(!name) return; if(editingMachineId) await updateDoc(doc(db, "exercises", editingMachineId), { name, category }); else await addDoc(collection(db, "exercises"), { name, category, userId: auth.currentUser.uid }); loadExercises(); loadExercisesManageList(); closeModal(); };
         window.deleteExo = async (id) => { if(confirm("Supprimer cette machine ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
 
@@ -273,14 +282,11 @@
             const m = e.target.value; const ghostDiv = document.getElementById('last-workout-ghost');
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", m), orderBy("timestamp", "desc"));
             const snap = await getDocs(q); let last = null; snap.forEach(d => { if(!last && !d.data().isWarmup) last = d.data(); });
-            const pr = personalRecords[m]; let html = last ? `Dernier : ${last.weight}kg x ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}kg)<br>` : "";
-            if(pr) html += `<span style="color:var(--pr-color)">Record : ${pr.weight}kg le ${formatDate(pr.date)}</span>`; 
+            const pr = personalRecords[m]; let html = last ? `DERNIER : ${last.weight}KG X ${last.reps} (1RM: ${calc1RM(last.weight, last.reps)}KG)<br>` : "";
+            if(pr) html += `<span style="color:var(--pr-color)">RECORD : ${pr.weight}KG LE ${formatDate(pr.date)}</span>`; 
             ghostDiv.innerHTML = html;
-            // AUTO-REMPLISSAGE SMART
             if(last) { document.getElementById('weight').value = last.weight; document.getElementById('reps').value = last.reps; updateLive1RM(); }
         };
-
-        function updateLive1RM() { const rm = calc1RM(parseFloat(document.getElementById('weight').value), parseInt(document.getElementById('reps').value)); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM estimé : ${rm} kg` : `1RM estimé : -`; }
 
         async function loadPRs() {
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid));
@@ -290,7 +296,7 @@
 
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
-            document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "Séance du jour" : "Séance du " + formatDate(new Date(dateInput));
+            document.getElementById('session-date-display').innerText = dateInput === new Date().toISOString().split('T')[0] ? "SÉANCE DU JOUR" : "SÉANCE DU " + formatDate(new Date(dateInput));
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
             const snap = await getDocs(q); let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateInput) filtered.push({id: d.id, data: d.data()}); });
             renderGrouped(filtered, document.getElementById('history-list'));
@@ -301,10 +307,10 @@
             arr.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
             groups.forEach(g => {
                 const isCollapsed = collapsedGroups.has(g.machine); const div = document.createElement('div'); div.className = `history-group ${isCollapsed ? 'collapsed' : ''}`;
-                let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
+                let html = `<div class="group-header" onclick="toggleGroup('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span><span>${isCollapsed?'+':'-'}</span></div><div class="group-sets">`;
                 g.sets.reverse().forEach((s, i) => {
                     const d = s.data; const machineMax = personalRecords[d.machine]?.weight || 0; const isPR = !d.isWarmup && d.weight === machineMax && machineMax > 0;
-                    html += `<div class="set-item"><div><span class="set-number">${d.isWarmup?'🔥':i+1}</span><strong>${d.weight}kg x ${d.reps}</strong> <span class="rm-small">(${calc1RM(d.weight, d.reps)}kg)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div></div>`;
+                    html += `<div class="set-item"><div><span class="set-number">${d.isWarmup?'🔥':i+1}</span><strong>${d.weight}KG X ${d.reps}</strong> <span class="rm-small">(${calc1RM(d.weight, d.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${d.machine}', ${d.weight}, ${d.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`;
                 }); div.innerHTML = html + `</div>`; container.appendChild(div);
             });
             if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">Aucune série.</p>';
@@ -326,10 +332,36 @@
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             let counts = {}; let volume = 0; let total = 0; 
             snap.forEach(d => { const data = d.data(); if(!data.isWarmup) { total++; volume += (parseInt(data.weight) * parseInt(data.reps)); counts[data.machine] = (counts[data.machine] || 0) + 1; }});
-            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'kg';
+            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
             const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0]), datasets: [{ label: 'Séries', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: top.map(m => m[0].toUpperCase()), datasets: [{ label: 'SÉRIES', data: top.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+        }
+
+        async function renderCalendar() {
+            const container = document.getElementById('calendar-container'); container.innerHTML = '';
+            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
+            document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate).toUpperCase();
+            ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
+            const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
+            const activeDays = new Set();
+            snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
+            for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':'');
+                if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.classList.add('today');
+                cell.innerText = i; cell.onclick = () => { document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
+                container.appendChild(cell);
+            }
+        }
+
+        async function loadDayDetails(day) {
+            const dateStr = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day).toISOString().split('T')[0];
+            const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), orderBy("timestamp", "desc")));
+            let filtered = []; snap.forEach(d => { if(d.data().timestamp.toDate().toISOString().split('T')[0] === dateStr) filtered.push({id: d.id, data: d.data()}); });
+            renderGrouped(filtered, document.getElementById('day-details'));
         }
 
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); renderCalendar(); };
