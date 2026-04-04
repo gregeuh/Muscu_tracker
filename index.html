@@ -48,27 +48,25 @@
         
         .card { background-color: var(--card-bg); padding: 22px; border-radius: 28px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease-out both; }
         h2 { font-family: var(--font-impact); font-size: 38px; margin: 10px 0 20px 0; letter-spacing: 1px; text-transform: uppercase; }
-        h3.session-title { font-family: var(--font-impact); font-size: 20px; margin: 25px 0 15px 5px; color: var(--accent-color); text-transform: uppercase; }
 
         input, select { width: 100%; padding: 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 16px; font-size: 16px; font-weight: 600; box-sizing: border-box; margin-bottom: 12px; font-family: var(--font-main); }
         .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 16px; font-family: var(--font-impact); font-size: 20px; letter-spacing: 1px; border-radius: 18px; width: 100%; cursor: pointer; transition: transform 0.1s; }
         .btn-primary:active { transform: scale(0.96); }
         .btn-outline { background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 10px; font-family: var(--font-impact); font-size: 16px; border-radius: 14px; width: 100%; cursor: pointer; margin-bottom: 10px; }
 
-        /* CALENDAR */
+        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
+
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
         .day-label { font-family: var(--font-impact); font-size: 12px; color: var(--text-muted); padding-bottom: 8px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; position: relative; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
         .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
 
-        /* CARDIO TABLE */
-        .cardio-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .cardio-table th { text-align: left; padding: 12px 8px; color: var(--text-muted); font-family: var(--font-impact); font-size: 14px; border-bottom: 1px solid var(--border-color); }
-        .cardio-table td { padding: 14px 8px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-        .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 16px; }
+        .cardio-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .cardio-table th { text-align: left; padding: 12px 8px; color: var(--text-muted); font-family: var(--font-impact); border-bottom: 1px solid var(--border-color); }
+        .cardio-table td { padding: 14px 8px; border-bottom: 1px solid var(--border-color); font-weight: 700; }
+        .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 18px; }
 
-        /* NAV */
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
         .nav-btn { background: none; border: none; color: var(--text-muted); padding: 8px; font-family: var(--font-main); font-size: 10px; font-weight: 700; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-btn.active { color: var(--accent-color); }
@@ -77,17 +75,16 @@
         .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .set-item strong { font-family: var(--font-impact); font-size: 19px; }
-        .pr-badge { font-family: var(--font-impact); background: var(--pr-color); color: white; font-size: 12px; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
 
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
-        .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); font-size: 12px; padding: 8px 12px; }
-        
-        /* ROUTINE V50 XXL */
-        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 25px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; }
-        .exo-check-item { display: block; background: var(--bg-color); padding: 16px; border-radius: 16px; font-weight: 700; margin-bottom: 8px; border: 1px solid var(--border-color); cursor: pointer; }
+        .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); padding: 8px 12px; }
+
+        /* ROUTINE V54 - XXL Titles & No Checkbox */
+        .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
+        .exo-check-item { display: block; background: var(--bg-color); padding: 18px; border-radius: 18px; font-weight: 700; margin-bottom: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .exo-check-item input { display: none; }
-        .exo-check-item:has(input:checked) { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .exo-check-item:has(input:checked) { background: var(--accent-color) !important; color: white !important; border-color: var(--accent-color); }
         
         .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000 !important; padding: 20px; box-sizing: border-box; }
         .modal-card { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; padding: 28px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; }
@@ -97,16 +94,16 @@
     <header>
         <div class="logo">MUSCU<span>PRO</span></div>
         <div class="header-right">
-            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" style="background:none; border:none; font-size:22px; cursor:pointer;">🌙</button>
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" style="background:none; border:none; font-size:22px;">🌙</button>
             <img id="user-photo" class="user-photo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil">
             <button id="logout-btn">CIAO ! 👋</button>
         </div>
     </header>
 
     <div id="auth-screen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; padding:20px; text-align:center;">
-        <h1 style="font-family: var(--font-impact); font-size: 50px; letter-spacing: 2px;">MUSCU<span>PRO</span></h1>
-        <button id="google-login-btn" class="google-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> GOOGLE</button>
-        <div style="width:100%; max-width:320px; margin-top:20px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Pass"><button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION</button></div>
+        <h1 style="font-family: var(--font-impact); font-size: 55px; letter-spacing: 2px;">MUSCU<span>PRO</span></h1>
+        <button id="google-login-btn" class="btn-primary" style="background:white; color:#1c1c1e; border:1px solid #dcdcdc; width:100%; max-width:320px; display:flex; align-items:center; justify-content:center; gap:10px; font-family:var(--font-main); font-size:14px;"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> CONTINUER AVEC GOOGLE</button>
+        <div style="width:100%; max-width:320px; margin-top:20px;"><input type="email" id="auth-email" placeholder="Email"><input type="password" id="auth-password" placeholder="Pass"><button id="auth-submit-btn" class="btn-primary" style="margin-top:10px;">CONNEXION / CRÉATION</button></div>
     </div>
 
     <div id="app-screen">
@@ -152,14 +149,9 @@
                 <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
                 <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">VOLUME</h4><p id="stat-volume" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--pr-color);">0</p></div>
             </div>
-            
             <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">TOP RECORDS (KG)</h4><canvas id="statsChart"></canvas></div>
-            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN PAR SÉRIE (KG)</h4><canvas id="avgStatsChart"></canvas></div>
-            
-            <div class="card" id="cardio-stats-container">
-                <h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4>
-                <div id="cardio-summary-list"></div>
-            </div>
+            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN (KG)</h4><canvas id="avgStatsChart"></canvas></div>
+            <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4><div id="cardio-summary-list"></div></div>
         </section>
     </div>
 
@@ -184,28 +176,25 @@
         const firebaseConfig = { apiKey: "AIzaSyDqD_BnYDL6GwQPIsn3W8ffnoo9BwoKr1Q", authDomain: "suivi-muscu-8dd6d.firebaseapp.com", projectId: "suivi-muscu-8dd6d", storageBucket: "suivi-muscu-8dd6d.firebasestorage.app", messagingSenderId: "1011748268882", appId: "G-P9TLE42VZ1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-
         enableMultiTabIndexedDbPersistence(db).catch(() => {});
         setPersistence(auth, browserLocalPersistence);
 
         let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null; let exerciseCategories = {};
 
         window.toggleTheme = () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const target = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', target);
-            localStorage.setItem('theme', target);
-            document.getElementById('theme-btn').innerText = target === 'dark' ? '☀️' : '🌙';
+            const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
+            document.getElementById('theme-btn').innerText = t === 'dark' ? '☀️' : '🌙';
         };
-        const st = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', st);
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
-                initApp();
+                resetTimerState(); initApp();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none';
+                resetTimerState();
             }
         });
 
@@ -217,35 +206,16 @@
         }
 
         function adaptInputsForCardio() {
-            const m = document.getElementById('machine').value;
-            const cat = exerciseCategories[m];
-            const weightInput = document.getElementById('weight');
-            const repsInput = document.getElementById('reps');
-            const oneRMDisplay = document.getElementById('one-rm-live');
-
-            if (cat === "Cardio") {
-                weightInput.placeholder = "Min";
-                repsInput.placeholder = "Km / Niv";
-                oneRMDisplay.style.display = "none";
-            } else {
-                weightInput.placeholder = "Kg";
-                repsInput.placeholder = "Reps";
-                oneRMDisplay.style.display = "block";
-                updateLive1RM();
-            }
+            const m = document.getElementById('machine').value; const cat = exerciseCategories[m];
+            const wi = document.getElementById('weight'); const ri = document.getElementById('reps'); const orm = document.getElementById('one-rm-live');
+            if (cat === "Cardio") { wi.placeholder = "Min"; ri.placeholder = "Km / Niv"; orm.style.display = "none"; } 
+            else { wi.placeholder = "Kg"; ri.placeholder = "Reps"; orm.style.display = "block"; updateLive1RM(); }
         }
 
         const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
-        function updateLive1RM() { 
-            const m = document.getElementById('machine').value;
-            if (exerciseCategories[m] === "Cardio") return;
-            const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); 
-            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; 
-        }
+        function updateLive1RM() { if (exerciseCategories[document.getElementById('machine').value] === "Cardio") return; const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
 
-        // --- STATS PAR POIDS & CARDIO (V53 FIX) ---
-        document.getElementById('stats-time-filter').onchange = () => loadStats();
         async function loadStats() {
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             const filter = document.getElementById('stats-time-filter').value;
@@ -255,61 +225,38 @@
             else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
             else if (filter === 'all') limitDate = new Date(0);
 
-            let muscuMax = {}; let muscuSum = {}; let muscuCount = {};
-            let cardioStats = {}; 
-            let volume = 0; let total = 0;
-
+            let muscuMax = {}; let muscuSum = {}; let muscuCount = {}; let cardioStats = {}; let volume = 0; let total = 0;
             snap.forEach(d => {
-                const data = d.data(); if(data.isWarmup) return;
-                const workoutDate = data.timestamp.toDate();
-                if (workoutDate >= limitDate) {
-                    const isCardio = exerciseCategories[data.machine] === "Cardio";
-                    total++;
-                    if (isCardio) {
-                        if (!cardioStats[data.machine]) cardioStats[data.machine] = { maxTime:0, maxKm:0, sessions:0 };
-                        cardioStats[data.machine].maxTime = Math.max(cardioStats[data.machine].maxTime, Number(data.weight));
-                        cardioStats[data.machine].maxKm = Math.max(cardioStats[data.machine].maxKm, Number(data.reps));
-                        cardioStats[data.machine].sessions++;
-                    } else {
-                        const weightVal = Number(data.weight);
-                        volume += (weightVal * Number(data.reps));
-                        if (!muscuMax[data.machine] || weightVal > muscuMax[data.machine]) muscuMax[data.machine] = weightVal;
-                        muscuSum[data.machine] = (muscuSum[data.machine] || 0) + weightVal;
-                        muscuCount[data.machine] = (muscuCount[data.machine] || 0) + 1;
-                    }
+                const data = d.data(); if(data.isWarmup || data.timestamp.toDate() < limitDate) return;
+                total++;
+                if (exerciseCategories[data.machine] === "Cardio") {
+                    if (!cardioStats[data.machine]) cardioStats[data.machine] = { maxTime:0, maxKm:0, sessions:0 };
+                    cardioStats[data.machine].maxTime = Math.max(cardioStats[data.machine].maxTime, Number(data.weight));
+                    cardioStats[data.machine].maxKm = Math.max(cardioStats[data.machine].maxKm, Number(data.reps));
+                    cardioStats[data.machine].sessions++;
+                } else {
+                    const w = Number(data.weight); volume += (w * Number(data.reps));
+                    if (!muscuMax[data.machine] || w > muscuMax[data.machine]) muscuMax[data.machine] = w;
+                    muscuSum[data.machine] = (muscuSum[data.machine] || 0) + w; muscuCount[data.machine] = (muscuCount[data.machine] || 0) + 1;
                 }
             });
-
-            document.getElementById('stat-series').innerText = total;
-            document.getElementById('stat-volume').innerText = volume + 'KG';
-
-            // Muscu Charts
-            const topRecords = Object.entries(muscuMax).sort((a,b) => b[1]-a[1]).slice(0,5);
+            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
+            const tr = Object.entries(muscuMax).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: topRecords.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG)', data: topRecords.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] }, options: { responsive: true } });
-
-            let avgWeights = {}; Object.keys(muscuSum).forEach(m => { avgWeights[m] = Math.round(muscuSum[m] / muscuCount[m]); });
-            const topAvg = Object.entries(avgWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: tr.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG)', data: tr.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] } });
+            let avgW = {}; Object.keys(muscuSum).forEach(m => { avgW[m] = Math.round(muscuSum[m] / muscuCount[m]); });
+            const ta = Object.entries(avgW).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.avgStatsChartInstance) window.avgStatsChartInstance.destroy();
-            window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: topAvg.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: topAvg.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true } });
-
-            // Cardio Summary Table
-            const cardioList = document.getElementById('cardio-summary-list');
+            window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: ta.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: ta.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] } });
             let html = '<table class="cardio-table"><tr><th>MACHINE</th><th>⏱ MAX</th><th>🏃 MAX</th><th>🔥 SES.</th></tr>';
-            Object.keys(cardioStats).forEach(m => {
-                const s = cardioStats[m];
-                html += `<tr><td>${m}</td><td class="cardio-val">${s.maxTime}m</td><td class="cardio-val">${s.maxKm}k</td><td>${s.sessions}</td></tr>`;
-            });
-            cardioList.innerHTML = html + '</table>';
+            Object.keys(cardioStats).forEach(m => { const s = cardioStats[m]; html += `<tr><td>${m}</td><td class="cardio-val">${s.maxTime}m</td><td class="cardio-val">${s.maxKm}km</td><td>${s.sessions}</td></tr>`; });
+            document.getElementById('cardio-summary-list').innerHTML = html + '</table>';
         }
 
-        // --- ROUTINES ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
-            const container = document.getElementById('routine-exo-selection');
-            container.innerHTML = "";
-            let grouped = {};
-            snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(data.name); });
+            const container = document.getElementById('routine-exo-selection'); container.innerHTML = "";
+            let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(data.name); });
             Object.keys(grouped).sort().forEach(cat => {
                 container.innerHTML += `<div class="routine-cat-sub">${cat.toUpperCase()}</div>`;
                 grouped[cat].sort().forEach(name => { container.innerHTML += `<label class="exo-check-item"><input type="checkbox" value="${name}" class="routine-check"> <span>${name}</span></label>`; });
@@ -319,164 +266,139 @@
 
         window.saveRoutine = async () => {
             const name = document.getElementById('routine-name-input').value.trim();
-            const checks = document.querySelectorAll('.routine-check:checked');
-            const exos = Array.from(checks).map(c => c.value);
+            const exos = Array.from(document.querySelectorAll('.routine-check:checked')).map(c => c.value);
             if(!name || exos.length === 0) return alert("Champs vides !");
             await addDoc(collection(db, "routines"), { name, exercises: exos, userId: auth.currentUser.uid });
-            document.getElementById('modal-routine').style.display = 'none';
-            loadRoutines();
+            document.getElementById('modal-routine').style.display = 'none'; loadRoutines();
         };
 
         window.importRoutineDefaults = async () => {
-            const routines = [
-                {n: "PUSH (Pecs/Épaules/Triceps)", e: ["Développé couché", "Développé militaire", "Dips", "Extensions triceps"]},
-                {n: "PULL (Dos/Biceps)", e: ["Tractions", "Rowing barre", "Tirage vertical", "Curl haltères"]},
-                {n: "LEGS (Cuisses/Mollets)", e: ["Squat", "Presse à cuisses", "Leg Extension", "Leg Curl"]},
-                {n: "SESSION CARDIO", e: ["Tapis de course", "Vélo d'intérieur", "Rameur"]}
-            ];
+            const routines = [{n: "PUSH (Pecs/Epaules)", e: ["Développé couché", "Développé militaire", "Dips"]}, {n: "PULL (Dos/Biceps)", e: ["Tractions", "Rowing barre", "Curl haltères"]}, {n: "LEGS (Cuisses)", e: ["Squat", "Presse à cuisses", "Leg Extension"]}, {n: "CARDIO SESSION", e: ["Tapis de course", "Vélo d'intérieur", "Rameur"]}];
             for (const r of routines) { await addDoc(collection(db, "routines"), { name: r.n, exercises: r.e, userId: auth.currentUser.uid }); }
-            loadRoutines();
+            loadRoutines(); alert("Routines importées !");
         };
 
         async function loadRoutines() {
-            const container = document.getElementById('routines-list');
+            const container = document.getElementById('routines-list'); container.innerHTML = "";
             const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
-            container.innerHTML = "";
-            snap.forEach(d => {
-                const r = d.data();
-                container.innerHTML += `<div class="routine-item"><span class="routine-name">${r.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn success" onclick="applyRoutine('${d.id}')">▶️ LANCER</button><button class="icon-btn danger" onclick="deleteRoutine('${d.id}')">🗑️</button></div></div>`;
-            });
+            snap.forEach(d => { const r = d.data(); container.innerHTML += `<div class="routine-item"><span class="routine-name">${r.name}</span><div style="display:flex; gap:10px;"><button class="icon-btn success" onclick="applyRoutine('${d.id}')">▶️ LANCER</button><button class="icon-btn danger" onclick="deleteRoutine('${d.id}')">🗑️</button></div></div>`; });
         }
 
         window.applyRoutine = async (id) => {
             const snap = await getDocs(query(collection(db, "routines"), where("userId", "==", auth.currentUser.uid)));
-            let exercises = null; snap.forEach(d => { if(d.id === id) exercises = d.data().exercises; });
-            if (exercises) {
-                const select = document.getElementById('machine');
-                select.innerHTML = exercises.map(e => `<option value="${e}">${e}</option>`).join('');
-                select.dispatchEvent(new Event('change'));
-                showTab('workout', document.getElementById('nav-workout'));
-            }
+            let exos = null; snap.forEach(d => { if(d.id === id) exos = d.data().exercises; });
+            if (exos) { document.getElementById('machine').innerHTML = exos.map(e => `<option value="${e}">${e}</option>`).join(''); adaptInputsForCardio(); showTab('workout', document.getElementById('nav-workout')); }
         };
 
-        // --- CATALOGUE & LOGIC ---
         window.importDefaults = async () => {
-            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo d'intérieur", c: "Cardio"}, {n: "Rameur", c: "Cardio"}];
+            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo d'intérieur", c: "Cardio"}, {n: "Rameur", c: "Cardio"}];
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const existing = new Set(); snap.forEach(d => existing.add(d.data().name.toLowerCase()));
             for (const item of defaults) { if (!existing.has(item.n.toLowerCase())) await addDoc(collection(db, "exercises"), { name: item.n, category: item.c, userId: auth.currentUser.uid }); }
-            loadExercises(); loadExercisesManageList(); alert("Machines importées !");
+            loadExercises(); loadExercisesManageList(); alert("Catalogue importé !");
         };
 
         window.openMachineHistory = async (name) => {
             document.getElementById('history-machine-name').innerText = name.toUpperCase();
             document.getElementById('modal-machine-history').style.display = 'flex';
             const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name));
-            const snap = await getDocs(q);
-            let allData = []; snap.forEach(d => allData.push(d.data()));
-            allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
-            let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
-            allData.forEach(data => { if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; 
+            const snap = await getDocs(q); let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
+            snap.forEach(d => { const data = d.data(); if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; 
                 let val = exerciseCategories[name] === "Cardio" ? Number(data.reps) : calc1RM(data.weight, data.reps);
                 if(!dailyMax[dateKey] || val > dailyMax[dateKey]) dailyMax[dateKey] = val; if(val > absoluteMax) absoluteMax = val; 
             });
             document.getElementById('hist-max-rm').innerText = absoluteMax + (exerciseCategories[name]==="Cardio"?" KM":" KG");
             document.getElementById('hist-total-sets').innerText = totalSets;
             if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: 'Score', data: Object.values(dailyMax), borderColor: '#0a84ff', tension: 0.4, fill: true, backgroundColor: 'rgba(10, 132, 255, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false } });
+            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: 'Score', data: Object.values(dailyMax), borderColor: '#0a84ff', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
         };
 
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { const workoutDate = d.data().timestamp.toDate(); const dInput = new Date(dateInput); if(workoutDate.getFullYear() === dInput.getFullYear() && workoutDate.getMonth() === dInput.getMonth() && workoutDate.getDate() === dInput.getDate()) { filtered.push({id: d.id, data: d.data()}); } });
+            let filtered = []; snap.forEach(d => { const wd = d.data().timestamp.toDate(); const di = new Date(dateInput); if(wd.getFullYear() === di.getFullYear() && wd.getMonth() === di.getMonth() && wd.getDate() === di.getDate()) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
-            renderGrouped(filtered, document.getElementById('history-list'));
-        }
-
-        function renderGrouped(arr, container) {
-            container.innerHTML = ''; let groups = []; let cur = null;
-            arr.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
+            let container = document.getElementById('history-list'); container.innerHTML = ''; let groups = []; let cur = null;
+            filtered.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
             groups.forEach(g => {
                 const div = document.createElement('div'); div.className = 'history-group';
                 div.innerHTML = `<div class="group-header" onclick="openMachineHistory('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
                 g.sets.map(s => { 
-                    const isCardio = exerciseCategories[s.data.machine] === "Cardio";
-                    const mMax = personalRecords[s.data.machine]?.weight || 0; 
-                    const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0;
-                    const valDisplay = isCardio ? `<strong>${s.data.weight}MIN | ${s.data.reps}KM</strong>` : `<strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>`;
-                    return `<div class="set-item"><div>${valDisplay}${isPR?'<span class="pr-badge">🏆 PR</span>':''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; 
+                    const isC = exerciseCategories[s.data.machine] === "Cardio"; const val = isC ? `<strong>${s.data.weight}MIN | ${s.data.reps}KM</strong>` : `<strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>`;
+                    return `<div class="set-item"><div>${val}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; 
                 }).join('') + `</div>`; container.appendChild(div);
             });
         }
 
-        // --- HELPERS ---
         window.showTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); btn.classList.add('active'); if(tabId === 'calendar-tab') renderCalendar(); if(tabId === 'stats') loadStats(); if(tabId === 'exercises-tab') { loadExercisesManageList(); loadRoutines(); } };
         window.openModal = () => document.getElementById('modal-add-machine').style.display='flex';
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
+        window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } } };
         window.copySeries = async (m, w, r) => { await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: false, timestamp: new Date(document.getElementById('workout-date').value), userId: auth.currentUser.uid }); loadWorkouts(); };
-        window.resetTimerState = () => { clearInterval(timerInterval); document.getElementById('floating-timer').style.display = 'none'; };
+        window.resetTimerState = () => { clearInterval(timerInterval); timerInterval = null; document.getElementById('floating-timer').style.display = 'none'; };
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); if(navigator.vibrate) navigator.vibrate([100, 50, 100]); } timerSeconds--; }, 1000); }
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); document.getElementById('modal-timer-prompt').style.display='none'; });
         window.addTime = () => { timerSeconds += 30; };
         window.closeModalTimer = () => document.getElementById('modal-timer-prompt').style.display='none';
 
         document.getElementById('workout-form').onsubmit = async (e) => {
-            e.preventDefault(); const weight = Number(document.getElementById('weight').value); const reps = Number(document.getElementById('reps').value); const machine = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value); const isWarmup = document.getElementById('is-warmup').checked;
-            if(!isWarmup && weight > (personalRecords[machine]?.weight || 0)) { confetti({ particleCount: 150, spread: 70 }); personalRecords[machine] = { weight, date }; }
-            await addDoc(collection(db, "workouts"), { machine, weight, reps, isWarmup, timestamp: date, userId: auth.currentUser.uid });
-            const flash = document.getElementById('success-flash'); flash.style.display='block'; setTimeout(()=>flash.style.display='none', 3000);
+            e.preventDefault(); const w = Number(document.getElementById('weight').value); const r = Number(document.getElementById('reps').value); const m = document.getElementById('machine').value; const date = new Date(document.getElementById('workout-date').value); const isW = document.getElementById('is-warmup').checked;
+            await addDoc(collection(db, "workouts"), { machine: m, weight: w, reps: r, isWarmup: isW, timestamp: date, userId: auth.currentUser.uid });
+            document.getElementById('success-flash').style.display='block'; setTimeout(()=>document.getElementById('success-flash').style.display='none', 2000);
             loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } setTimeout(() => { document.getElementById('modal-timer-prompt').style.display = 'flex'; }, 200);
         };
 
         async function renderCalendar() {
             const container = document.getElementById('calendar-container'); container.innerHTML = '';
-            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
+            const y = currentViewDate.getFullYear(); const m = currentViewDate.getMonth();
             document.getElementById('month-display').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentViewDate).toUpperCase();
             ['L','M','M','J','V','S','D'].forEach(d => { const label = document.createElement('div'); label.className = 'day-label'; label.innerText = d; container.appendChild(label); });
-            const firstDay = new Date(year, month, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1;
+            const fd = new Date(y, m, 1).getDay(); const offset = fd === 0 ? 6 : fd - 1;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === month && dt.getFullYear() === year) activeDays.add(dt.getDate()); });
-            for(let i=0; i<offset; i++) { const empty = document.createElement('div'); empty.className = 'day-cell empty'; container.appendChild(empty); }
-            for (let i = 1; i <= new Date(year, month + 1, 0).getDate(); i++) {
-                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cell.style.border = "1.5px solid var(--accent-color)";
-                if(i === activeCalendarDay) cell.classList.add('selected');
+            const activeDays = new Set(); snap.forEach(d => { const dt = d.data().timestamp.toDate(); if(dt.getMonth() === m && dt.getFullYear() === y) activeDays.add(dt.getDate()); });
+            for(let i=0; i<offset; i++) container.appendChild(document.createElement('div'));
+            for (let i = 1; i <= new Date(y, m + 1, 0).getDate(); i++) {
+                const cell = document.createElement('div'); cell.className = 'day-cell' + (activeDays.has(i)?' has-data':''); if(i === activeCalendarDay) cell.classList.add('selected');
                 cell.innerText = i; cell.onclick = () => { activeCalendarDay = i; document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); loadDayDetails(i); };
                 container.appendChild(cell);
             }
         }
         async function loadDayDetails(day) {
-            const dateObj = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
+            const dObj = new Date(currentViewDate.getFullYear(), currentViewDate.getMonth(), day);
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
-            let filtered = []; snap.forEach(d => { const workoutDate = d.data().timestamp.toDate(); if(workoutDate.getFullYear() === dateObj.getFullYear() && workoutDate.getMonth() === dateObj.getMonth() && workoutDate.getDate() === dateObj.getDate()) { filtered.push({id: d.id, data: d.data()}); } });
+            let filtered = []; snap.forEach(d => { const wd = d.data().timestamp.toDate(); if(wd.getFullYear() === dObj.getFullYear() && wd.getMonth() === dObj.getMonth() && wd.getDate() === dObj.getDate()) filtered.push({id: d.id, data: d.data()}); });
             filtered.sort((a,b) => a.data.timestamp.toDate() - b.data.timestamp.toDate());
-            renderGrouped(filtered, document.getElementById('day-details'));
+            let container = document.getElementById('day-details'); container.innerHTML = ''; let cur = null;
+            filtered.forEach(x => { 
+                const isC = exerciseCategories[x.data.machine] === "Cardio"; const val = isC ? `<strong>${x.data.weight}MIN | ${x.data.reps}KM</strong>` : `<strong>${x.data.weight}KG X ${x.data.reps}</strong>`;
+                container.innerHTML += `<div class="set-item"><div><strong>${x.data.machine}</strong>: ${val}</div><button class="icon-btn danger" onclick="deleteSeries('${x.id}')">🗑️</button></div>`;
+            });
         }
         window.changeMonth = (val) => { currentViewDate.setMonth(currentViewDate.getMonth() + val); activeCalendarDay = null; renderCalendar(); document.getElementById('day-details').innerHTML = ''; };
 
         async function loadExercises() {
-            const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); let machines = []; exerciseCategories = {}; snap.forEach(d => { const data = d.data(); machines.push(data); exerciseCategories[data.name] = data.category; });
-            machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
-            let opts = ""; let currentCat = "";
-            machines.forEach(m => { const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; } opts += `<option value="${m.name}">${m.name}</option>`; });
+            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
+            let mList = []; exerciseCategories = {}; snap.forEach(d => { const da = d.data(); mList.push(da); exerciseCategories[da.name] = da.category; });
+            mList.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
+            let opts = ""; let curCat = "";
+            mList.forEach(m => { const cat = m.category || "Autre"; if(cat !== curCat) { if(curCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; curCat = cat; } opts += `<option value="${m.name}">${m.name}</option>`; });
             document.getElementById('machine').innerHTML = opts; document.getElementById('machine').dispatchEvent(new Event('change'));
         }
         async function loadExercisesManageList() {
-            const container = document.getElementById('machine-grouped-list'); const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); container.innerHTML = "";
-            let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name, category: cat}); });
+            const container = document.getElementById('machine-grouped-list'); container.innerHTML = "";
+            const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
+            let grouped = {}; snap.forEach(d => { const data = d.data(); const cat = data.category || "Autre"; if(!grouped[cat]) grouped[cat] = []; grouped[cat].push({id: d.id, name: data.name}); });
             for(const [cat, items] of Object.entries(grouped)) {
                 container.innerHTML += `<h4 class="category-header">${cat}</h4>`;
                 let html = '<div class="card" style="padding:0; overflow:hidden;">';
-                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text">${m.name}</span><div class="machine-actions"><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
+                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text">${m.name}</span><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div>`; });
                 container.innerHTML += html + '</div>';
             }
         }
         document.getElementById('workout-date').value = new Date().toISOString().split('T')[0];
-        async function loadPRs() { const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {}; snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight, date: data.timestamp.toDate() }; }); }
+        async function loadPRs() { const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid))); personalRecords = {}; snap.forEach(d => { const data = d.data(); if(!data.isWarmup && (!personalRecords[data.machine] || Number(data.weight) > Number(personalRecords[data.machine].weight))) personalRecords[data.machine] = { weight: data.weight }; }); }
         document.getElementById('logout-btn').onclick = () => signOut(auth);
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
-        document.getElementById('auth-submit-btn').onclick = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch { try { await createUserWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch(err) { alert("Erreur"); } } };
+        document.getElementById('auth-submit-btn').onclick = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch { try { await createUserWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); } catch(err) { alert("Erreur identifiants"); } } };
     </script></body></html>
