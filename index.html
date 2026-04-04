@@ -88,12 +88,26 @@
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
         
-        /* FIX MODALE ROUTINE V47 */
+        /* MODALE ROUTINE V48 - PAS DE CHECKBOX VISIBLE */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
         .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        .exo-check-item { display: flex; align-items: center; gap: 12px; background: var(--bg-color); padding: 14px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; border: 1px solid var(--border-color); }
-        .exo-check-item input { width: 22px; height: 22px; margin: 0; cursor: pointer; flex-shrink: 0; }
+        
+        .exo-check-item { 
+            display: block; background: var(--bg-color); padding: 16px; border-radius: 16px; 
+            font-weight: 700; font-size: 15px; cursor: pointer; border: 1px solid var(--border-color); 
+            transition: 0.2s; position: relative;
+        }
+        .exo-check-item input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        
+        /* STYLE QUAND SÉLECTIONNÉ */
+        .exo-check-item:has(input:checked) {
+            background-color: var(--accent-color) !important;
+            color: white !important;
+            border-color: var(--accent-color) !important;
+            transform: scale(0.98);
+        }
+
         .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 18px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -169,7 +183,7 @@
     <div id="modal-routine" class="modal-overlay"><div class="modal-card">
         <h2>CRÉER ROUTINE</h2>
         <input type="text" id="routine-name-input" placeholder="Ex: Séance PUSH">
-        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES (PAR MUSCLE) :</p>
+        <p style="font-weight:bold; margin-bottom:5px;">CHOISIR LES EXERCICES :</p>
         <div id="routine-exo-selection" class="exo-checkbox-list"></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button class="btn-primary" style="background:#3a3a3c;" onclick="document.getElementById('modal-routine').style.display='none'">ANNULER</button>
@@ -238,7 +252,7 @@
         
         function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
 
-        // --- GESTION DES ROUTINES (V47) ---
+        // --- GESTION DES ROUTINES (V48 FIX) ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
