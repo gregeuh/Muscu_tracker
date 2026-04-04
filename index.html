@@ -88,7 +88,7 @@
         
         .category-header { font-family: var(--font-impact); font-size: 16px; color: var(--text-muted); margin: 20px 0 10px 10px; text-transform: uppercase; }
 
-        /* DESIGN ROUTINE V50 */
+        /* MODALE ROUTINE V51 */
         .routine-item { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .routine-name { font-family: var(--font-impact); font-size: 22px; color: var(--text-main); }
         .exo-checkbox-list { display: grid; gap: 8px; margin: 15px 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
@@ -105,7 +105,6 @@
             border-color: var(--accent-color) !important;
         }
 
-        /* NOM DES MUSCLES EN GROS (V50) */
         .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 25px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         
         #success-flash { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 12px 25px; border-radius: 50px; font-family: var(--font-impact); font-size: 18px; z-index: 6000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -194,7 +193,7 @@
 
     <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()">
         <h2 id="history-machine-name">DÉTAILS</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>MAX 1RM</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES TOTALES</label><span id="hist-total-sets">-</span></div></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>MAX 1RM / DISTANCE</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES TOTALES</label><span id="hist-total-sets">-</span></div></div>
         <div style="position:relative; height:220px; width:100%;"><canvas id="historyChart"></canvas></div>
         <button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button>
     </div></div>
@@ -217,7 +216,7 @@
         enableMultiTabIndexedDbPersistence(db).catch(() => {});
         setPersistence(auth, browserLocalPersistence);
 
-        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null;
+        let currentViewDate = new Date(); let personalRecords = {}; let timerInterval = null; let timerSeconds = 0; let editingMachineId = null; let historyChartInstance = null; let activeCalendarDay = null; let exerciseCategories = {};
 
         // --- GESTION THÈME ---
         window.toggleTheme = () => {
@@ -245,14 +244,40 @@
             loadExercises(); loadWorkouts(); loadPRs(); loadRoutines();
             document.getElementById('weight').addEventListener('input', updateLive1RM);
             document.getElementById('reps').addEventListener('input', updateLive1RM);
+            document.getElementById('machine').addEventListener('change', adaptInputsForCardio);
             if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerText = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
         }
 
         const calc1RM = (w, r) => { const weight = Number(w); const reps = Number(r); if (!weight || !reps || reps <= 0) return 0; return reps === 1 ? weight : Math.round(weight / (1.0278 - (0.0278 * reps))); };
         const formatDate = (d) => new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(d);
-        function updateLive1RM() { const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; }
+        
+        function adaptInputsForCardio() {
+            const m = document.getElementById('machine').value;
+            const cat = exerciseCategories[m];
+            const weightInput = document.getElementById('weight');
+            const repsInput = document.getElementById('reps');
+            const oneRMDisplay = document.getElementById('one-rm-live');
 
-        // --- GESTION DES ROUTINES (FIX XXL V50) ---
+            if (cat === "Cardio") {
+                weightInput.placeholder = "Min";
+                repsInput.placeholder = "Km / Niv";
+                oneRMDisplay.style.display = "none";
+            } else {
+                weightInput.placeholder = "Kg";
+                repsInput.placeholder = "Reps";
+                oneRMDisplay.style.display = "block";
+                updateLive1RM();
+            }
+        }
+
+        function updateLive1RM() { 
+            const m = document.getElementById('machine').value;
+            if (exerciseCategories[m] === "Cardio") return;
+            const rm = calc1RM(document.getElementById('weight').value, document.getElementById('reps').value); 
+            document.getElementById('one-rm-live').innerText = rm > 0 ? `1RM ESTIMÉ : ${rm} KG` : `1RM ESTIMÉ : -`; 
+        }
+
+        // --- GESTION DES ROUTINES (FIX V50) ---
         window.openRoutineModal = async () => {
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const container = document.getElementById('routine-exo-selection');
@@ -284,7 +309,7 @@
                 {n: "PUSH (Pecs/Épaules/Triceps)", e: ["Développé couché", "Développé militaire", "Dips", "Extensions triceps"]},
                 {n: "PULL (Dos/Biceps)", e: ["Tractions", "Rowing barre", "Tirage vertical", "Curl haltères"]},
                 {n: "LEGS (Cuisses/Mollets)", e: ["Squat", "Presse à cuisses", "Leg Extension", "Leg Curl"]},
-                {n: "FULL BODY (Complet)", e: ["Développé couché", "Squat", "Tractions", "Soulevé de terre"]}
+                {n: "CARDIO SESSION", e: ["Tapis de course", "Vélo elliptique", "Rameur"]}
             ];
             for (const r of routines) { await addDoc(collection(db, "routines"), { name: r.n, exercises: r.e, userId: auth.currentUser.uid }); }
             loadRoutines(); alert("Catalogue de routines importé !");
@@ -314,7 +339,7 @@
 
         // --- CATALOGUE MACHINES ---
         window.importDefaults = async () => {
-            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Rowing barre", c: "Dos"}, {n: "Tirage vertical", c: "Dos"}, {n: "Dips", c: "Pectoraux"}];
+            const defaults = [{n: "Développé couché", c: "Pectoraux"}, {n: "Presse à cuisses", c: "Jambes"}, {n: "Tractions", c: "Dos"}, {n: "Curl haltères", c: "Bras"}, {n: "Extensions triceps", c: "Bras"}, {n: "Crunch", c: "Abdos"}, {n: "Squat", c: "Jambes"}, {n: "Développé militaire", c: "Épaules"}, {n: "Rowing barre", c: "Dos"}, {n: "Tirage vertical", c: "Dos"}, {n: "Dips", c: "Pectoraux"}, {n: "Tapis de course", c: "Cardio"}, {n: "Vélo elliptique", c: "Cardio"}, {n: "Rameur", c: "Cardio"}];
             const snap = await getDocs(query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid)));
             const existing = new Set(); snap.forEach(d => existing.add(d.data().name.toLowerCase()));
             for (const item of defaults) { if (!existing.has(item.n.toLowerCase())) await addDoc(collection(db, "exercises"), { name: item.n, category: item.c, userId: auth.currentUser.uid }); }
@@ -329,11 +354,16 @@
             let allData = []; snap.forEach(d => allData.push(d.data()));
             allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
             let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
-            allData.forEach(data => { if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; const rm = calc1RM(data.weight, data.reps); if(!dailyMax[dateKey] || rm > dailyMax[dateKey]) dailyMax[dateKey] = rm; if(rm > absoluteMax) absoluteMax = rm; });
-            document.getElementById('hist-max-rm').innerText = absoluteMax > 0 ? absoluteMax + " KG" : "-";
+            allData.forEach(data => { if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; 
+                let val = 0;
+                if (exerciseCategories[name] === "Cardio") { val = Number(data.reps); } 
+                else { val = calc1RM(data.weight, data.reps); }
+                if(!dailyMax[dateKey] || val > dailyMax[dateKey]) dailyMax[dateKey] = val; if(val > absoluteMax) absoluteMax = val; 
+            });
+            document.getElementById('hist-max-rm').innerText = absoluteMax > 0 ? absoluteMax + (exerciseCategories[name]==="Cardio"?" KM":" KG") : "-";
             document.getElementById('hist-total-sets').innerText = totalSets;
             if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: '1RM (kg)', data: Object.values(dailyMax), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' } } } } });
+            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: exerciseCategories[name]==="Cardio"?"Km":"1RM", data: Object.values(dailyMax), borderColor: '#0a84ff', backgroundColor: 'rgba(10, 132, 255, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#0a84ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(142, 142, 147, 0.05)' } } } } });
         };
 
         document.getElementById('stats-time-filter').onchange = () => loadStats();
@@ -347,15 +377,20 @@
             else if (filter === 'all') limitDate = new Date(0);
 
             let maxWeights = {}; let sumWeights = {}; let countSetsPerMach = {}; let volume = 0; let total = 0;
-            snap.forEach(d => { const data = d.data(); if(data.isWarmup) return; if (data.timestamp.toDate() >= limitDate) { total++; const weightVal = Number(data.weight); volume += (weightVal * Number(data.reps)); if (!maxWeights[data.machine] || weightVal > maxWeights[data.machine]) maxWeights[data.machine] = weightVal; sumWeights[data.machine] = (sumWeights[data.machine] || 0) + weightVal; countSetsPerMach[data.machine] = (countSetsPerMach[data.machine] || 0) + 1; } });
+            snap.forEach(d => { const data = d.data(); if(data.isWarmup) return; if (data.timestamp.toDate() >= limitDate) { total++; const weightVal = Number(data.weight); 
+                if (exerciseCategories[data.machine] !== "Cardio") { volume += (weightVal * Number(data.reps)); }
+                if (!maxWeights[data.machine] || weightVal > maxWeights[data.machine]) maxWeights[data.machine] = weightVal;
+                sumWeights[data.machine] = (sumWeights[data.machine] || 0) + weightVal;
+                countSetsPerMach[data.machine] = (countSetsPerMach[data.machine] || 0) + 1;
+            } });
             document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
             const topRecords = Object.entries(maxWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
-            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: topRecords.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG)', data: topRecords.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+            window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: topRecords.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG/MIN)', data: topRecords.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
             let avgWeights = {}; Object.keys(sumWeights).forEach(m => { avgWeights[m] = Math.round(sumWeights[m] / countSetsPerMach[m]); });
             const topAvg = Object.entries(avgWeights).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.avgStatsChartInstance) window.avgStatsChartInstance.destroy();
-            window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: topAvg.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: topAvg.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+            window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: topAvg.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG/MIN)', data: topAvg.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
         }
 
         async function loadWorkouts() {
@@ -372,7 +407,13 @@
             groups.forEach(g => {
                 const div = document.createElement('div'); div.className = 'history-group';
                 div.innerHTML = `<div class="group-header" onclick="openMachineHistory('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
-                g.sets.map(s => { const mMax = personalRecords[s.data.machine]?.weight || 0; const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0; return `<div class="set-item"><div><strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>${isPR?`<span class="pr-badge">🏆 PR</span>`:''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; }).join('') + `</div>`; container.appendChild(div);
+                g.sets.map(s => { 
+                    const isCardio = exerciseCategories[s.data.machine] === "Cardio";
+                    const mMax = personalRecords[s.data.machine]?.weight || 0; 
+                    const isPR = !s.data.isWarmup && Number(s.data.weight) === Number(mMax) && mMax > 0;
+                    const valDisplay = isCardio ? `<strong>${s.data.weight}MIN | ${s.data.reps}KM</strong>` : `<strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>`;
+                    return `<div class="set-item"><div>${valDisplay}${isPR?'<span class="pr-badge">🏆 PR</span>':''}</div><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="copySeries('${s.data.machine}', ${s.data.weight}, ${s.data.reps})">👯</button><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; 
+                }).join('') + `</div>`; container.appendChild(div);
             });
             if(arr.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px;">AUCUNE SÉRIE.</p>';
         }
@@ -430,7 +471,7 @@
         document.getElementById('workout-date').onchange = () => loadWorkouts();
         async function loadExercises() {
             const q = query(collection(db, "exercises"), where("userId", "==", auth.currentUser.uid));
-            const snap = await getDocs(q); let machines = []; snap.forEach(d => machines.push(d.data()));
+            const snap = await getDocs(q); let machines = []; exerciseCategories = {}; snap.forEach(d => { const data = d.data(); machines.push(data); exerciseCategories[data.name] = data.category; });
             machines.sort((a,b) => (a.category || "Autre").localeCompare(b.category || "Autre"));
             let opts = ""; let currentCat = "";
             machines.forEach(m => { const cat = m.category || "Autre"; if(cat !== currentCat) { if(currentCat !== "") opts += `</optgroup>`; opts += `<optgroup label="${cat.toUpperCase()}">`; currentCat = cat; } opts += `<option value="${m.name}">${m.name}</option>`; });
