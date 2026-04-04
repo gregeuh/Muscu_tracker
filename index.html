@@ -58,19 +58,19 @@
         .btn-primary:active { transform: scale(0.96); }
         .btn-outline { background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 10px; font-family: var(--font-impact); font-size: 16px; border-radius: 14px; width: 100%; cursor: pointer; margin-bottom: 10px; }
 
-        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
+        #floating-timer { display: none; position: fixed; bottom: calc(85px + env(safe-area-inset-bottom, 20px)); left: 16px; right: 16px; background: var(--accent-color); color: white; padding: 18px 22px; border-radius: 24px; z-index: 4000; box-shadow: 0 10px 30px rgba(0,122,255,0.4); font-family: var(--font-impact); font-size: 22px; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-        .day-label { font-family: var(--font-impact); font-size: 12px; color: var(--text-muted); padding-bottom: 8px; }
         .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; position: relative; }
         .day-cell.has-data::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; }
         .day-cell.selected { background: var(--accent-color) !important; color: white !important; }
 
+        /* TABLEAU CARDIO ÉLITE */
         .cardio-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .cardio-table th { text-align: left; padding: 12px 8px; color: var(--text-muted); font-family: var(--font-impact); border-bottom: 1px solid var(--border-color); }
         .cardio-table td { padding: 14px 8px; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 14px; }
         .cardio-table tr { cursor: pointer; transition: 0.2s; }
-        .cardio-table tr:active { background: rgba(0,122,255,0.1); }
+        .cardio-table tr:active { background: rgba(0,122,255,0.15); }
         .cardio-val { color: var(--accent-color); font-family: var(--font-impact); font-size: 18px; }
 
         nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--panel-bg); backdrop-filter: blur(25px); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1500; }
@@ -80,15 +80,14 @@
         .history-group { background-color: var(--card-bg); border-radius: 26px; margin-bottom: 16px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeInUp 0.4s ease-out both; }
         .group-header { background: rgba(0,122,255,0.04); color: var(--accent-color); padding: 16px 20px; font-family: var(--font-impact); font-size: 18px; display: flex; justify-content: space-between; cursor: pointer; }
         .set-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .set-item strong { font-family: var(--font-impact); font-size: 19px; }
 
         .icon-btn { background: rgba(0, 122, 255, 0.08); border: none; padding: 10px; border-radius: 12px; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .icon-btn.danger { background: rgba(255, 59, 48, 0.08); color: var(--danger-color); }
-        .icon-btn.success { background: rgba(52, 199, 89, 0.1); color: var(--pr-color); font-family: var(--font-impact); padding: 8px 12px; }
-
+        
         .machine-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .machine-name-text { flex: 1; font-weight: 700; text-align: left; }
 
+        /* ROUTINE XXL */
         .routine-cat-sub { font-family: var(--font-impact); color: var(--accent-color); font-size: 22px; margin: 22px 0 12px 5px; border-bottom: 2px solid var(--accent-color); padding-bottom: 6px; letter-spacing: 1px; }
         .exo-check-item { display: block; background: var(--bg-color); padding: 18px; border-radius: 18px; font-weight: 700; margin-bottom: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .exo-check-item input { display: none; }
@@ -150,7 +149,7 @@
         <section id="stats" class="tab-content">
             <h2>MES STATS</h2>
             <select id="stats-time-filter" style="margin-bottom: 20px;">
-                <option value="week">CETTE SEMAINE</option><option value="month" selected>CE MOIS</option><option value="year">CETTE ANNÉE</option><option value="all">TOUT</option>
+                <option value="day">AUJOURD'HUI</option><option value="week">CETTE SEMAINE</option><option value="month" selected>CE MOIS</option><option value="year">CETTE ANNÉE</option><option value="all">TOUT</option>
             </select>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
                 <div class="card" style="text-align:center; padding:15px;"><h4 style="font-family:var(--font-impact); margin:0;">SÉRIES</h4><p id="stat-series" style="font-family:var(--font-impact); font-size:32px; margin:0; color:var(--accent-color);">0</p></div>
@@ -158,7 +157,11 @@
             </div>
             <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">TOP RECORDS (KG)</h4><canvas id="statsChart"></canvas></div>
             <div class="card"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">POIDS MOYEN (KG)</h4><canvas id="avgStatsChart"></canvas></div>
-            <div class="card" id="cardio-stats-container"><h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4><div id="cardio-summary-list"></div></div>
+            
+            <div class="card" id="cardio-stats-container">
+                <h4 style="font-family:var(--font-impact); margin-top:0; text-align:center;">🏃 RÉSUMÉ CARDIO</h4>
+                <div id="cardio-summary-list"></div>
+            </div>
         </section>
     </div>
 
@@ -167,7 +170,7 @@
     </div></div>
 
     <div id="modal-machine-history" class="modal-overlay" onclick="this.style.display='none'"><div class="modal-card" onclick="event.stopPropagation()">
-        <h2 id="history-machine-name">DÉTAILS</h2><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label>RECORD</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES</label><span id="hist-total-sets">-</span></div></div><div style="height:220px;"><canvas id="historyChart"></canvas></div><button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button></div></div>
+        <h2 id="history-machine-name">DÉTAILS</h2><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"><div class="stat-badge"><label id="hist-label">RECORD</label><span id="hist-max-rm">-</span></div><div class="stat-badge"><label>SÉRIES</label><span id="hist-total-sets">-</span></div></div><div style="height:220px;"><canvas id="historyChart"></canvas></div><button class="btn-primary" style="margin-top:20px; background:#3a3a3c;" onclick="document.getElementById('modal-machine-history').style.display='none'">FERMER</button></div></div>
 
     <div id="modal-add-machine" class="modal-overlay"><div class="modal-card"><h2>MACHINE</h2><input type="text" id="new-machine-name" placeholder="Nom"><select id="new-machine-category"><option value="Pectoraux">Pectoraux</option><option value="Dos">Dos</option><option value="Jambes">Jambes</option><option value="Épaules">Épaules</option><option value="Bras">Bras</option><option value="Abdos">Abdos</option><option value="Cardio">Cardio</option></select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"><button class="btn-primary" style="background:#3a3a3c;" onclick="closeModal()">ANNULER</button><button class="btn-primary" id="save-machine-btn">VALIDER</button></div></div></div>
     <div id="modal-timer-prompt" class="modal-overlay"><div class="modal-card" style="text-align:center;"><h2>REPOS ? ⏳</h2><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:20px;"><button class="btn-primary timer-btn" data-time="60">1:00</button><button class="btn-primary timer-btn" data-time="90">1:30</button><button class="btn-primary timer-btn" data-time="120">2:00</button></div><button class="btn-outline" onclick="closeModalTimer()">PASSER</button></div></div>
@@ -217,7 +220,45 @@
             document.getElementById('weight').addEventListener('input', updateLive1RM);
             document.getElementById('reps').addEventListener('input', updateLive1RM);
             document.getElementById('machine').addEventListener('change', adaptInputsForCardio);
+            if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerText = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
         }
+
+        // --- GLOBAL FUNCTIONS BLINDÉES ---
+        window.openMachineHistory = async (name) => {
+            document.getElementById('history-machine-name').innerText = name.toUpperCase();
+            document.getElementById('modal-machine-history').style.display = 'flex';
+            const isCardio = exerciseCategories[name] === "Cardio";
+            document.getElementById('hist-label').innerText = isCardio ? "MAX KM" : "RECORD 1RM";
+            
+            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name));
+            const snap = await getDocs(q);
+            let allData = []; snap.forEach(d => allData.push(d.data()));
+            allData.sort((a,b) => a.timestamp.toDate() - b.timestamp.toDate());
+            
+            let dailyBest = {}; let totalSets = 0; let absoluteMax = 0;
+            allData.forEach(data => { 
+                if(data.isWarmup) return; 
+                totalSets++; 
+                const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; 
+                let val = isCardio ? Number(data.reps) : calc1RM(data.weight, data.reps);
+                if(!dailyBest[dateKey] || val > dailyBest[dateKey]) dailyBest[dateKey] = val; 
+                if(val > absoluteMax) absoluteMax = val; 
+            });
+            
+            document.getElementById('hist-max-rm').innerText = absoluteMax + (isCardio ? " KM" : " KG");
+            document.getElementById('hist-total-sets').innerText = totalSets;
+            
+            if(historyChartInstance) historyChartInstance.destroy();
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            historyChartInstance = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: Object.keys(dailyBest).map(d => formatDate(new Date(d))), 
+                    datasets: [{ label: isCardio ? 'KM' : 'KG', data: Object.values(dailyBest), borderColor: '#0a84ff', tension: 0.4, fill: true, backgroundColor: 'rgba(10, 132, 255, 0.1)' }] 
+                }, 
+                options: { responsive: true, maintainAspectRatio: false } 
+            });
+        };
 
         function adaptInputsForCardio() {
             const m = document.getElementById('machine').value; const cat = exerciseCategories[m];
@@ -234,7 +275,8 @@
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
             const filter = document.getElementById('stats-time-filter').value;
             let limitDate = new Date(); limitDate.setHours(0,0,0,0);
-            if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
+            if (filter === 'day') limitDate.setHours(0,0,0,0);
+            else if (filter === 'week') limitDate.setDate(limitDate.getDate() - 7);
             else if (filter === 'month') limitDate.setDate(limitDate.getDate() - 30);
             else if (filter === 'year') limitDate.setFullYear(limitDate.getFullYear() - 1);
             else if (filter === 'all') limitDate = new Date(0);
@@ -254,18 +296,23 @@
                     muscuSum[data.machine] = (muscuSum[data.machine] || 0) + w; muscuCount[data.machine] = (muscuCount[data.machine] || 0) + 1;
                 }
             });
-            document.getElementById('stat-series').innerText = total; document.getElementById('stat-volume').innerText = volume + 'KG';
+
+            document.getElementById('stat-series').innerText = total;
+            document.getElementById('stat-volume').innerText = volume + 'KG';
+
             const tr = Object.entries(muscuMax).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.statChartInstance) window.statChartInstance.destroy();
             window.statChartInstance = new Chart(document.getElementById('statsChart'), { type: 'bar', data: { labels: tr.map(m => m[0].toUpperCase()), datasets: [{ label: 'RECORD (KG)', data: tr.map(m => m[1]), backgroundColor: '#34c759', borderRadius: 8 }] } });
+
             let avgW = {}; Object.keys(muscuSum).forEach(m => { avgW[m] = Math.round(muscuSum[m] / muscuCount[m]); });
             const ta = Object.entries(avgW).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(window.avgStatsChartInstance) window.avgStatsChartInstance.destroy();
             window.avgStatsChartInstance = new Chart(document.getElementById('avgStatsChart'), { type: 'bar', data: { labels: ta.map(m => m[0].toUpperCase()), datasets: [{ label: 'MOYENNE (KG)', data: ta.map(m => m[1]), backgroundColor: '#0a84ff', borderRadius: 8 }] } });
+
             let html = '<table class="cardio-table"><tr><th>MACHINE</th><th>⏱ MAX</th><th>🏃 MAX</th><th>🔥 SES.</th></tr>';
             Object.keys(cardioStats).forEach(m => { 
                 const s = cardioStats[m]; 
-                html += `<tr onclick="openMachineHistory('${m}')"><td>${m}</td><td class="cardio-val">${s.maxTime}m</td><td class="cardio-val">${s.maxKm}km</td><td>${s.sessions}</td></tr>`; 
+                html += `<tr onclick="window.openMachineHistory('${m}')"><td>${m}</td><td class="cardio-val">${s.maxTime}m</td><td class="cardio-val">${s.maxKm}km</td><td>${s.sessions}</td></tr>`; 
             });
             document.getElementById('cardio-summary-list').innerHTML = html + '</table>';
         }
@@ -315,21 +362,6 @@
             loadExercises(); loadExercisesManageList(); alert("Catalogue importé !");
         };
 
-        window.openMachineHistory = async (name) => {
-            document.getElementById('history-machine-name').innerText = name.toUpperCase();
-            document.getElementById('modal-machine-history').style.display = 'flex';
-            const q = query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid), where("machine", "==", name));
-            const snap = await getDocs(q); let dailyMax = {}; let totalSets = 0; let absoluteMax = 0;
-            snap.forEach(d => { const data = d.data(); if(data.isWarmup) return; totalSets++; const dateKey = data.timestamp.toDate().toISOString().split('T')[0]; 
-                let val = exerciseCategories[name] === "Cardio" ? Number(data.reps) : calc1RM(data.weight, data.reps);
-                if(!dailyMax[dateKey] || val > dailyMax[dateKey]) dailyMax[dateKey] = val; if(val > absoluteMax) absoluteMax = val; 
-            });
-            document.getElementById('hist-max-rm').innerText = absoluteMax + (exerciseCategories[name]==="Cardio"?" KM":" KG");
-            document.getElementById('hist-total-sets').innerText = totalSets;
-            if(historyChartInstance) historyChartInstance.destroy();
-            historyChartInstance = new Chart(document.getElementById('historyChart').getContext('2d'), { type: 'line', data: { labels: Object.keys(dailyMax).map(d => formatDate(new Date(d))), datasets: [{ label: 'Score', data: Object.values(dailyMax), borderColor: '#0a84ff', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false } });
-        };
-
         async function loadWorkouts() {
             const dateInput = document.getElementById('workout-date').value;
             const snap = await getDocs(query(collection(db, "workouts"), where("userId", "==", auth.currentUser.uid)));
@@ -339,7 +371,7 @@
             filtered.forEach(x => { if(!cur || cur.machine !== x.data.machine) { cur = { machine: x.data.machine, sets: [] }; groups.push(cur); } cur.sets.push(x); });
             groups.forEach(g => {
                 const div = document.createElement('div'); div.className = 'history-group';
-                div.innerHTML = `<div class="group-header" onclick="openMachineHistory('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
+                div.innerHTML = `<div class="group-header" onclick="window.openMachineHistory('${g.machine}')"><span>🏋️ ${g.machine.toUpperCase()}</span></div><div>` + 
                 g.sets.map(s => { 
                     const isC = exerciseCategories[s.data.machine] === "Cardio"; const val = isC ? `<strong>${s.data.weight}MIN | ${s.data.reps}KM</strong>` : `<strong>${s.data.weight}KG X ${s.data.reps}</strong> <span class="rm-small">(${calc1RM(s.data.weight, s.data.reps)}KG)</span>`;
                     return `<div class="set-item"><div>${val}</div><div style="display:flex; gap:10px;"><button class="icon-btn danger" onclick="deleteSeries('${s.id}')">🗑️</button></div></div>`; 
@@ -352,6 +384,7 @@
         window.closeModal = () => document.getElementById('modal-add-machine').style.display='none';
         window.deleteExo = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "exercises", id)); loadExercisesManageList(); loadExercises(); } };
         window.deleteSeries = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "workouts", id)); loadWorkouts(); if(activeCalendarDay) { loadDayDetails(activeCalendarDay); renderCalendar(); } } };
+        
         window.resetTimerState = () => { clearInterval(timerInterval); timerInterval = null; document.getElementById('floating-timer').style.display = 'none'; };
         function startTimer(sec) { resetTimerState(); timerSeconds = sec; document.getElementById('floating-timer').style.display = 'block'; timerInterval = setInterval(() => { let m = Math.floor(timerSeconds/60), s = timerSeconds%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`; if(timerSeconds <= 0) { clearInterval(timerInterval); } timerSeconds--; }, 1000); }
         document.querySelectorAll('.timer-btn').forEach(btn => btn.onclick = () => { startTimer(parseInt(btn.dataset.time)); document.getElementById('modal-timer-prompt').style.display='none'; });
@@ -406,7 +439,7 @@
             for(const [cat, items] of Object.entries(grouped)) {
                 container.innerHTML += `<h4 class="category-header" style="font-family:var(--font-impact); color:var(--text-muted); margin:20px 0 10px 10px;">${cat}</h4>`;
                 let html = '<div class="card" style="padding:0; overflow:hidden;">';
-                items.forEach(m => { html += `<div class="machine-item" onclick="openMachineHistory('${m.name}')"><span class="machine-name-text" style="padding-left:15px; font-weight:700;">${m.name}</span><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')" style="margin-right:15px;">🗑️</button></div>`; });
+                items.forEach(m => { html += `<div class="machine-item" onclick="window.openMachineHistory('${m.name}')"><span class="machine-name-text" style="padding-left:15px; font-weight:700;">${m.name}</span><div class="machine-actions" style="padding-right:15px;"><button class="icon-btn danger" onclick="event.stopPropagation(); deleteExo('${m.id}')">🗑️</button></div></div>`; });
                 container.innerHTML += html + '</div>';
             }
         }
